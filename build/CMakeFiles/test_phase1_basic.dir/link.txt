@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -O3 -DNDEBUG -O2 -DNDEBUG -march=native CMakeFiles/test_phase1_basic.dir/tests/unit/test_phase1_basic.c.o -o test_phase1_basic  -Wl,-rpath,/home/karl/Projects/LGX/build liblgx_runtime.so.1.0.0 -lm -ldl 

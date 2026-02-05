@@ -1,0 +1,13 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: LGX Runtime Core
+Description: High-performance deterministic runtime for Linux gaming
+Version: @PROJECT_VERSION@
+URL: https://github.com/lgx-platform/lgx-runtime-core
+Requires: 
+Libs: -L${libdir} -llgx_runtime
+Libs.private: -lpthread -lm -ldl
+Cflags: -I${includedir}

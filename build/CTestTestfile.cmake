@@ -1,0 +1,32 @@
+# CMake generated Testfile for 
+# Source directory: /home/karl/Projects/LGX
+# Build directory: /home/karl/Projects/LGX/build
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(test_csf1_comparison "/home/karl/Projects/LGX/build/test_csf1_comparison")
+set_tests_properties(test_csf1_comparison PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_csf1_hybrid_allocator "/home/karl/Projects/LGX/build/test_csf1_hybrid_allocator")
+set_tests_properties(test_csf1_hybrid_allocator PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_csf2_numa_awareness "/home/karl/Projects/LGX/build/test_csf2_numa_awareness")
+set_tests_properties(test_csf2_numa_awareness PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_csf3_namespace_isolation "/home/karl/Projects/LGX/build/test_csf3_namespace_isolation")
+set_tests_properties(test_csf3_namespace_isolation PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_csf4_abi_stability "/home/karl/Projects/LGX/build/test_csf4_abi_stability")
+set_tests_properties(test_csf4_abi_stability PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_csf5_telemetry_overhead "/home/karl/Projects/LGX/build/test_csf5_telemetry_overhead")
+set_tests_properties(test_csf5_telemetry_overhead PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_hardware_adaptation "/home/karl/Projects/LGX/build/test_hardware_adaptation")
+set_tests_properties(test_hardware_adaptation PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_hierarchical_intents "/home/karl/Projects/LGX/build/test_hierarchical_intents")
+set_tests_properties(test_hierarchical_intents PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_intent_accuracy "/home/karl/Projects/LGX/build/test_intent_accuracy")
+set_tests_properties(test_intent_accuracy PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_intent_mismatch_rates "/home/karl/Projects/LGX/build/test_intent_mismatch_rates")
+set_tests_properties(test_intent_mismatch_rates PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_intent_validation "/home/karl/Projects/LGX/build/test_intent_validation")
+set_tests_properties(test_intent_validation PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_performance "/home/karl/Projects/LGX/build/test_performance")
+set_tests_properties(test_performance PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+add_test(test_tiered_performance "/home/karl/Projects/LGX/build/test_tiered_performance")
+set_tests_properties(test_tiered_performance PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;123;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")

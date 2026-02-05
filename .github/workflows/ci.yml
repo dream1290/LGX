@@ -1,0 +1,333 @@
+name: LGX Runtime CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04]
+        compiler: [gcc-11, gcc-12, clang-14, clang-15]
+        include:
+          - os: ubuntu-22.04
+            compiler: gcc-11
+            cc: gcc-11
+            cxx: g++-11
+          - os: ubuntu-22.04
+            compiler: gcc-12
+            cc: gcc-12
+            cxx: g++-12
+          - os: ubuntu-22.04
+            compiler: clang-14
+            cc: clang-14
+            cxx: clang++-14
+          - os: ubuntu-22.04
+            compiler: clang-15
+            cc: clang-15
+            cxx: clang++-15
+          - os: ubuntu-20.04
+            compiler: gcc-11
+            cc: gcc-11
+            cxx: g++-11
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          pkg-config \
+          libjemalloc-dev \
+          valgrind \
+          ${{ matrix.cc }} \
+          ${{ matrix.cxx }}
+
+    - name: Configure CMake
+      env:
+        CC: ${{ matrix.cc }}
+        CXX: ${{ matrix.cxx }}
+      run: |
+        cmake -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+          -DCMAKE_C_COMPILER=${{ matrix.cc }} \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j$(nproc)
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest --output-on-failure -C ${{env.BUILD_TYPE}}
+
+    - name: Run Phase 0 tests
+      working-directory: ${{github.workspace}}/build
+      run: make run_phase0_tests
+
+    - name: Install
+      run: sudo cmake --install ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test installation
+      run: |
+        # Test that headers are installed
+        test -f /usr/local/include/lgx_runtime.h
+        test -f /usr/local/include/lgx_types.h
+        test -f /usr/local/include/lgx_version.h
+        test -f /usr/local/include/lgx_integration.h
+        test -f /usr/local/include/lgx/lgx_runtime_internal.h
+        
+        # Test that library is installed
+        test -f /usr/local/lib/liblgx_runtime.so
+        test -f /usr/local/lib/liblgx_runtime.so.1
+        
+        # Test that pkg-config file is installed
+        test -f /usr/local/lib/pkgconfig/lgx_runtime.pc
+        
+        # Test pkg-config works
+        pkg-config --exists lgx_runtime
+        pkg-config --cflags lgx_runtime
+        pkg-config --libs lgx_runtime
+
+  fedora-build:
+    runs-on: ubuntu-latest
+    container: fedora:38
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        dnf update -y
+        dnf install -y \
+          gcc \
+          gcc-c++ \
+          cmake \
+          make \
+          pkg-config \
+          jemalloc-devel \
+          valgrind
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build build --config ${{env.BUILD_TYPE}} -j$(nproc)
+
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure -C ${{env.BUILD_TYPE}}
+
+  arch-build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        pacman -Syu --noconfirm
+        pacman -S --noconfirm \
+          base-devel \
+          cmake \
+          pkg-config \
+          jemalloc \
+          valgrind
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build build --config ${{env.BUILD_TYPE}} -j$(nproc)
+
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure -C ${{env.BUILD_TYPE}}
+
+  performance-regression:
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'pull_request'
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Need full history for comparison
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          pkg-config \
+          libjemalloc-dev \
+          python3 \
+          python3-pip
+
+    - name: Install Python dependencies
+      run: |
+        pip3 install matplotlib numpy scipy
+
+    - name: Build current version
+      run: |
+        cmake -B build-current -DCMAKE_BUILD_TYPE=Release
+        cmake --build build-current -j$(nproc)
+
+    - name: Run current performance tests
+      working-directory: build-current
+      run: |
+        make run_performance_tests
+        cp performance_results.json ../current_results.json
+
+    - name: Checkout base branch
+      run: |
+        git checkout ${{ github.base_ref }}
+
+    - name: Build base version
+      run: |
+        cmake -B build-base -DCMAKE_BUILD_TYPE=Release
+        cmake --build build-base -j$(nproc)
+
+    - name: Run base performance tests
+      working-directory: build-base
+      run: |
+        make run_performance_tests
+        cp performance_results.json ../base_results.json
+
+    - name: Compare performance
+      run: |
+        python3 scripts/compare_performance.py \
+          base_results.json \
+          current_results.json \
+          --threshold 5.0 \
+          --output performance_comparison.md
+
+    - name: Comment PR with performance results
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const comparison = fs.readFileSync('performance_comparison.md', 'utf8');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comparison
+          });
+
+  security-scan:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          pkg-config \
+          libjemalloc-dev \
+          clang \
+          clang-tools
+
+    - name: Configure CMake with sanitizers
+      run: |
+        cmake -B build-sanitized \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_C_COMPILER=clang \
+          -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+
+    - name: Build with sanitizers
+      run: cmake --build build-sanitized -j$(nproc)
+
+    - name: Run tests with sanitizers
+      working-directory: build-sanitized
+      run: ctest --output-on-failure
+
+    - name: Run static analysis
+      run: |
+        clang-tidy src/runtime/*.c -- -Iinclude -Iinclude/lgx
+
+    - name: Check for security issues
+      run: |
+        # Check for common security issues
+        grep -r "strcpy\|strcat\|sprintf\|gets" src/ && exit 1 || true
+        grep -r "malloc\|free" src/ | grep -v "lgx_" && echo "Warning: Direct malloc/free usage found" || true
+
+  abi-compatibility:
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'pull_request'
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          pkg-config \
+          libjemalloc-dev \
+          abi-dumper \
+          abi-compliance-checker
+
+    - name: Build current version
+      run: |
+        cmake -B build-current -DCMAKE_BUILD_TYPE=Release
+        cmake --build build-current -j$(nproc)
+
+    - name: Generate current ABI dump
+      run: |
+        abi-dumper build-current/liblgx_runtime.so \
+          -o current.abi \
+          -public-headers include/
+
+    - name: Checkout base branch
+      run: |
+        git checkout ${{ github.base_ref }}
+
+    - name: Build base version
+      run: |
+        cmake -B build-base -DCMAKE_BUILD_TYPE=Release
+        cmake --build build-base -j$(nproc)
+
+    - name: Generate base ABI dump
+      run: |
+        abi-dumper build-base/liblgx_runtime.so \
+          -o base.abi \
+          -public-headers include/
+
+    - name: Check ABI compatibility
+      run: |
+        abi-compliance-checker \
+          -lib lgx_runtime \
+          -old base.abi \
+          -new current.abi \
+          -report-path abi_report.html
+
+    - name: Upload ABI report
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: abi-compatibility-report
+        path: abi_report.html

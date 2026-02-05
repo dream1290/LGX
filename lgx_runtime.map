@@ -1,0 +1,85 @@
+LGX_1.0 {
+    global:
+        # Core API functions
+        lgx_runtime_init;
+        lgx_runtime_shutdown;
+        lgx_runtime_get_version;
+        lgx_runtime_check_compatibility;
+        
+        # Configuration API
+        lgx_config_create;
+        lgx_config_destroy;
+        lgx_config_set_*;
+        
+        # Capability detection
+        lgx_runtime_has_capability;
+        lgx_runtime_query_capabilities;
+        lgx_runtime_get_hardware_status;
+        lgx_runtime_get_performance_characteristics;
+        lgx_runtime_get_performance_targets;
+        lgx_runtime_assess_performance;
+        lgx_performance_tier_to_string;
+        
+        # Memory management
+        lgx_alloc;
+        lgx_alloc_aligned;
+        lgx_alloc_with_strategy;
+        lgx_alloc_with_intent;
+        lgx_alloc_with_intent_ex;
+        lgx_alloc_validate_intent;
+        lgx_free;
+        lgx_memory_stats;
+        lgx_alloc_get_usage_stats;
+        
+        # Prototype compatibility functions
+        lgx_allocator_prototype_init;
+        lgx_allocator_prototype_cleanup;
+        lgx_alloc_prototype;
+        lgx_free_prototype;
+        lgx_get_cache_stats;
+        
+        # Lifecycle management
+        lgx_runtime_suspend;
+        lgx_runtime_resume;
+        
+        # Platform services
+        lgx_fs_*;
+        lgx_time_*;
+        lgx_log;
+        
+        # Error handling
+        lgx_get_last_error;
+        lgx_get_last_error_ex;
+        lgx_clear_last_error;
+        lgx_set_error_handler;
+        lgx_result_to_string;
+        
+        # Health monitoring
+        lgx_runtime_health_check;
+        lgx_runtime_configure_limits;
+        lgx_runtime_get_effective_limits;
+        
+        # Performance counters
+        lgx_get_counter;
+        lgx_reset_counters;
+        lgx_register_counter;
+        lgx_increment_counter;
+        lgx_add_to_counter;
+        
+        # Telemetry (opt-in)
+        lgx_telemetry_configure;
+        lgx_telemetry_enable;
+        lgx_telemetry_export;
+        lgx_telemetry_get_privacy_policy;
+        lgx_telemetry_export_collected_data;
+        
+        # Integration contracts
+        lgx_runtime_get_translate_context;
+        lgx_runtime_register_security_hooks;
+        lgx_runtime_unregister_security_hooks;
+        lgx_runtime_configure_shader_cache;
+        lgx_runtime_*_component;
+        
+    local:
+        *;
+};

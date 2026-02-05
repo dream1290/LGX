@@ -7,10 +7,16 @@ The LGX Runtime Core provides a stable C ABI layer that games link against, mana
 **Revolutionary Enhancement**: The Runtime Core implements a **Telescoping Architecture** with intent-based APIs that enable incremental enhancement across 4 layers without breaking ABI compatibility.
 
 **Core Innovation**: APIs capture **intent** (what, why, how you'll use resources), not just requirements (how much). This enables:
-- Layer 1: Optimal pool selection based on intent
-- Layer 2: Predictive pre-warming based on learned patterns
-- Layer 3: Hardware-aware NUMA placement based on access patterns
-- Layer 4: Verified allocation for safety-critical operations
+- Layer 1: Optimal pool selection based on intent with hybrid allocation strategy
+- Layer 2: Predictive pre-warming based on learned patterns with validation
+- Layer 3: Hardware-aware optimization with software fallbacks
+- Layer 4: Selective verification of critical components only
+
+**Key Architectural Refinements** (based on engineering review):
+- **Hybrid Allocation**: Lock-free for hot paths, lock-based for cold paths, jemalloc fallback
+- **Hardware Adaptation**: Graceful degradation across hardware tiers (OPTIMAL, COMPATIBLE, DEGRADED)
+- **Intent Validation**: Runtime validates developer intent and adapts based on observed patterns
+- **Tiered Performance**: MVP, Competitive, and Best-in-class performance targets
 
 See `REVOLUTIONARY_ARCHITECTURE.md` for complete 48-month roadmap.
 
@@ -95,9 +101,36 @@ typedef struct lgx_version {
 lgx_version_t lgx_runtime_get_version(void);
 lgx_result_t lgx_runtime_check_compatibility(const lgx_version_t* required_version);
 
-// Capability Detection
+// Capability Detection with Hardware Tiers
 typedef enum lgx_capability {
     LGX_CAP_DX11_TRANSLATION,
+    LGX_CAP_DX12_TRANSLATION,
+    LGX_CAP_SECURITY_MODULE,
+    LGX_CAP_RAYTRACING,
+    LGX_CAP_MESH_SHADERS,
+    LGX_CAP_NUMA_AWARENESS,
+    LGX_CAP_HUGE_PAGES,
+    LGX_CAP_VENDOR_ACCELERATION,
+} lgx_capability_t;
+
+typedef enum lgx_hardware_tier {
+    LGX_HW_TIER_OPTIMAL,        // Native hardware path, all features available
+    LGX_HW_TIER_COMPATIBLE,     // Emulated features with performance penalty
+    LGX_HW_TIER_DEGRADED,       // Missing hardware features, software fallback
+} lgx_hardware_tier_t;
+
+typedef struct lgx_hardware_status {
+    size_t struct_size;
+    lgx_hardware_tier_t achieved_tier;
+    uint32_t missing_capabilities;  // Bitmask of LGX_CAP_*
+    const char* degradation_reason;
+    const char* performance_impact_estimate;  // "10-20% slower"
+    const char* remediation_steps;            // "Enable huge pages: ..."
+} lgx_hardware_status_t;
+
+bool lgx_runtime_has_capability(lgx_capability_t cap);
+lgx_result_t lgx_runtime_query_capabilities(lgx_capability_t* caps, size_t* count);
+lgx_hardware_status_t lgx_runtime_get_hardware_status(void);
     LGX_CAP_DX12_TRANSLATION,
     LGX_CAP_SECURITY_MODULE,
     LGX_CAP_RAYTRACING,
@@ -107,52 +140,123 @@ typedef enum lgx_capability {
 bool lgx_runtime_has_capability(lgx_capability_t cap);
 lgx_result_t lgx_runtime_query_capabilities(lgx_capability_t* caps, size_t* count);
 
-// Memory Management
+// Memory Management (Hybrid Strategy)
+typedef enum lgx_allocator_strategy {
+    LGX_ALLOC_LOCK_FREE,      // Lock-free (hot path, small allocations)
+    LGX_ALLOC_LOCK_BASED,     // Mutex-based (cold path, large allocations)
+    LGX_ALLOC_JEMALLOC,       // Delegate to jemalloc (fallback)
+    LGX_ALLOC_AUTO,           // Runtime selects best strategy
+} lgx_allocator_strategy_t;
+
 void* lgx_alloc(size_t size);
 void* lgx_alloc_aligned(size_t size, size_t alignment);
+void* lgx_alloc_with_strategy(size_t size, lgx_allocator_strategy_t strategy);
 void lgx_free(void* ptr);
 lgx_result_t lgx_memory_stats(lgx_memory_stats_t* stats);
 
-// Memory Management with Intent (Layer 1+)
+// Memory Management with Enhanced Intent (Layer 1+)
 typedef enum lgx_access_pattern {
     LGX_ACCESS_SEQUENTIAL,          // Sequential access (streaming)
     LGX_ACCESS_RANDOM,              // Random access (lookup tables)
     LGX_ACCESS_WRITE_ONCE,          // Write once, read many
+    LGX_ACCESS_UNKNOWN,             // Developer doesn't know (runtime will learn)
 } lgx_access_pattern_t;
 
 typedef enum lgx_lifetime {
     LGX_LIFETIME_FRAME,             // Lives for one frame
     LGX_LIFETIME_LEVEL,             // Lives for current level/scene
     LGX_LIFETIME_SESSION,           // Lives for entire game session
+    LGX_LIFETIME_UNKNOWN,           // Developer doesn't know (runtime will learn)
 } lgx_lifetime_t;
 
 typedef enum lgx_performance_hint {
-    LGX_HINT_CRITICAL_PATH,         // Frame-critical, needs <50ns access
+    LGX_HINT_CRITICAL_PATH,         // Frame-critical, needs low latency
     LGX_HINT_BACKGROUND,            // Background task, latency tolerant
-    LGX_HINT_BANDWIDTH_HUNGRY,      // Needs high bandwidth (>100GB/s)
+    LGX_HINT_BANDWIDTH_HUNGRY,      // Needs high bandwidth
     LGX_HINT_COMPUTE_HEAVY,         // CPU-intensive operations
+    LGX_HINT_GPU_SHARED,            // Shared with GPU (zero-copy preferred)
 } lgx_performance_hint_t;
 
-typedef struct lgx_allocation_intent {
+typedef enum lgx_intent_validation {
+    LGX_INTENT_TRUST,           // Trust developer intent, no validation
+    LGX_INTENT_VALIDATE_WARN,   // Validate, warn on mismatch
+    LGX_INTENT_VALIDATE_ADAPT,  // Validate, auto-adapt allocations
+} lgx_intent_validation_t;
+
+// Base intent structure (Layer 1)
+typedef struct lgx_allocation_intent_base {
     size_t struct_size;             // For forward compatibility
     size_t size;                    // How much memory
     lgx_access_pattern_t access_pattern;  // How you'll access it
     lgx_lifetime_t lifetime;        // How long you'll keep it
     lgx_performance_hint_t hint;    // Performance requirements
-} lgx_allocation_intent_t;
+    lgx_intent_validation_t validation_policy;  // How to handle intent mismatches
+} lgx_allocation_intent_base_t;
+
+// Extended intent for Layer 2+ (optional)
+typedef struct lgx_allocation_intent_l2 {
+    size_t struct_size;
+    lgx_allocation_intent_base_t base;  // Embed base
+    
+    // Layer 2 specific
+    uint8_t priority;                    // 0-255, for predictive prefetch
+    bool enable_predictive_prefetch;
+} lgx_allocation_intent_l2_t;
 
 // Intent-based allocation (enables future layers)
-void* lgx_alloc_with_intent(const lgx_allocation_intent_t* intent);
+void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent);
+void* lgx_alloc_with_intent_ex(const void* intent, size_t intent_type_id);
 
-// Mathematical Guarantees (Layer 1)
-typedef struct lgx_temporal_guarantee {
+// Intent validation and learning
+typedef struct lgx_allocation_usage {
     size_t struct_size;
-    uint64_t max_init_time_ns;      // 500ms, mathematically proven
-    uint64_t max_allocation_ns;     // 1μs, statistically guaranteed
-    double frame_time_variance;     // <0.5ms p99, formally verified
-} lgx_temporal_guarantee_t;
+    uint64_t access_count;
+    lgx_access_pattern_t observed_pattern;  // What we actually saw
+    double pattern_confidence;               // 0.0 to 1.0
+    lgx_lifetime_t observed_lifetime;
+    uint64_t actual_lifetime_ms;            // Measured lifetime
+} lgx_allocation_usage_t;
 
-lgx_result_t lgx_request_guarantees(lgx_temporal_guarantee_t* guarantees);
+lgx_result_t lgx_alloc_get_usage_stats(void* ptr, lgx_allocation_usage_t* usage);
+
+// Performance Characteristics (Layer 1) - Probabilistic, not Mathematical Proofs
+typedef struct lgx_performance_characteristics {
+    size_t struct_size;
+    
+    // Algorithmic guarantees (provable)
+    const char* alloc_complexity;           // "O(1) for cache hit, O(log n) for cache miss"
+    size_t max_memory_overhead;             // Provable bound
+    
+    // Statistical characteristics (measured, not proven)
+    struct {
+        uint64_t p50_ns;    // Median
+        uint64_t p95_ns;    // 95th percentile
+        uint64_t p99_ns;    // 99th percentile
+        uint64_t p999_ns;   // 99.9th percentile
+        double confidence_interval;  // 0.95 for 95% CI
+        size_t sample_size;          // Samples used for measurement
+    } measured_init_time;
+    
+    struct {
+        uint64_t p50_ns;
+        uint64_t p95_ns;
+        uint64_t p99_ns;
+        uint64_t p999_ns;
+        double confidence_interval;
+        size_t sample_size;
+    } measured_alloc_time;
+    
+    // System configuration for measurements
+    const char* kernel_version;
+    const char* cpu_model;
+    bool real_time_kernel;      // PREEMPT_RT applied?
+    bool cpu_isolation;         // isolcpus configured?
+    const char* measurement_conditions;  // "80% CPU load, 90% memory used"
+} lgx_performance_characteristics_t;
+
+lgx_result_t lgx_runtime_get_performance_characteristics(
+    lgx_performance_characteristics_t* chars
+);
 
 // Lifecycle Management
 lgx_result_t lgx_runtime_suspend(void);
@@ -180,11 +284,55 @@ typedef enum lgx_log_level {
 
 void lgx_log(lgx_log_level_t level, const char* format, ...);
 
-// Telemetry (Opt-in)
+// Enhanced Telemetry with Privacy Framework
+typedef enum lgx_telemetry_overflow {
+    LGX_TEL_DROP_OLDEST,     // Ring buffer behavior
+    LGX_TEL_DROP_NEWEST,     // Preserve history
+    LGX_TEL_SAMPLE,          // Statistical sampling (adaptive)
+} lgx_telemetry_overflow_t;
+
+typedef struct lgx_privacy_policy {
+    size_t struct_size;
+    
+    // What we collect (user can inspect)
+    bool collect_frame_times;           // ✅ Safe (just numbers)
+    bool collect_allocation_sizes;      // ✅ Safe (just numbers)
+    bool collect_cpu_model;             // ⚠️ Fingerprinting risk
+    bool collect_gpu_model;             // ⚠️ Fingerprinting risk
+    bool collect_kernel_version;        // ⚠️ Fingerprinting risk
+    
+    // What we NEVER collect (guaranteed)
+    // ❌ File paths, process names, user names, IP addresses, any PII
+    
+    // Anonymization techniques
+    bool add_noise;                     // Add random noise to data
+    double noise_stddev;                // 0.05 = 5% noise
+    bool aggregate_only;                // Only send aggregates, not raw data
+} lgx_privacy_policy_t;
+
+typedef struct lgx_telemetry_config {
+    size_t struct_size;
+    bool enabled;
+    size_t ring_buffer_size;
+    lgx_telemetry_overflow_t overflow_policy;
+    
+    // Adaptive sampling
+    bool adaptive_sampling;         // Reduce sample rate when buffer fills
+    double min_sample_rate;         // 0.01 = 1% minimum (emergency mode)
+    
+    // Privacy settings
+    lgx_privacy_policy_t privacy_policy;
+} lgx_telemetry_config_t;
+
+lgx_result_t lgx_telemetry_configure(const lgx_telemetry_config_t* config);
 lgx_result_t lgx_telemetry_enable(bool opt_in);
 lgx_result_t lgx_telemetry_export(char* buffer, size_t buffer_size);
 
-// Error Handling
+// Transparency: user can inspect what is collected
+lgx_privacy_policy_t lgx_telemetry_get_privacy_policy(void);
+lgx_result_t lgx_telemetry_export_collected_data(const char* output_path);
+
+// Enhanced Error Handling with Recovery Guidance
 typedef enum lgx_result {
     LGX_SUCCESS = 0,
     LGX_ERROR_INVALID_PARAM,
@@ -197,11 +345,26 @@ typedef enum lgx_result {
     LGX_ERROR_LIBRARY_VERSION_MISMATCH,
     LGX_ERROR_GPU_UNAVAILABLE,
     LGX_ERROR_RESOURCE_LIMIT_EXCEEDED,
+    LGX_ERROR_HARDWARE_DEGRADED,        // Hardware features unavailable
+    LGX_ERROR_INTENT_VALIDATION_FAILED, // Intent doesn't match usage
 } lgx_result_t;
+
+typedef enum lgx_error_severity {
+    LGX_SEV_WARNING,       // Can continue, but degraded
+    LGX_SEV_ERROR,         // Cannot continue current operation
+    LGX_SEV_FATAL,         // Cannot continue at all
+} lgx_error_severity_t;
+
+typedef enum lgx_recovery_action {
+    LGX_RECOVER_RETRY,         // Retry operation
+    LGX_RECOVER_DEGRADE,       // Continue with reduced quality
+    LGX_RECOVER_ABORT,         // Abort operation, continue game
+    LGX_RECOVER_SHUTDOWN,      // Shutdown gracefully
+} lgx_recovery_action_t;
 
 const char* lgx_result_to_string(lgx_result_t result);
 
-// Error Context API (thread-local)
+// Enhanced Error Context API (thread-local)
 typedef struct lgx_error_context {
     size_t struct_size;
     lgx_result_t error_code;
@@ -209,26 +372,102 @@ typedef struct lgx_error_context {
     const char* function_name;
     const char* file_name;
     int line_number;
+    uint64_t timestamp_ns;          // When error occurred
 } lgx_error_context_t;
 
+typedef struct lgx_error_context_ex {
+    lgx_error_context_t base;
+    
+    // Recovery guidance
+    lgx_error_severity_t severity;
+    lgx_recovery_action_t suggested_action;
+    const char* recovery_steps;    // Human-readable recovery steps
+    bool recoverable;
+    void* context_data;            // Optional context for recovery
+} lgx_error_context_ex_t;
+
 lgx_error_context_t lgx_get_last_error(void);
+lgx_error_context_ex_t lgx_get_last_error_ex(void);
+void lgx_clear_last_error(void);
 
 // Error Callback
-typedef void (*lgx_error_callback_t)(const lgx_error_context_t* context, void* user_data);
+typedef void (*lgx_error_callback_t)(const lgx_error_context_ex_t* context, void* user_data);
 void lgx_set_error_handler(lgx_error_callback_t callback, void* user_data);
 
-// Health Check API
+// Enhanced Health Check API
 typedef struct lgx_health_status {
     size_t struct_size;
     bool is_healthy;
+    lgx_hardware_tier_t hardware_tier;
     bool huge_pages_active;
     bool gpu_responsive;
+    bool numa_awareness_active;
     size_t memory_usage_mb;
+    size_t memory_limit_mb;
     uint32_t allocation_failures;
     uint32_t degraded_features;  // Bitmask of features in degraded mode
+    double cpu_overhead_percent; // Measured CPU overhead
+    const char* degradation_summary;  // Human-readable summary
 } lgx_health_status_t;
 
 lgx_result_t lgx_runtime_health_check(lgx_health_status_t* status);
+
+// Dynamic Resource Limits Configuration
+typedef struct lgx_resource_limits {
+    size_t struct_size;
+    
+    // Memory limits
+    size_t max_memory_bytes;          // Absolute limit
+    double max_memory_percent;        // 0.25 = 25% of system RAM
+    bool use_percentage;               // If true, use percent instead of absolute
+    
+    // Allocation rate limits
+    size_t max_alloc_per_second;      // Absolute limit
+    bool adaptive_rate_limiting;       // Adjust based on system load
+    
+    // File handle limits
+    size_t max_open_files;            // Absolute limit
+    double max_files_percent;         // 0.10 = 10% of ulimit
+} lgx_resource_limits_t;
+
+typedef struct lgx_effective_limits {
+    size_t effective_max_memory;       // Computed from config + system
+    size_t effective_max_alloc_rate;
+    size_t effective_max_files;
+    const char* limit_source;          // "config" or "system" or "calculated"
+} lgx_effective_limits_t;
+
+lgx_result_t lgx_runtime_configure_limits(const lgx_resource_limits_t* limits);
+lgx_effective_limits_t lgx_runtime_get_effective_limits(void);
+
+// Configuration Validation Framework
+typedef struct lgx_config_constraints {
+    size_t min_memory_pool_size;       // 1MB
+    size_t max_memory_pool_size;       // 16GB
+    size_t min_thread_cache_objects;   // 8
+    size_t max_thread_cache_objects;   // 256
+} lgx_config_constraints_t;
+
+lgx_result_t lgx_config_validate(
+    const lgx_runtime_config_t* config,
+    lgx_config_constraints_t* violated_constraints  // OUT: what failed
+);
+
+lgx_result_t lgx_config_sanitize(
+    lgx_runtime_config_t* config,
+    bool strict  // If true, fail on any invalid param
+);
+
+// Observability Levels
+typedef enum lgx_observability_level {
+    LGX_OBS_NONE,          // No overhead
+    LGX_OBS_MINIMAL,       // Counters only (<0.1% overhead)
+    LGX_OBS_NORMAL,        // Counters + errors + warnings (<0.5% overhead)
+    LGX_OBS_DETAILED,      // Above + debug logs (<2% overhead)
+    LGX_OBS_EXHAUSTIVE,    // Everything including traces (>5% overhead)
+} lgx_observability_level_t;
+
+void lgx_set_observability_level(lgx_observability_level_t level);
 
 // Performance Counters API
 typedef enum lgx_counter {
@@ -237,10 +476,20 @@ typedef enum lgx_counter {
     LGX_COUNTER_CACHE_HITS,
     LGX_COUNTER_CACHE_MISSES,
     LGX_COUNTER_POOL_EXHAUSTIONS,
+    LGX_COUNTER_INTENT_MISMATCHES,     // Intent vs actual usage mismatches
+    LGX_COUNTER_HARDWARE_FALLBACKS,   // Times we fell back to software
+    LGX_COUNTER_NUMA_MIGRATIONS,      // Memory moved between NUMA nodes
 } lgx_counter_t;
 
 uint64_t lgx_get_counter(lgx_counter_t counter);
 void lgx_reset_counters(void);
+
+// Performance Counter Registry (for custom counters)
+typedef uint32_t lgx_custom_counter_t;
+
+lgx_custom_counter_t lgx_register_counter(const char* name);
+void lgx_increment_counter(lgx_custom_counter_t counter);
+void lgx_add_to_counter(lgx_custom_counter_t counter, uint64_t value);
 ```
 
 ### 3.2 Integration Contracts for Other LGX Components
@@ -1340,3 +1589,68 @@ lgx_result_t lgx_runtime_configure_shader_cache(const lgx_shader_cache_config_t*
 - Advanced telemetry (GPU metrics, network stats)
 - Support for ARM64 architecture
 - Integration with cloud gaming platforms
+
+// Security Enhancements API
+typedef enum lgx_security_level {
+    LGX_SECURITY_STANDARD,      // Normal operations
+    LGX_SECURITY_SENSITIVE,     // Constant-time operations
+    LGX_SECURITY_CRITICAL,      // Maximum protection
+} lgx_security_level_t;
+
+// Side-channel resistant operations
+#ifdef __x86_64__
+#define LGX_SPECULATION_BARRIER() asm volatile("lfence" ::: "memory")
+#else
+#define LGX_SPECULATION_BARRIER() __sync_synchronize()
+#endif
+
+// Safe array access with speculation barrier
+static inline bool lgx_safe_array_access(
+    const void* array, 
+    size_t index, 
+    size_t array_size,
+    void* result
+) {
+    if (index >= array_size) {
+        return false;
+    }
+    
+    LGX_SPECULATION_BARRIER();  // Prevent speculative read
+    
+    memcpy(result, (const uint8_t*)array + index, 1);
+    return true;
+}
+
+// Sensitive data allocation
+void* lgx_alloc_sensitive(size_t size);
+void lgx_free_sensitive(void* ptr);
+void* lgx_alloc_constant_time(size_t size);
+
+// Secure random number generation
+lgx_result_t lgx_random_bytes(void* buffer, size_t size);
+
+// Security configuration
+typedef struct lgx_security_config {
+    size_t struct_size;
+    bool constant_time_alloc;        // Allocation time independent of size
+    bool randomize_allocations;      // ASLR for heap allocations
+    bool zero_free_memory;           // Clear memory on free
+    bool isolate_sensitive_data;     // Separate pool for sensitive data
+} lgx_security_config_t;
+
+lgx_result_t lgx_runtime_configure_security(const lgx_security_config_t* config);
+
+// Chaos Testing Framework
+typedef struct lgx_chaos_config {
+    size_t struct_size;
+    bool inject_memory_pressure;     // Randomly fail allocations
+    double failure_rate;              // 0.01 = 1% of allocations fail
+    
+    bool inject_latency_spikes;      // Add random delays
+    uint64_t max_latency_spike_ns;   // Up to 1ms delays
+    
+    bool inject_numa_imbalance;      // Simulate NUMA issues
+    bool inject_gpu_hangs;           // Simulate driver hangs
+} lgx_chaos_config_t;
+
+lgx_result_t lgx_runtime_enable_chaos_testing(const lgx_chaos_config_t* config);

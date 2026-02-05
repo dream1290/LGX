@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined CMakeFiles/test_intent_accuracy.dir/tests/phase0/test_intent_accuracy.c.o -o test_intent_accuracy  -Wl,-rpath,/home/karl/Projects/LGX/build liblgx_runtime.so.1.0.0 -lm -ldl 

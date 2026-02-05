@@ -1,0 +1,88 @@
+name: Multi-Distribution Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  multi-distro-test:
+    strategy:
+      matrix:
+        include:
+          # Ubuntu variants
+          - distro: ubuntu
+            version: "22.04"
+            container: ubuntu:22.04
+            install_cmd: "apt-get update && apt-get install -y"
+            packages: "build-essential cmake pkg-config libjemalloc-dev"
+            
+          - distro: ubuntu
+            version: "20.04"
+            container: ubuntu:20.04
+            install_cmd: "apt-get update && apt-get install -y"
+            packages: "build-essential cmake pkg-config libjemalloc-dev"
+            
+          # Fedora variants
+          - distro: fedora
+            version: "38"
+            container: fedora:38
+            install_cmd: "dnf install -y"
+            packages: "gcc cmake pkgconf-pkg-config jemalloc-devel make"
+            
+          - distro: fedora
+            version: "39"
+            container: fedora:39
+            install_cmd: "dnf install -y"
+            packages: "gcc cmake pkgconf-pkg-config jemalloc-devel make"
+            
+          # Arch Linux
+          - distro: arch
+            version: "latest"
+            container: archlinux:latest
+            install_cmd: "pacman -Sy --noconfirm"
+            packages: "base-devel cmake pkgconf jemalloc"
+    
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    
+    steps:
+    - name: Install git (required for checkout)
+      run: |
+        if [ "${{ matrix.distro }}" = "ubuntu" ]; then
+          apt-get update && apt-get install -y git
+        elif [ "${{ matrix.distro }}" = "fedora" ]; then
+          dnf install -y git
+        elif [ "${{ matrix.distro }}" = "arch" ]; then
+          pacman -Sy --noconfirm git
+        fi
+    
+    - uses: actions/checkout@v4
+    
+    - name: Install build dependencies
+      run: |
+        ${{ matrix.install_cmd }} ${{ matrix.packages }}
+    
+    - name: Configure CMake
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+    
+    - name: Build
+      run: |
+        cmake --build build -j$(nproc)
+    
+    - name: Run tests
+      run: |
+        cd build
+        ctest --output-on-failure -L "unit|integration"
+    
+    - name: Test installation
+      run: |
+        cmake --install build --prefix /tmp/lgx-install
+        export PKG_CONFIG_PATH=/tmp/lgx-install/lib/pkgconfig:$PKG_CONFIG_PATH
+        pkg-config --exists lgx_runtime
+        pkg-config --modversion lgx_runtime
