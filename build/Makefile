@@ -263,6 +263,110 @@ test_csf5_telemetry_overhead/fast:
 .PHONY : test_csf5_telemetry_overhead/fast
 
 #=============================================================================
+# Target rules for targets named test_day10_hugepages
+
+# Build rule for target.
+test_day10_hugepages: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_day10_hugepages
+.PHONY : test_day10_hugepages
+
+# fast build rule for target.
+test_day10_hugepages/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_day10_hugepages.dir/build.make CMakeFiles/test_day10_hugepages.dir/build
+.PHONY : test_day10_hugepages/fast
+
+#=============================================================================
+# Target rules for targets named test_frame_arena
+
+# Build rule for target.
+test_frame_arena: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_frame_arena
+.PHONY : test_frame_arena
+
+# fast build rule for target.
+test_frame_arena/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena.dir/build.make CMakeFiles/test_frame_arena.dir/build
+.PHONY : test_frame_arena/fast
+
+#=============================================================================
+# Target rules for targets named test_frame_arena_polish
+
+# Build rule for target.
+test_frame_arena_polish: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_frame_arena_polish
+.PHONY : test_frame_arena_polish
+
+# fast build rule for target.
+test_frame_arena_polish/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena_polish.dir/build.make CMakeFiles/test_frame_arena_polish.dir/build
+.PHONY : test_frame_arena_polish/fast
+
+#=============================================================================
+# Target rules for targets named test_gpu_buddy_allocator
+
+# Build rule for target.
+test_gpu_buddy_allocator: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu_buddy_allocator
+.PHONY : test_gpu_buddy_allocator
+
+# fast build rule for target.
+test_gpu_buddy_allocator/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_buddy_allocator.dir/build.make CMakeFiles/test_gpu_buddy_allocator.dir/build
+.PHONY : test_gpu_buddy_allocator/fast
+
+#=============================================================================
+# Target rules for targets named test_gpu_detection
+
+# Build rule for target.
+test_gpu_detection: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu_detection
+.PHONY : test_gpu_detection
+
+# fast build rule for target.
+test_gpu_detection/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_detection.dir/build.make CMakeFiles/test_gpu_detection.dir/build
+.PHONY : test_gpu_detection/fast
+
+#=============================================================================
+# Target rules for targets named test_gpu_perf_simple
+
+# Build rule for target.
+test_gpu_perf_simple: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu_perf_simple
+.PHONY : test_gpu_perf_simple
+
+# fast build rule for target.
+test_gpu_perf_simple/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_perf_simple.dir/build.make CMakeFiles/test_gpu_perf_simple.dir/build
+.PHONY : test_gpu_perf_simple/fast
+
+#=============================================================================
+# Target rules for targets named test_gpu_performance
+
+# Build rule for target.
+test_gpu_performance: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu_performance
+.PHONY : test_gpu_performance
+
+# fast build rule for target.
+test_gpu_performance/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_performance.dir/build.make CMakeFiles/test_gpu_performance.dir/build
+.PHONY : test_gpu_performance/fast
+
+#=============================================================================
+# Target rules for targets named test_gpu_pool
+
+# Build rule for target.
+test_gpu_pool: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu_pool
+.PHONY : test_gpu_pool
+
+# fast build rule for target.
+test_gpu_pool/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_pool.dir/build.make CMakeFiles/test_gpu_pool.dir/build
+.PHONY : test_gpu_pool/fast
+
+#=============================================================================
 # Target rules for targets named test_hardware_adaptation
 
 # Build rule for target.
@@ -302,6 +406,19 @@ test_intent_accuracy/fast:
 .PHONY : test_intent_accuracy/fast
 
 #=============================================================================
+# Target rules for targets named test_intent_allocator
+
+# Build rule for target.
+test_intent_allocator: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_intent_allocator
+.PHONY : test_intent_allocator
+
+# fast build rule for target.
+test_intent_allocator/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_allocator.dir/build.make CMakeFiles/test_intent_allocator.dir/build
+.PHONY : test_intent_allocator/fast
+
+#=============================================================================
 # Target rules for targets named test_intent_mismatch_rates
 
 # Build rule for target.
@@ -339,6 +456,45 @@ test_performance: cmake_check_build_system
 test_performance/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_performance.dir/build.make CMakeFiles/test_performance.dir/build
 .PHONY : test_performance/fast
+
+#=============================================================================
+# Target rules for targets named test_persistent_heap
+
+# Build rule for target.
+test_persistent_heap: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_persistent_heap
+.PHONY : test_persistent_heap
+
+# fast build rule for target.
+test_persistent_heap/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap.dir/build.make CMakeFiles/test_persistent_heap.dir/build
+.PHONY : test_persistent_heap/fast
+
+#=============================================================================
+# Target rules for targets named test_persistent_heap_buddy
+
+# Build rule for target.
+test_persistent_heap_buddy: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_persistent_heap_buddy
+.PHONY : test_persistent_heap_buddy
+
+# fast build rule for target.
+test_persistent_heap_buddy/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_buddy.dir/build.make CMakeFiles/test_persistent_heap_buddy.dir/build
+.PHONY : test_persistent_heap_buddy/fast
+
+#=============================================================================
+# Target rules for targets named test_persistent_heap_perf
+
+# Build rule for target.
+test_persistent_heap_perf: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_persistent_heap_perf
+.PHONY : test_persistent_heap_perf
+
+# fast build rule for target.
+test_persistent_heap_perf/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/build
+.PHONY : test_persistent_heap_perf/fast
 
 #=============================================================================
 # Target rules for targets named test_tiered_performance
@@ -490,6 +646,54 @@ src/runtime/lgx_error_handler.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.s
 .PHONY : src/runtime/lgx_error_handler.c.s
 
+src/runtime/lgx_frame_arena.o: src/runtime/lgx_frame_arena.c.o
+.PHONY : src/runtime/lgx_frame_arena.o
+
+# target to build an object file
+src/runtime/lgx_frame_arena.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o
+.PHONY : src/runtime/lgx_frame_arena.c.o
+
+src/runtime/lgx_frame_arena.i: src/runtime/lgx_frame_arena.c.i
+.PHONY : src/runtime/lgx_frame_arena.i
+
+# target to preprocess a source file
+src/runtime/lgx_frame_arena.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.i
+.PHONY : src/runtime/lgx_frame_arena.c.i
+
+src/runtime/lgx_frame_arena.s: src/runtime/lgx_frame_arena.c.s
+.PHONY : src/runtime/lgx_frame_arena.s
+
+# target to generate assembly for a file
+src/runtime/lgx_frame_arena.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.s
+.PHONY : src/runtime/lgx_frame_arena.c.s
+
+src/runtime/lgx_gpu_pool.o: src/runtime/lgx_gpu_pool.c.o
+.PHONY : src/runtime/lgx_gpu_pool.o
+
+# target to build an object file
+src/runtime/lgx_gpu_pool.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o
+.PHONY : src/runtime/lgx_gpu_pool.c.o
+
+src/runtime/lgx_gpu_pool.i: src/runtime/lgx_gpu_pool.c.i
+.PHONY : src/runtime/lgx_gpu_pool.i
+
+# target to preprocess a source file
+src/runtime/lgx_gpu_pool.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.i
+.PHONY : src/runtime/lgx_gpu_pool.c.i
+
+src/runtime/lgx_gpu_pool.s: src/runtime/lgx_gpu_pool.c.s
+.PHONY : src/runtime/lgx_gpu_pool.s
+
+# target to generate assembly for a file
+src/runtime/lgx_gpu_pool.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.s
+.PHONY : src/runtime/lgx_gpu_pool.c.s
+
 src/runtime/lgx_hardware_adapter.o: src/runtime/lgx_hardware_adapter.c.o
 .PHONY : src/runtime/lgx_hardware_adapter.o
 
@@ -538,6 +742,54 @@ src/runtime/lgx_health_monitor.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.s
 .PHONY : src/runtime/lgx_health_monitor.c.s
 
+src/runtime/lgx_hugepages.o: src/runtime/lgx_hugepages.c.o
+.PHONY : src/runtime/lgx_hugepages.o
+
+# target to build an object file
+src/runtime/lgx_hugepages.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o
+.PHONY : src/runtime/lgx_hugepages.c.o
+
+src/runtime/lgx_hugepages.i: src/runtime/lgx_hugepages.c.i
+.PHONY : src/runtime/lgx_hugepages.i
+
+# target to preprocess a source file
+src/runtime/lgx_hugepages.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.i
+.PHONY : src/runtime/lgx_hugepages.c.i
+
+src/runtime/lgx_hugepages.s: src/runtime/lgx_hugepages.c.s
+.PHONY : src/runtime/lgx_hugepages.s
+
+# target to generate assembly for a file
+src/runtime/lgx_hugepages.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.s
+.PHONY : src/runtime/lgx_hugepages.c.s
+
+src/runtime/lgx_intent_allocator.o: src/runtime/lgx_intent_allocator.c.o
+.PHONY : src/runtime/lgx_intent_allocator.o
+
+# target to build an object file
+src/runtime/lgx_intent_allocator.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o
+.PHONY : src/runtime/lgx_intent_allocator.c.o
+
+src/runtime/lgx_intent_allocator.i: src/runtime/lgx_intent_allocator.c.i
+.PHONY : src/runtime/lgx_intent_allocator.i
+
+# target to preprocess a source file
+src/runtime/lgx_intent_allocator.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.i
+.PHONY : src/runtime/lgx_intent_allocator.c.i
+
+src/runtime/lgx_intent_allocator.s: src/runtime/lgx_intent_allocator.c.s
+.PHONY : src/runtime/lgx_intent_allocator.s
+
+# target to generate assembly for a file
+src/runtime/lgx_intent_allocator.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.s
+.PHONY : src/runtime/lgx_intent_allocator.c.s
+
 src/runtime/lgx_lifecycle_manager.o: src/runtime/lgx_lifecycle_manager.c.o
 .PHONY : src/runtime/lgx_lifecycle_manager.o
 
@@ -562,6 +814,30 @@ src/runtime/lgx_lifecycle_manager.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.s
 .PHONY : src/runtime/lgx_lifecycle_manager.c.s
 
+src/runtime/lgx_lockfree_pool.o: src/runtime/lgx_lockfree_pool.c.o
+.PHONY : src/runtime/lgx_lockfree_pool.o
+
+# target to build an object file
+src/runtime/lgx_lockfree_pool.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o
+.PHONY : src/runtime/lgx_lockfree_pool.c.o
+
+src/runtime/lgx_lockfree_pool.i: src/runtime/lgx_lockfree_pool.c.i
+.PHONY : src/runtime/lgx_lockfree_pool.i
+
+# target to preprocess a source file
+src/runtime/lgx_lockfree_pool.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.i
+.PHONY : src/runtime/lgx_lockfree_pool.c.i
+
+src/runtime/lgx_lockfree_pool.s: src/runtime/lgx_lockfree_pool.c.s
+.PHONY : src/runtime/lgx_lockfree_pool.s
+
+# target to generate assembly for a file
+src/runtime/lgx_lockfree_pool.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.s
+.PHONY : src/runtime/lgx_lockfree_pool.c.s
+
 src/runtime/lgx_memory_manager.o: src/runtime/lgx_memory_manager.c.o
 .PHONY : src/runtime/lgx_memory_manager.o
 
@@ -585,6 +861,30 @@ src/runtime/lgx_memory_manager.s: src/runtime/lgx_memory_manager.c.s
 src/runtime/lgx_memory_manager.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s
 .PHONY : src/runtime/lgx_memory_manager.c.s
+
+src/runtime/lgx_persistent_heap.o: src/runtime/lgx_persistent_heap.c.o
+.PHONY : src/runtime/lgx_persistent_heap.o
+
+# target to build an object file
+src/runtime/lgx_persistent_heap.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o
+.PHONY : src/runtime/lgx_persistent_heap.c.o
+
+src/runtime/lgx_persistent_heap.i: src/runtime/lgx_persistent_heap.c.i
+.PHONY : src/runtime/lgx_persistent_heap.i
+
+# target to preprocess a source file
+src/runtime/lgx_persistent_heap.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.i
+.PHONY : src/runtime/lgx_persistent_heap.c.i
+
+src/runtime/lgx_persistent_heap.s: src/runtime/lgx_persistent_heap.c.s
+.PHONY : src/runtime/lgx_persistent_heap.s
+
+# target to generate assembly for a file
+src/runtime/lgx_persistent_heap.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.s
+.PHONY : src/runtime/lgx_persistent_heap.c.s
 
 src/runtime/lgx_platform_services.o: src/runtime/lgx_platform_services.c.o
 .PHONY : src/runtime/lgx_platform_services.o
@@ -633,6 +933,30 @@ src/runtime/lgx_runtime_core.s: src/runtime/lgx_runtime_core.c.s
 src/runtime/lgx_runtime_core.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_runtime_core.c.s
 .PHONY : src/runtime/lgx_runtime_core.c.s
+
+src/runtime/lgx_simd_ops.o: src/runtime/lgx_simd_ops.c.o
+.PHONY : src/runtime/lgx_simd_ops.o
+
+# target to build an object file
+src/runtime/lgx_simd_ops.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o
+.PHONY : src/runtime/lgx_simd_ops.c.o
+
+src/runtime/lgx_simd_ops.i: src/runtime/lgx_simd_ops.c.i
+.PHONY : src/runtime/lgx_simd_ops.i
+
+# target to preprocess a source file
+src/runtime/lgx_simd_ops.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.i
+.PHONY : src/runtime/lgx_simd_ops.c.i
+
+src/runtime/lgx_simd_ops.s: src/runtime/lgx_simd_ops.c.s
+.PHONY : src/runtime/lgx_simd_ops.s
+
+# target to generate assembly for a file
+src/runtime/lgx_simd_ops.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.s
+.PHONY : src/runtime/lgx_simd_ops.c.s
 
 src/runtime/lgx_telemetry.o: src/runtime/lgx_telemetry.c.o
 .PHONY : src/runtime/lgx_telemetry.o
@@ -802,6 +1126,198 @@ tests/phase0/test_csf5_telemetry_overhead.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_csf5_telemetry_overhead.dir/build.make CMakeFiles/test_csf5_telemetry_overhead.dir/tests/phase0/test_csf5_telemetry_overhead.c.s
 .PHONY : tests/phase0/test_csf5_telemetry_overhead.c.s
 
+tests/phase0/test_day10_hugepages.o: tests/phase0/test_day10_hugepages.c.o
+.PHONY : tests/phase0/test_day10_hugepages.o
+
+# target to build an object file
+tests/phase0/test_day10_hugepages.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_day10_hugepages.dir/build.make CMakeFiles/test_day10_hugepages.dir/tests/phase0/test_day10_hugepages.c.o
+.PHONY : tests/phase0/test_day10_hugepages.c.o
+
+tests/phase0/test_day10_hugepages.i: tests/phase0/test_day10_hugepages.c.i
+.PHONY : tests/phase0/test_day10_hugepages.i
+
+# target to preprocess a source file
+tests/phase0/test_day10_hugepages.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_day10_hugepages.dir/build.make CMakeFiles/test_day10_hugepages.dir/tests/phase0/test_day10_hugepages.c.i
+.PHONY : tests/phase0/test_day10_hugepages.c.i
+
+tests/phase0/test_day10_hugepages.s: tests/phase0/test_day10_hugepages.c.s
+.PHONY : tests/phase0/test_day10_hugepages.s
+
+# target to generate assembly for a file
+tests/phase0/test_day10_hugepages.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_day10_hugepages.dir/build.make CMakeFiles/test_day10_hugepages.dir/tests/phase0/test_day10_hugepages.c.s
+.PHONY : tests/phase0/test_day10_hugepages.c.s
+
+tests/phase0/test_frame_arena.o: tests/phase0/test_frame_arena.c.o
+.PHONY : tests/phase0/test_frame_arena.o
+
+# target to build an object file
+tests/phase0/test_frame_arena.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena.dir/build.make CMakeFiles/test_frame_arena.dir/tests/phase0/test_frame_arena.c.o
+.PHONY : tests/phase0/test_frame_arena.c.o
+
+tests/phase0/test_frame_arena.i: tests/phase0/test_frame_arena.c.i
+.PHONY : tests/phase0/test_frame_arena.i
+
+# target to preprocess a source file
+tests/phase0/test_frame_arena.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena.dir/build.make CMakeFiles/test_frame_arena.dir/tests/phase0/test_frame_arena.c.i
+.PHONY : tests/phase0/test_frame_arena.c.i
+
+tests/phase0/test_frame_arena.s: tests/phase0/test_frame_arena.c.s
+.PHONY : tests/phase0/test_frame_arena.s
+
+# target to generate assembly for a file
+tests/phase0/test_frame_arena.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena.dir/build.make CMakeFiles/test_frame_arena.dir/tests/phase0/test_frame_arena.c.s
+.PHONY : tests/phase0/test_frame_arena.c.s
+
+tests/phase0/test_frame_arena_polish.o: tests/phase0/test_frame_arena_polish.c.o
+.PHONY : tests/phase0/test_frame_arena_polish.o
+
+# target to build an object file
+tests/phase0/test_frame_arena_polish.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena_polish.dir/build.make CMakeFiles/test_frame_arena_polish.dir/tests/phase0/test_frame_arena_polish.c.o
+.PHONY : tests/phase0/test_frame_arena_polish.c.o
+
+tests/phase0/test_frame_arena_polish.i: tests/phase0/test_frame_arena_polish.c.i
+.PHONY : tests/phase0/test_frame_arena_polish.i
+
+# target to preprocess a source file
+tests/phase0/test_frame_arena_polish.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena_polish.dir/build.make CMakeFiles/test_frame_arena_polish.dir/tests/phase0/test_frame_arena_polish.c.i
+.PHONY : tests/phase0/test_frame_arena_polish.c.i
+
+tests/phase0/test_frame_arena_polish.s: tests/phase0/test_frame_arena_polish.c.s
+.PHONY : tests/phase0/test_frame_arena_polish.s
+
+# target to generate assembly for a file
+tests/phase0/test_frame_arena_polish.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena_polish.dir/build.make CMakeFiles/test_frame_arena_polish.dir/tests/phase0/test_frame_arena_polish.c.s
+.PHONY : tests/phase0/test_frame_arena_polish.c.s
+
+tests/phase0/test_gpu_buddy_allocator.o: tests/phase0/test_gpu_buddy_allocator.c.o
+.PHONY : tests/phase0/test_gpu_buddy_allocator.o
+
+# target to build an object file
+tests/phase0/test_gpu_buddy_allocator.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_buddy_allocator.dir/build.make CMakeFiles/test_gpu_buddy_allocator.dir/tests/phase0/test_gpu_buddy_allocator.c.o
+.PHONY : tests/phase0/test_gpu_buddy_allocator.c.o
+
+tests/phase0/test_gpu_buddy_allocator.i: tests/phase0/test_gpu_buddy_allocator.c.i
+.PHONY : tests/phase0/test_gpu_buddy_allocator.i
+
+# target to preprocess a source file
+tests/phase0/test_gpu_buddy_allocator.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_buddy_allocator.dir/build.make CMakeFiles/test_gpu_buddy_allocator.dir/tests/phase0/test_gpu_buddy_allocator.c.i
+.PHONY : tests/phase0/test_gpu_buddy_allocator.c.i
+
+tests/phase0/test_gpu_buddy_allocator.s: tests/phase0/test_gpu_buddy_allocator.c.s
+.PHONY : tests/phase0/test_gpu_buddy_allocator.s
+
+# target to generate assembly for a file
+tests/phase0/test_gpu_buddy_allocator.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_buddy_allocator.dir/build.make CMakeFiles/test_gpu_buddy_allocator.dir/tests/phase0/test_gpu_buddy_allocator.c.s
+.PHONY : tests/phase0/test_gpu_buddy_allocator.c.s
+
+tests/phase0/test_gpu_detection.o: tests/phase0/test_gpu_detection.c.o
+.PHONY : tests/phase0/test_gpu_detection.o
+
+# target to build an object file
+tests/phase0/test_gpu_detection.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_detection.dir/build.make CMakeFiles/test_gpu_detection.dir/tests/phase0/test_gpu_detection.c.o
+.PHONY : tests/phase0/test_gpu_detection.c.o
+
+tests/phase0/test_gpu_detection.i: tests/phase0/test_gpu_detection.c.i
+.PHONY : tests/phase0/test_gpu_detection.i
+
+# target to preprocess a source file
+tests/phase0/test_gpu_detection.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_detection.dir/build.make CMakeFiles/test_gpu_detection.dir/tests/phase0/test_gpu_detection.c.i
+.PHONY : tests/phase0/test_gpu_detection.c.i
+
+tests/phase0/test_gpu_detection.s: tests/phase0/test_gpu_detection.c.s
+.PHONY : tests/phase0/test_gpu_detection.s
+
+# target to generate assembly for a file
+tests/phase0/test_gpu_detection.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_detection.dir/build.make CMakeFiles/test_gpu_detection.dir/tests/phase0/test_gpu_detection.c.s
+.PHONY : tests/phase0/test_gpu_detection.c.s
+
+tests/phase0/test_gpu_perf_simple.o: tests/phase0/test_gpu_perf_simple.c.o
+.PHONY : tests/phase0/test_gpu_perf_simple.o
+
+# target to build an object file
+tests/phase0/test_gpu_perf_simple.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_perf_simple.dir/build.make CMakeFiles/test_gpu_perf_simple.dir/tests/phase0/test_gpu_perf_simple.c.o
+.PHONY : tests/phase0/test_gpu_perf_simple.c.o
+
+tests/phase0/test_gpu_perf_simple.i: tests/phase0/test_gpu_perf_simple.c.i
+.PHONY : tests/phase0/test_gpu_perf_simple.i
+
+# target to preprocess a source file
+tests/phase0/test_gpu_perf_simple.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_perf_simple.dir/build.make CMakeFiles/test_gpu_perf_simple.dir/tests/phase0/test_gpu_perf_simple.c.i
+.PHONY : tests/phase0/test_gpu_perf_simple.c.i
+
+tests/phase0/test_gpu_perf_simple.s: tests/phase0/test_gpu_perf_simple.c.s
+.PHONY : tests/phase0/test_gpu_perf_simple.s
+
+# target to generate assembly for a file
+tests/phase0/test_gpu_perf_simple.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_perf_simple.dir/build.make CMakeFiles/test_gpu_perf_simple.dir/tests/phase0/test_gpu_perf_simple.c.s
+.PHONY : tests/phase0/test_gpu_perf_simple.c.s
+
+tests/phase0/test_gpu_performance.o: tests/phase0/test_gpu_performance.c.o
+.PHONY : tests/phase0/test_gpu_performance.o
+
+# target to build an object file
+tests/phase0/test_gpu_performance.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_performance.dir/build.make CMakeFiles/test_gpu_performance.dir/tests/phase0/test_gpu_performance.c.o
+.PHONY : tests/phase0/test_gpu_performance.c.o
+
+tests/phase0/test_gpu_performance.i: tests/phase0/test_gpu_performance.c.i
+.PHONY : tests/phase0/test_gpu_performance.i
+
+# target to preprocess a source file
+tests/phase0/test_gpu_performance.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_performance.dir/build.make CMakeFiles/test_gpu_performance.dir/tests/phase0/test_gpu_performance.c.i
+.PHONY : tests/phase0/test_gpu_performance.c.i
+
+tests/phase0/test_gpu_performance.s: tests/phase0/test_gpu_performance.c.s
+.PHONY : tests/phase0/test_gpu_performance.s
+
+# target to generate assembly for a file
+tests/phase0/test_gpu_performance.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_performance.dir/build.make CMakeFiles/test_gpu_performance.dir/tests/phase0/test_gpu_performance.c.s
+.PHONY : tests/phase0/test_gpu_performance.c.s
+
+tests/phase0/test_gpu_pool.o: tests/phase0/test_gpu_pool.c.o
+.PHONY : tests/phase0/test_gpu_pool.o
+
+# target to build an object file
+tests/phase0/test_gpu_pool.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_pool.dir/build.make CMakeFiles/test_gpu_pool.dir/tests/phase0/test_gpu_pool.c.o
+.PHONY : tests/phase0/test_gpu_pool.c.o
+
+tests/phase0/test_gpu_pool.i: tests/phase0/test_gpu_pool.c.i
+.PHONY : tests/phase0/test_gpu_pool.i
+
+# target to preprocess a source file
+tests/phase0/test_gpu_pool.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_pool.dir/build.make CMakeFiles/test_gpu_pool.dir/tests/phase0/test_gpu_pool.c.i
+.PHONY : tests/phase0/test_gpu_pool.c.i
+
+tests/phase0/test_gpu_pool.s: tests/phase0/test_gpu_pool.c.s
+.PHONY : tests/phase0/test_gpu_pool.s
+
+# target to generate assembly for a file
+tests/phase0/test_gpu_pool.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_pool.dir/build.make CMakeFiles/test_gpu_pool.dir/tests/phase0/test_gpu_pool.c.s
+.PHONY : tests/phase0/test_gpu_pool.c.s
+
 tests/phase0/test_hardware_adaptation.o: tests/phase0/test_hardware_adaptation.c.o
 .PHONY : tests/phase0/test_hardware_adaptation.o
 
@@ -873,6 +1389,30 @@ tests/phase0/test_intent_accuracy.s: tests/phase0/test_intent_accuracy.c.s
 tests/phase0/test_intent_accuracy.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_accuracy.dir/build.make CMakeFiles/test_intent_accuracy.dir/tests/phase0/test_intent_accuracy.c.s
 .PHONY : tests/phase0/test_intent_accuracy.c.s
+
+tests/phase0/test_intent_allocator.o: tests/phase0/test_intent_allocator.c.o
+.PHONY : tests/phase0/test_intent_allocator.o
+
+# target to build an object file
+tests/phase0/test_intent_allocator.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_allocator.dir/build.make CMakeFiles/test_intent_allocator.dir/tests/phase0/test_intent_allocator.c.o
+.PHONY : tests/phase0/test_intent_allocator.c.o
+
+tests/phase0/test_intent_allocator.i: tests/phase0/test_intent_allocator.c.i
+.PHONY : tests/phase0/test_intent_allocator.i
+
+# target to preprocess a source file
+tests/phase0/test_intent_allocator.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_allocator.dir/build.make CMakeFiles/test_intent_allocator.dir/tests/phase0/test_intent_allocator.c.i
+.PHONY : tests/phase0/test_intent_allocator.c.i
+
+tests/phase0/test_intent_allocator.s: tests/phase0/test_intent_allocator.c.s
+.PHONY : tests/phase0/test_intent_allocator.s
+
+# target to generate assembly for a file
+tests/phase0/test_intent_allocator.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_allocator.dir/build.make CMakeFiles/test_intent_allocator.dir/tests/phase0/test_intent_allocator.c.s
+.PHONY : tests/phase0/test_intent_allocator.c.s
 
 tests/phase0/test_intent_mismatch_rates.o: tests/phase0/test_intent_mismatch_rates.c.o
 .PHONY : tests/phase0/test_intent_mismatch_rates.o
@@ -946,6 +1486,78 @@ tests/phase0/test_performance.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_performance.dir/build.make CMakeFiles/test_performance.dir/tests/phase0/test_performance.c.s
 .PHONY : tests/phase0/test_performance.c.s
 
+tests/phase0/test_persistent_heap.o: tests/phase0/test_persistent_heap.c.o
+.PHONY : tests/phase0/test_persistent_heap.o
+
+# target to build an object file
+tests/phase0/test_persistent_heap.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap.dir/build.make CMakeFiles/test_persistent_heap.dir/tests/phase0/test_persistent_heap.c.o
+.PHONY : tests/phase0/test_persistent_heap.c.o
+
+tests/phase0/test_persistent_heap.i: tests/phase0/test_persistent_heap.c.i
+.PHONY : tests/phase0/test_persistent_heap.i
+
+# target to preprocess a source file
+tests/phase0/test_persistent_heap.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap.dir/build.make CMakeFiles/test_persistent_heap.dir/tests/phase0/test_persistent_heap.c.i
+.PHONY : tests/phase0/test_persistent_heap.c.i
+
+tests/phase0/test_persistent_heap.s: tests/phase0/test_persistent_heap.c.s
+.PHONY : tests/phase0/test_persistent_heap.s
+
+# target to generate assembly for a file
+tests/phase0/test_persistent_heap.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap.dir/build.make CMakeFiles/test_persistent_heap.dir/tests/phase0/test_persistent_heap.c.s
+.PHONY : tests/phase0/test_persistent_heap.c.s
+
+tests/phase0/test_persistent_heap_buddy.o: tests/phase0/test_persistent_heap_buddy.c.o
+.PHONY : tests/phase0/test_persistent_heap_buddy.o
+
+# target to build an object file
+tests/phase0/test_persistent_heap_buddy.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_buddy.dir/build.make CMakeFiles/test_persistent_heap_buddy.dir/tests/phase0/test_persistent_heap_buddy.c.o
+.PHONY : tests/phase0/test_persistent_heap_buddy.c.o
+
+tests/phase0/test_persistent_heap_buddy.i: tests/phase0/test_persistent_heap_buddy.c.i
+.PHONY : tests/phase0/test_persistent_heap_buddy.i
+
+# target to preprocess a source file
+tests/phase0/test_persistent_heap_buddy.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_buddy.dir/build.make CMakeFiles/test_persistent_heap_buddy.dir/tests/phase0/test_persistent_heap_buddy.c.i
+.PHONY : tests/phase0/test_persistent_heap_buddy.c.i
+
+tests/phase0/test_persistent_heap_buddy.s: tests/phase0/test_persistent_heap_buddy.c.s
+.PHONY : tests/phase0/test_persistent_heap_buddy.s
+
+# target to generate assembly for a file
+tests/phase0/test_persistent_heap_buddy.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_buddy.dir/build.make CMakeFiles/test_persistent_heap_buddy.dir/tests/phase0/test_persistent_heap_buddy.c.s
+.PHONY : tests/phase0/test_persistent_heap_buddy.c.s
+
+tests/phase0/test_persistent_heap_perf.o: tests/phase0/test_persistent_heap_perf.c.o
+.PHONY : tests/phase0/test_persistent_heap_perf.o
+
+# target to build an object file
+tests/phase0/test_persistent_heap_perf.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/tests/phase0/test_persistent_heap_perf.c.o
+.PHONY : tests/phase0/test_persistent_heap_perf.c.o
+
+tests/phase0/test_persistent_heap_perf.i: tests/phase0/test_persistent_heap_perf.c.i
+.PHONY : tests/phase0/test_persistent_heap_perf.i
+
+# target to preprocess a source file
+tests/phase0/test_persistent_heap_perf.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/tests/phase0/test_persistent_heap_perf.c.i
+.PHONY : tests/phase0/test_persistent_heap_perf.c.i
+
+tests/phase0/test_persistent_heap_perf.s: tests/phase0/test_persistent_heap_perf.c.s
+.PHONY : tests/phase0/test_persistent_heap_perf.s
+
+# target to generate assembly for a file
+tests/phase0/test_persistent_heap_perf.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/tests/phase0/test_persistent_heap_perf.c.s
+.PHONY : tests/phase0/test_persistent_heap_perf.c.s
+
 tests/phase0/test_tiered_performance.o: tests/phase0/test_tiered_performance.c.o
 .PHONY : tests/phase0/test_tiered_performance.o
 
@@ -995,12 +1607,24 @@ help:
 	@echo "... test_csf3_namespace_isolation"
 	@echo "... test_csf4_abi_stability"
 	@echo "... test_csf5_telemetry_overhead"
+	@echo "... test_day10_hugepages"
+	@echo "... test_frame_arena"
+	@echo "... test_frame_arena_polish"
+	@echo "... test_gpu_buddy_allocator"
+	@echo "... test_gpu_detection"
+	@echo "... test_gpu_perf_simple"
+	@echo "... test_gpu_performance"
+	@echo "... test_gpu_pool"
 	@echo "... test_hardware_adaptation"
 	@echo "... test_hierarchical_intents"
 	@echo "... test_intent_accuracy"
+	@echo "... test_intent_allocator"
 	@echo "... test_intent_mismatch_rates"
 	@echo "... test_intent_validation"
 	@echo "... test_performance"
+	@echo "... test_persistent_heap"
+	@echo "... test_persistent_heap_buddy"
+	@echo "... test_persistent_heap_perf"
 	@echo "... test_tiered_performance"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
@@ -1011,24 +1635,45 @@ help:
 	@echo "... src/runtime/lgx_error_handler.o"
 	@echo "... src/runtime/lgx_error_handler.i"
 	@echo "... src/runtime/lgx_error_handler.s"
+	@echo "... src/runtime/lgx_frame_arena.o"
+	@echo "... src/runtime/lgx_frame_arena.i"
+	@echo "... src/runtime/lgx_frame_arena.s"
+	@echo "... src/runtime/lgx_gpu_pool.o"
+	@echo "... src/runtime/lgx_gpu_pool.i"
+	@echo "... src/runtime/lgx_gpu_pool.s"
 	@echo "... src/runtime/lgx_hardware_adapter.o"
 	@echo "... src/runtime/lgx_hardware_adapter.i"
 	@echo "... src/runtime/lgx_hardware_adapter.s"
 	@echo "... src/runtime/lgx_health_monitor.o"
 	@echo "... src/runtime/lgx_health_monitor.i"
 	@echo "... src/runtime/lgx_health_monitor.s"
+	@echo "... src/runtime/lgx_hugepages.o"
+	@echo "... src/runtime/lgx_hugepages.i"
+	@echo "... src/runtime/lgx_hugepages.s"
+	@echo "... src/runtime/lgx_intent_allocator.o"
+	@echo "... src/runtime/lgx_intent_allocator.i"
+	@echo "... src/runtime/lgx_intent_allocator.s"
 	@echo "... src/runtime/lgx_lifecycle_manager.o"
 	@echo "... src/runtime/lgx_lifecycle_manager.i"
 	@echo "... src/runtime/lgx_lifecycle_manager.s"
+	@echo "... src/runtime/lgx_lockfree_pool.o"
+	@echo "... src/runtime/lgx_lockfree_pool.i"
+	@echo "... src/runtime/lgx_lockfree_pool.s"
 	@echo "... src/runtime/lgx_memory_manager.o"
 	@echo "... src/runtime/lgx_memory_manager.i"
 	@echo "... src/runtime/lgx_memory_manager.s"
+	@echo "... src/runtime/lgx_persistent_heap.o"
+	@echo "... src/runtime/lgx_persistent_heap.i"
+	@echo "... src/runtime/lgx_persistent_heap.s"
 	@echo "... src/runtime/lgx_platform_services.o"
 	@echo "... src/runtime/lgx_platform_services.i"
 	@echo "... src/runtime/lgx_platform_services.s"
 	@echo "... src/runtime/lgx_runtime_core.o"
 	@echo "... src/runtime/lgx_runtime_core.i"
 	@echo "... src/runtime/lgx_runtime_core.s"
+	@echo "... src/runtime/lgx_simd_ops.o"
+	@echo "... src/runtime/lgx_simd_ops.i"
+	@echo "... src/runtime/lgx_simd_ops.s"
 	@echo "... src/runtime/lgx_telemetry.o"
 	@echo "... src/runtime/lgx_telemetry.i"
 	@echo "... src/runtime/lgx_telemetry.s"
@@ -1050,6 +1695,30 @@ help:
 	@echo "... tests/phase0/test_csf5_telemetry_overhead.o"
 	@echo "... tests/phase0/test_csf5_telemetry_overhead.i"
 	@echo "... tests/phase0/test_csf5_telemetry_overhead.s"
+	@echo "... tests/phase0/test_day10_hugepages.o"
+	@echo "... tests/phase0/test_day10_hugepages.i"
+	@echo "... tests/phase0/test_day10_hugepages.s"
+	@echo "... tests/phase0/test_frame_arena.o"
+	@echo "... tests/phase0/test_frame_arena.i"
+	@echo "... tests/phase0/test_frame_arena.s"
+	@echo "... tests/phase0/test_frame_arena_polish.o"
+	@echo "... tests/phase0/test_frame_arena_polish.i"
+	@echo "... tests/phase0/test_frame_arena_polish.s"
+	@echo "... tests/phase0/test_gpu_buddy_allocator.o"
+	@echo "... tests/phase0/test_gpu_buddy_allocator.i"
+	@echo "... tests/phase0/test_gpu_buddy_allocator.s"
+	@echo "... tests/phase0/test_gpu_detection.o"
+	@echo "... tests/phase0/test_gpu_detection.i"
+	@echo "... tests/phase0/test_gpu_detection.s"
+	@echo "... tests/phase0/test_gpu_perf_simple.o"
+	@echo "... tests/phase0/test_gpu_perf_simple.i"
+	@echo "... tests/phase0/test_gpu_perf_simple.s"
+	@echo "... tests/phase0/test_gpu_performance.o"
+	@echo "... tests/phase0/test_gpu_performance.i"
+	@echo "... tests/phase0/test_gpu_performance.s"
+	@echo "... tests/phase0/test_gpu_pool.o"
+	@echo "... tests/phase0/test_gpu_pool.i"
+	@echo "... tests/phase0/test_gpu_pool.s"
 	@echo "... tests/phase0/test_hardware_adaptation.o"
 	@echo "... tests/phase0/test_hardware_adaptation.i"
 	@echo "... tests/phase0/test_hardware_adaptation.s"
@@ -1059,6 +1728,9 @@ help:
 	@echo "... tests/phase0/test_intent_accuracy.o"
 	@echo "... tests/phase0/test_intent_accuracy.i"
 	@echo "... tests/phase0/test_intent_accuracy.s"
+	@echo "... tests/phase0/test_intent_allocator.o"
+	@echo "... tests/phase0/test_intent_allocator.i"
+	@echo "... tests/phase0/test_intent_allocator.s"
 	@echo "... tests/phase0/test_intent_mismatch_rates.o"
 	@echo "... tests/phase0/test_intent_mismatch_rates.i"
 	@echo "... tests/phase0/test_intent_mismatch_rates.s"
@@ -1068,6 +1740,15 @@ help:
 	@echo "... tests/phase0/test_performance.o"
 	@echo "... tests/phase0/test_performance.i"
 	@echo "... tests/phase0/test_performance.s"
+	@echo "... tests/phase0/test_persistent_heap.o"
+	@echo "... tests/phase0/test_persistent_heap.i"
+	@echo "... tests/phase0/test_persistent_heap.s"
+	@echo "... tests/phase0/test_persistent_heap_buddy.o"
+	@echo "... tests/phase0/test_persistent_heap_buddy.i"
+	@echo "... tests/phase0/test_persistent_heap_buddy.s"
+	@echo "... tests/phase0/test_persistent_heap_perf.o"
+	@echo "... tests/phase0/test_persistent_heap_perf.i"
+	@echo "... tests/phase0/test_persistent_heap_perf.s"
 	@echo "... tests/phase0/test_tiered_performance.o"
 	@echo "... tests/phase0/test_tiered_performance.i"
 	@echo "... tests/phase0/test_tiered_performance.s"

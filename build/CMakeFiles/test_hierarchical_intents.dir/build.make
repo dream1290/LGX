@@ -93,6 +93,8 @@ test_hierarchical_intents_EXTERNAL_OBJECTS =
 test_hierarchical_intents: CMakeFiles/test_hierarchical_intents.dir/tests/phase0/test_hierarchical_intents.c.o
 test_hierarchical_intents: CMakeFiles/test_hierarchical_intents.dir/build.make
 test_hierarchical_intents: liblgx_runtime.so.1.0.0
+test_hierarchical_intents: /usr/lib/x86_64-linux-gnu/libvulkan.so
+test_hierarchical_intents: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_hierarchical_intents: CMakeFiles/test_hierarchical_intents.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable test_hierarchical_intents"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_hierarchical_intents.dir/link.txt --verbose=$(VERBOSE)

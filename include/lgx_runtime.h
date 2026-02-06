@@ -38,6 +38,58 @@ lgx_result_t lgx_memory_stats(lgx_memory_stats_t* stats);
 lgx_result_t lgx_alloc_get_usage_stats(void* ptr, lgx_allocation_usage_t* usage);
 lgx_result_t lgx_alloc_validate_intent(void* ptr);  // Manually trigger validation
 
+// Convenience macros for common allocation patterns
+// These make intent-based allocation easier to use
+
+// Convenience allocation functions (inline for performance)
+static inline void* lgx_alloc_frame(size_t size) {
+    lgx_allocation_intent_base_t intent = {
+        .struct_size = sizeof(lgx_allocation_intent_base_t),
+        .size = size,
+        .access_pattern = LGX_ACCESS_SEQUENTIAL,
+        .lifetime = LGX_LIFETIME_FRAME,
+        .hint = LGX_HINT_CRITICAL_PATH,
+        .validation_policy = LGX_INTENT_TRUST
+    };
+    return lgx_alloc_with_intent(&intent);
+}
+
+static inline void* lgx_alloc_level(size_t size) {
+    lgx_allocation_intent_base_t intent = {
+        .struct_size = sizeof(lgx_allocation_intent_base_t),
+        .size = size,
+        .access_pattern = LGX_ACCESS_RANDOM,
+        .lifetime = LGX_LIFETIME_LEVEL,
+        .hint = LGX_HINT_BACKGROUND,
+        .validation_policy = LGX_INTENT_TRUST
+    };
+    return lgx_alloc_with_intent(&intent);
+}
+
+static inline void* lgx_alloc_persistent(size_t size) {
+    lgx_allocation_intent_base_t intent = {
+        .struct_size = sizeof(lgx_allocation_intent_base_t),
+        .size = size,
+        .access_pattern = LGX_ACCESS_RANDOM,
+        .lifetime = LGX_LIFETIME_SESSION,
+        .hint = LGX_HINT_BACKGROUND,
+        .validation_policy = LGX_INTENT_TRUST
+    };
+    return lgx_alloc_with_intent(&intent);
+}
+
+static inline void* lgx_alloc_gpu_shared(size_t size) {
+    lgx_allocation_intent_base_t intent = {
+        .struct_size = sizeof(lgx_allocation_intent_base_t),
+        .size = size,
+        .access_pattern = LGX_ACCESS_WRITE_ONCE,
+        .lifetime = LGX_LIFETIME_FRAME,
+        .hint = LGX_HINT_GPU_SHARED,
+        .validation_policy = LGX_INTENT_TRUST
+    };
+    return lgx_alloc_with_intent(&intent);
+}
+
 // Performance measurement and assessment
 lgx_result_t lgx_runtime_get_performance_characteristics(
     lgx_performance_characteristics_t* chars
@@ -111,6 +163,24 @@ void lgx_add_to_counter(lgx_custom_counter_t counter, uint64_t value);
 // Observability
 void lgx_set_observability_level(lgx_observability_level_t level);
 lgx_observability_level_t lgx_get_observability_level(void);
+
+// Intent allocator management (Task 3.4)
+lgx_result_t lgx_intent_allocator_init(void);
+lgx_result_t lgx_intent_allocator_shutdown(void);
+
+// Intent statistics structure
+typedef struct {
+    uint64_t frame_allocations;
+    uint64_t gpu_allocations;
+    uint64_t persistent_allocations;
+    uint64_t unknown_allocations;
+    uint64_t intent_mismatches;
+    uint64_t intent_validations;
+    uint64_t total_intent_allocations;
+    uint64_t total_intent_frees;
+} lgx_intent_stats_t;
+
+lgx_result_t lgx_intent_get_stats(lgx_intent_stats_t* stats);
 
 #ifdef __cplusplus
 }

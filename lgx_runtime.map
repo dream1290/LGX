@@ -31,6 +31,51 @@ LGX_1.0 {
         lgx_memory_stats;
         lgx_alloc_get_usage_stats;
         
+        # Frame arena allocator (Month 1 - Specialized Allocators)
+        lgx_frame_arena_init;
+        lgx_frame_arena_shutdown;
+        lgx_frame_alloc;
+        lgx_frame_reset;
+        lgx_frame_get_stats;
+        lgx_frame_arena_is_initialized;
+        lgx_frame_get_current_frame;
+        lgx_frame_get_current_usage;
+        lgx_frame_get_peak_usage;
+        
+        # GPU memory pool (Month 2 - Specialized Allocators)
+        lgx_gpu_pool_init;
+        lgx_gpu_pool_shutdown;
+        lgx_gpu_pool_is_initialized;
+        lgx_gpu_pool_is_memory_type_available;
+        lgx_gpu_pool_get_memory_budget;
+        lgx_gpu_pool_get_memory_used;
+        lgx_gpu_alloc;
+        lgx_gpu_free;
+        lgx_gpu_get_memory;
+        lgx_gpu_get_offset;
+        lgx_gpu_get_size;
+        lgx_gpu_get_mapped_ptr;
+        lgx_gpu_pool_get_fragmentation;
+        lgx_gpu_pool_get_peak_usage;
+        
+        # Persistent heap allocator (Month 3 - Specialized Allocators)
+        lgx_persistent_heap_init;
+        lgx_persistent_heap_shutdown;
+        lgx_persistent_heap_is_initialized;
+        lgx_heap_alloc;
+        lgx_heap_free;
+        lgx_heap_get_stats;
+        lgx_heap_get_fragmentation;
+        lgx_heap_defragment;
+        lgx_heap_get_defrag_progress;
+        lgx_heap_health_check;
+        lgx_heap_get_error_stats;
+        
+        # Intent allocator (Task 3.4 - Unified Intent-Based API)
+        lgx_intent_allocator_init;
+        lgx_intent_allocator_shutdown;
+        lgx_intent_get_stats;
+        
         # Prototype compatibility functions
         lgx_allocator_prototype_init;
         lgx_allocator_prototype_cleanup;
@@ -46,6 +91,7 @@ LGX_1.0 {
         lgx_fs_*;
         lgx_time_*;
         lgx_log;
+        lgx_time_now_ns;
         
         # Error handling
         lgx_get_last_error;

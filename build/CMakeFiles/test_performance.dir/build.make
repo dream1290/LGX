@@ -93,6 +93,8 @@ test_performance_EXTERNAL_OBJECTS =
 test_performance: CMakeFiles/test_performance.dir/tests/phase0/test_performance.c.o
 test_performance: CMakeFiles/test_performance.dir/build.make
 test_performance: liblgx_runtime.so.1.0.0
+test_performance: /usr/lib/x86_64-linux-gnu/libvulkan.so
+test_performance: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_performance: CMakeFiles/test_performance.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable test_performance"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_performance.dir/link.txt --verbose=$(VERBOSE)

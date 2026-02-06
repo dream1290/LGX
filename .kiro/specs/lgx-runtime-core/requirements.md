@@ -25,11 +25,15 @@ See `REVOLUTIONARY_ARCHITECTURE.md` for complete vision.
 
 **US-2: As a game developer, I want to query the LGX runtime version and capabilities so that I can adapt my game's behavior based on available features.**
 
-**US-3: As a game developer, I want the runtime to manage memory pools efficiently so that I don't have to worry about Linux-specific memory management.**
+**US-3: As a game developer, I want a frame arena allocator that gives me sub-microsecond allocations for per-frame temporary data so that I can allocate freely without worrying about performance.**
 
-**US-4: As a game developer, I want clear lifecycle hooks (init, suspend, resume, shutdown) so that I can properly manage resources across different runtime states.**
+**US-4: As a game developer, I want a GPU memory pool that pre-allocates and manages GPU-visible memory so that I don't have to deal with complex GPU memory management.**
 
-**US-5: As a game developer, I want the runtime to provide platform services (filesystem, timing, logging) through a stable ABI so that my code works consistently across Linux distributions.**
+**US-5: As a game developer, I want a persistent heap allocator that handles long-lived allocations without fragmenting so that my game doesn't crash after hours of gameplay.**
+
+**US-6: As a game developer, I want clear lifecycle hooks (init, suspend, resume, shutdown) so that I can properly manage resources across different runtime states.**
+
+**US-7: As a game developer, I want the runtime to provide platform services (filesystem, timing, logging) through a stable ABI so that my code works consistently across Linux distributions.**
 
 ### 2.2 Platform Engineer Stories
 
@@ -67,12 +71,37 @@ See `REVOLUTIONARY_ARCHITECTURE.md` for complete vision.
 - The runtime SHALL provide hardware tier classification (OPTIMAL, COMPATIBLE, DEGRADED) with fallback strategies
 - The runtime SHALL report which features are degraded and provide remediation guidance
 
-**AC-4: Memory Management**
-- The runtime SHALL provide memory pool allocation functions: `lgx_alloc()`, `lgx_free()`, `lgx_alloc_with_intent()`
-- The runtime SHALL use hybrid allocation strategy: lock-free for hot paths, lock-based for cold paths, with jemalloc fallback
-- The runtime SHALL use adaptive thread-local caching to minimize memory waste in multi-threaded scenarios
+**AC-4: Specialized Memory Allocators**
+
+**Frame Arena Allocator:**
+- The runtime SHALL provide a frame arena allocator: `lgx_frame_alloc()`, `lgx_frame_reset()`
+- Frame allocations SHALL use bump pointer allocation (O(1), no free list traversal)
+- Frame allocations SHALL achieve P99 < 0.1 μs (100 nanoseconds)
+- Frame arena SHALL support triple-buffering (3-frame rotation) to prevent use-after-free
+- Frame arena SHALL automatically reset at frame boundaries
+- Frame arena SHALL handle 80% of typical game allocations
+
+**GPU Memory Pool:**
+- The runtime SHALL provide GPU memory pool: `lgx_gpu_alloc()`, `lgx_gpu_free()`
+- GPU allocations SHALL use pre-allocated GPU-visible memory (no runtime allocation)
+- GPU allocations SHALL achieve P99 < 10 μs
+- GPU pool SHALL support different memory types (device-local, host-visible, host-cached)
+- GPU pool SHALL handle memory alignment requirements (256-byte for buffers, 4KB for images)
+- GPU pool SHALL integrate with Vulkan memory management
+
+**Persistent Heap Allocator:**
+- The runtime SHALL provide persistent heap: `lgx_heap_alloc()`, `lgx_heap_free()`
+- Persistent heap SHALL use buddy allocator or segregated fit to minimize fragmentation
+- Persistent heap SHALL achieve P99 < 20 μs
+- Persistent heap SHALL handle long-lived allocations (level data, assets, caches)
+- Persistent heap SHALL support defragmentation during loading screens
+- Persistent heap SHALL maintain <5% fragmentation over 8-hour gameplay sessions
+
+**Unified API:**
+- The runtime SHALL provide intent-based allocation: `lgx_alloc_with_intent(intent)`
+- Intent SHALL specify lifetime (FRAME, LEVEL, SESSION) and usage (CPU, GPU, SHARED)
+- Runtime SHALL automatically route to appropriate allocator based on intent
 - The runtime SHALL maintain resident memory usage <300MB for core services (Tier 1), <200MB target (Tier 2)
-- The runtime SHALL support selective huge page usage based on allocation size and lifetime
 
 **AC-5: Lifecycle Management**
 - The runtime SHALL provide lifecycle hooks: `lgx_runtime_suspend()`, `lgx_runtime_resume()`, `lgx_runtime_shutdown()`
@@ -99,22 +128,25 @@ See `REVOLUTIONARY_ARCHITECTURE.md` for complete vision.
 **AC-8: Performance (Tiered Targets)**
 
 **Tier 1 - Minimum Viable Product:**
-- The runtime SHALL contribute <1ms to p99 frame-time variance
+- Frame arena SHALL achieve P99 < 0.5 μs (500 nanoseconds)
+- GPU pool SHALL achieve P99 < 20 μs
+- Persistent heap SHALL achieve P99 < 50 μs
 - The runtime SHALL have <10% CPU overhead in steady-state operation
 - The runtime SHALL have <300MB resident memory footprint
-- The runtime SHALL achieve <5μs allocation latency for cached allocations
 
 **Tier 2 - Competitive Product (Target):**
-- The runtime SHALL contribute <0.5ms to p99 frame-time variance
+- Frame arena SHALL achieve P99 < 0.1 μs (100 nanoseconds)
+- GPU pool SHALL achieve P99 < 10 μs
+- Persistent heap SHALL achieve P99 < 20 μs
 - The runtime SHALL have <5% CPU overhead in steady-state operation
 - The runtime SHALL have <200MB resident memory footprint
-- The runtime SHALL achieve <1μs allocation latency for cached allocations
 
 **Tier 3 - Best-in-Class (Aspirational):**
-- The runtime SHALL contribute <0.1ms to p99 frame-time variance
+- Frame arena SHALL achieve P99 < 0.05 μs (50 nanoseconds)
+- GPU pool SHALL achieve P99 < 5 μs
+- Persistent heap SHALL achieve P99 < 10 μs
 - The runtime SHALL have <2% CPU overhead in steady-state operation
 - The runtime SHALL have <100MB resident memory footprint
-- The runtime SHALL achieve <500ns allocation latency for cached allocations
 
 **Decision Framework:** Ship when Tier 1 met, market as competitive when Tier 2 met
 

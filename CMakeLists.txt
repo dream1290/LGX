@@ -19,6 +19,16 @@ set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g -DNDEBU
 # Find required packages
 find_package(Threads REQUIRED)
 
+# Optional: Find Vulkan for GPU memory pool
+find_package(Vulkan QUIET)
+if(Vulkan_FOUND)
+    message(STATUS "Found Vulkan: ${Vulkan_LIBRARY}")
+    add_definitions(-DHAVE_VULKAN=1)
+else()
+    message(STATUS "Vulkan not found - GPU memory pool features will be disabled")
+    add_definitions(-DHAVE_VULKAN=0)
+endif()
+
 # Optional: Find pkg-config
 find_package(PkgConfig QUIET)
 if(NOT PkgConfig_FOUND)
@@ -43,6 +53,10 @@ include_directories(include/lgx)
 set(LGX_RUNTIME_SOURCES
     src/runtime/lgx_runtime_core.c
     src/runtime/lgx_memory_manager.c
+    src/runtime/lgx_lockfree_pool.c
+    src/runtime/lgx_simd_ops.c
+    src/runtime/lgx_hugepages.c
+    src/runtime/lgx_frame_arena.c
     src/runtime/lgx_hardware_adapter.c
     src/runtime/lgx_capability_detector.c
     src/runtime/lgx_lifecycle_manager.c
@@ -55,6 +69,17 @@ set(LGX_RUNTIME_SOURCES
     # src/lgx_runtime.c
     src/lgx_allocator_prototype.c
 )
+
+# Add GPU pool if Vulkan is available
+if(Vulkan_FOUND)
+    list(APPEND LGX_RUNTIME_SOURCES src/runtime/lgx_gpu_pool.c)
+endif()
+
+# Add persistent heap allocator (Month 3)
+list(APPEND LGX_RUNTIME_SOURCES src/runtime/lgx_persistent_heap.c)
+
+# Add intent allocator (Task 3.4)
+list(APPEND LGX_RUNTIME_SOURCES src/runtime/lgx_intent_allocator.c)
 
 # Create the main runtime library
 add_library(lgx_runtime SHARED ${LGX_RUNTIME_SOURCES})
@@ -73,6 +98,12 @@ target_link_libraries(lgx_runtime
     m  # Math library
     dl # Dynamic loading
 )
+
+# Add Vulkan if available
+if(Vulkan_FOUND)
+    target_link_libraries(lgx_runtime ${Vulkan_LIBRARY})
+    target_include_directories(lgx_runtime PRIVATE ${Vulkan_INCLUDE_DIRS})
+endif()
 
 # Add jemalloc if available
 if(JEMALLOC_LIB)
@@ -120,6 +151,13 @@ foreach(test_file ${PHASE0_TESTS})
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file})
     target_link_libraries(${test_name} lgx_runtime m)
+    
+    # Add Vulkan for GPU pool tests
+    if(Vulkan_FOUND AND test_name MATCHES "gpu")
+        target_link_libraries(${test_name} ${Vulkan_LIBRARY})
+        target_include_directories(${test_name} PRIVATE ${Vulkan_INCLUDE_DIRS})
+    endif()
+    
     add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
 

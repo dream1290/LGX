@@ -1,0 +1,12 @@
+2:test_csf1_hybrid_allocator
+7:test_day10_hugepages
+10:test_gpu_buddy_allocator
+11:test_gpu_detection
+13:test_gpu_performance
+15:test_hardware_adaptation
+16:test_hierarchical_intents
+17:test_intent_accuracy
+19:test_intent_mismatch_rates
+20:test_intent_validation
+21:test_performance
+25:test_tiered_performance

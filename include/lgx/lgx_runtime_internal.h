@@ -106,7 +106,24 @@ lgx_result_t lgx_memory_manager_validate_intent(lgx_memory_manager_t* manager, v
 bool lgx_hardware_adapter_has_huge_pages(lgx_hardware_adapter_t* adapter);
 bool lgx_hardware_adapter_has_numa(lgx_hardware_adapter_t* adapter);
 long lgx_hardware_adapter_get_cpu_count(lgx_hardware_adapter_t* adapter);
+bool lgx_hardware_adapter_has_gpu(lgx_hardware_adapter_t* adapter);
+const char* lgx_hardware_adapter_get_gpu_vendor(lgx_hardware_adapter_t* adapter);
+const char* lgx_hardware_adapter_get_driver_version(lgx_hardware_adapter_t* adapter);
+
+// Huge pages API functions (Day 10 Optimization)
+lgx_result_t lgx_hugepages_init(lgx_hardware_adapter_t* hardware_adapter);
+lgx_result_t lgx_hugepages_shutdown(void);
+void* lgx_hugepages_alloc(size_t size);
+void lgx_hugepages_free(void* ptr, size_t size);
+void* lgx_hugepages_alloc_selective(size_t size, bool is_long_lived, bool is_hot_path);
+bool lgx_hugepages_available(void);
+double lgx_hugepages_estimate_tlb_improvement(size_t memory_size);
 lgx_hardware_status_t lgx_hardware_adapter_get_status(lgx_hardware_adapter_t* adapter);
+
+// Intent allocator API functions (Task 3.4)
+lgx_result_t lgx_intent_allocator_init(void);
+lgx_result_t lgx_intent_allocator_shutdown(void);
+// lgx_intent_stats_t and lgx_intent_get_stats are now in lgx_runtime.h
 
 // Capability detector API functions
 bool lgx_capability_detector_has_capability(lgx_capability_detector_t* detector, 
@@ -156,6 +173,101 @@ lgx_result_t lgx_telemetry_record_frame_time(lgx_telemetry_t* telemetry, float f
 lgx_result_t lgx_telemetry_record_memory_usage(lgx_telemetry_t* telemetry, 
                                               size_t memory_usage_mb, size_t pool_usage_mb);
 lgx_result_t lgx_telemetry_export(lgx_telemetry_t* telemetry, const char* output_path);
+
+// Lock-free pool API functions (Day 1-2 Breakthrough Optimization)
+#define NUM_SIZE_CLASSES 16
+
+lgx_result_t lgx_lockfree_pool_init(const size_t* size_classes, int num_classes);
+lgx_result_t lgx_lockfree_pool_shutdown(void);
+void lgx_lockfree_push(int size_class, void* ptr);
+void* lgx_lockfree_pop(int size_class);
+int lgx_lockfree_pop_batch(int size_class, void** blocks, int max_count);
+void lgx_lockfree_push_batch(int size_class, void** blocks, int count);
+uint32_t lgx_lockfree_pool_get_count(int size_class);
+lgx_result_t lgx_lockfree_pool_prewarm(int size_class, int num_blocks);
+
+// SIMD operations API functions (Day 8-9 Breakthrough Optimization)
+void lgx_simd_detect_features(void);
+bool lgx_simd_has_avx2(void);
+int lgx_simd_find_nonempty_slot(void** slots, int count);
+bool lgx_simd_all_null(void** slots, int count);
+int lgx_simd_count_nonempty(void** slots, int count);
+
+// Frame arena API functions (Month 1 - Specialized Allocators)
+typedef struct {
+    uint64_t total_allocations;
+    uint64_t total_bytes_allocated;
+    uint64_t overflow_count;
+    uint64_t peak_usage_bytes;
+    uint64_t current_frame;
+} frame_arena_stats_t;
+
+lgx_result_t lgx_frame_arena_init(void);
+lgx_result_t lgx_frame_arena_shutdown(void);
+void* lgx_frame_alloc(size_t size);
+lgx_result_t lgx_frame_reset(void);
+lgx_result_t lgx_frame_get_stats(frame_arena_stats_t* stats);
+bool lgx_frame_arena_is_initialized(void);
+uint32_t lgx_frame_get_current_frame(void);
+size_t lgx_frame_get_current_usage(void);
+size_t lgx_frame_get_peak_usage(void);
+
+// GPU memory pool API functions (Month 2 - Specialized Allocators)
+// Forward declare Vulkan types to avoid requiring vulkan.h in this header
+typedef struct VkInstance_T* VkInstance;
+typedef struct VkPhysicalDevice_T* VkPhysicalDevice;
+typedef struct VkDevice_T* VkDevice;
+typedef struct VkDeviceMemory_T* VkDeviceMemory;
+typedef uint64_t VkDeviceSize;
+
+typedef enum {
+    LGX_GPU_DEVICE_LOCAL = 0,
+    LGX_GPU_HOST_VISIBLE = 1,
+    LGX_GPU_HOST_CACHED  = 2,
+    LGX_GPU_MEMORY_TYPE_COUNT = 3
+} lgx_gpu_memory_type_t;
+
+typedef struct lgx_gpu_allocation lgx_gpu_allocation_t;
+
+lgx_result_t lgx_gpu_pool_init(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device);
+lgx_result_t lgx_gpu_pool_shutdown(void);
+bool lgx_gpu_pool_is_initialized(void);
+bool lgx_gpu_pool_is_memory_type_available(lgx_gpu_memory_type_t type);
+VkDeviceSize lgx_gpu_pool_get_memory_budget(lgx_gpu_memory_type_t type);
+VkDeviceSize lgx_gpu_pool_get_memory_used(lgx_gpu_memory_type_t type);
+
+// Buddy allocator API (Task 3.2.2 & 3.2.3)
+lgx_gpu_allocation_t* lgx_gpu_alloc(VkDeviceSize size, VkDeviceSize alignment, lgx_gpu_memory_type_t type);
+void lgx_gpu_free(lgx_gpu_allocation_t* alloc);
+VkDeviceMemory lgx_gpu_get_memory(lgx_gpu_allocation_t* alloc);
+VkDeviceSize lgx_gpu_get_offset(lgx_gpu_allocation_t* alloc);
+VkDeviceSize lgx_gpu_get_size(lgx_gpu_allocation_t* alloc);
+void* lgx_gpu_get_mapped_ptr(lgx_gpu_allocation_t* alloc);
+float lgx_gpu_pool_get_fragmentation(lgx_gpu_memory_type_t type);
+VkDeviceSize lgx_gpu_pool_get_peak_usage(lgx_gpu_memory_type_t type);
+
+// Persistent heap API functions (Month 3 - Specialized Allocators)
+typedef struct {
+    uint64_t total_allocations;
+    uint64_t total_frees;
+    uint64_t active_allocations;
+    uint64_t current_bytes;
+    uint64_t peak_bytes;
+    float fragmentation_ratio;
+} lgx_heap_stats_t;
+
+lgx_result_t lgx_persistent_heap_init(void);
+lgx_result_t lgx_persistent_heap_shutdown(void);
+void* lgx_heap_alloc(size_t size);
+void lgx_heap_free(void* ptr);
+bool lgx_persistent_heap_is_initialized(void);
+lgx_result_t lgx_heap_get_stats(lgx_heap_stats_t* stats);
+float lgx_heap_get_fragmentation(void);
+uint64_t lgx_heap_defragment(uint64_t time_budget_ns);
+float lgx_heap_get_defrag_progress(void);
+int lgx_heap_health_check(void);
+void lgx_heap_get_error_stats(uint64_t* oom_errors, uint64_t* rate_limit_errors, 
+                               uint64_t* validation_errors);
 
 // Utility functions
 uint64_t lgx_time_now_ns(void);

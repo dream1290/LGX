@@ -576,9 +576,368 @@ lgx_result_t lgx_runtime_unload_component(lgx_component_t component);
 - Verify new v1.5 features gracefully degrade when called by v1.0 game
 - CI runs compatibility matrix: all minor versions within major version
 
-## 4. Memory Management Design
+## 4. Memory Management Design - Specialized Allocators
 
-### 4.1 Memory Pool Architecture
+### 4.0 Design Philosophy: Right Tool for the Job
+
+**Problem with General-Purpose Allocators:**
+- Trying to optimize malloc/free for all use cases leads to complexity
+- Games have predictable allocation patterns that don't need general solutions
+- A "perfect" general allocator (P99 = 2 μs) is still 200x slower than a frame arena (P99 = 0.01 μs)
+
+**Solution: Specialized Allocators**
+- Frame Arena: Ultra-fast bump pointer for temporary per-frame data (80% of allocations)
+- GPU Pool: Pre-allocated GPU memory with alignment guarantees (15% of allocations)
+- Persistent Heap: Fragmentation-resistant allocator for long-lived data (5% of allocations)
+
+**Key Insight:** Most game allocations are frame-scoped. Optimize for the common case.
+
+### 4.1 Frame Arena Allocator
+
+**Purpose:** Handle temporary per-frame allocations (80% of game allocations)
+
+**Design:**
+```c
+// Triple-buffered frame arenas (prevents use-after-free)
+typedef struct lgx_frame_arena {
+    uint8_t* base;              // Base address (huge page aligned)
+    size_t capacity;            // Total capacity (e.g., 64MB)
+    size_t offset;              // Current allocation offset (bump pointer)
+    uint32_t frame_index;       // Current frame number
+    uint64_t allocations;       // Allocation counter
+} lgx_frame_arena_t;
+
+// Global state: 3 arenas for triple-buffering
+lgx_frame_arena_t g_frame_arenas[3];
+uint32_t g_current_frame = 0;
+
+// Ultra-fast allocation (bump pointer)
+void* lgx_frame_alloc(size_t size) {
+    lgx_frame_arena_t* arena = &g_frame_arenas[g_current_frame % 3];
+    
+    // Align to 16 bytes
+    size = (size + 15) & ~15;
+    
+    // Bump pointer allocation (no locks, no free list)
+    size_t old_offset = arena->offset;
+    size_t new_offset = old_offset + size;
+    
+    if (unlikely(new_offset > arena->capacity)) {
+        // Arena exhausted: allocate from overflow pool
+        return lgx_heap_alloc(size);  // Fallback to persistent heap
+    }
+    
+    arena->offset = new_offset;
+    arena->allocations++;
+    
+    return arena->base + old_offset;
+}
+
+// No individual free - reset entire arena at frame boundary
+void lgx_frame_reset(void) {
+    g_current_frame++;
+    lgx_frame_arena_t* arena = &g_frame_arenas[g_current_frame % 3];
+    
+    // Reset arena (instant, no deallocation needed)
+    arena->offset = 0;
+    arena->allocations = 0;
+    arena->frame_index = g_current_frame;
+}
+```
+
+**Performance Characteristics:**
+- Allocation: O(1), ~5-10 CPU cycles (0.01-0.02 μs on 3 GHz CPU)
+- Free: Not needed (entire arena reset at frame boundary)
+- Memory overhead: ~0% (no metadata per allocation)
+- Fragmentation: 0% (linear allocation)
+
+**Triple-Buffering Strategy:**
+- Frame N: Allocate from arena 0
+- Frame N+1: Allocate from arena 1 (arena 0 still in use by GPU)
+- Frame N+2: Allocate from arena 2 (arena 0, 1 still in use)
+- Frame N+3: Reset arena 0, allocate from it (safe, 3 frames old)
+
+**Capacity Planning:**
+- Typical frame: 10-50 MB of temporary allocations
+- Arena size: 64 MB per arena (192 MB total for 3 arenas)
+- Overflow: Falls back to persistent heap (rare, <1% of allocations)
+
+**Use Cases:**
+- Command buffers
+- Temporary vertex/index data
+- String formatting
+- Intermediate computation results
+- UI layout calculations
+
+### 4.2 GPU Memory Pool
+
+**Purpose:** Pre-allocated GPU-visible memory with alignment guarantees
+
+**Design:**
+```c
+// GPU memory types (Vulkan memory types)
+typedef enum lgx_gpu_memory_type {
+    LGX_GPU_DEVICE_LOCAL,       // GPU-only (fastest, VRAM)
+    LGX_GPU_HOST_VISIBLE,       // CPU-writable, GPU-readable (staging)
+    LGX_GPU_HOST_CACHED,        // CPU-readable, GPU-writable (readback)
+} lgx_gpu_memory_type_t;
+
+// GPU memory pool (per memory type)
+typedef struct lgx_gpu_pool {
+    VkDeviceMemory memory;      // Vulkan memory handle
+    uint8_t* mapped_ptr;        // CPU-mapped pointer (if host-visible)
+    size_t capacity;            // Total capacity
+    
+    // Buddy allocator for GPU memory
+    struct buddy_allocator* allocator;
+    
+    // Alignment requirements
+    size_t buffer_alignment;    // 256 bytes (Vulkan spec)
+    size_t image_alignment;     // 4096 bytes (page size)
+} lgx_gpu_pool_t;
+
+// GPU allocation with alignment
+void* lgx_gpu_alloc(size_t size, size_t alignment, lgx_gpu_memory_type_t type) {
+    lgx_gpu_pool_t* pool = &g_gpu_pools[type];
+    
+    // Allocate from buddy allocator (O(log n))
+    size_t offset = buddy_alloc(pool->allocator, size, alignment);
+    
+    if (offset == BUDDY_ALLOC_FAILED) {
+        // Pool exhausted: log error, return NULL
+        lgx_set_error(LGX_ERROR_OUT_OF_MEMORY, "GPU pool exhausted");
+        return NULL;
+    }
+    
+    // Return CPU pointer (if host-visible) or GPU offset
+    if (pool->mapped_ptr) {
+        return pool->mapped_ptr + offset;
+    } else {
+        return (void*)(uintptr_t)offset;  // GPU offset
+    }
+}
+
+void lgx_gpu_free(void* ptr, lgx_gpu_memory_type_t type) {
+    lgx_gpu_pool_t* pool = &g_gpu_pools[type];
+    
+    // Calculate offset
+    size_t offset;
+    if (pool->mapped_ptr) {
+        offset = (uint8_t*)ptr - pool->mapped_ptr;
+    } else {
+        offset = (uintptr_t)ptr;
+    }
+    
+    // Free in buddy allocator
+    buddy_free(pool->allocator, offset);
+}
+```
+
+**Buddy Allocator for GPU Memory:**
+- Binary tree of free blocks (power-of-2 sizes)
+- Allocation: O(log n), ~100-200 ns
+- Coalescing: Automatic when adjacent blocks freed
+- Fragmentation: <10% for typical workloads
+
+**Memory Type Strategy:**
+- Device-local (VRAM): 80% of GPU memory budget (textures, render targets)
+- Host-visible (staging): 15% of GPU memory budget (upload buffers)
+- Host-cached (readback): 5% of GPU memory budget (query results, screenshots)
+
+**Capacity Planning:**
+- Device-local: 2 GB (typical game VRAM usage)
+- Host-visible: 256 MB (staging buffers)
+- Host-cached: 64 MB (readback buffers)
+
+**Use Cases:**
+- Textures and render targets (device-local)
+- Vertex/index buffers (device-local)
+- Uniform buffers (host-visible, updated per-frame)
+- Staging buffers (host-visible, for uploads)
+- Query results (host-cached, for readback)
+
+### 4.3 Persistent Heap Allocator
+
+**Purpose:** Long-lived allocations with fragmentation resistance
+
+**Design:**
+```c
+// Segregated fit allocator (size classes + large block allocator)
+typedef struct lgx_persistent_heap {
+    // Small allocations: segregated free lists (16B - 4KB)
+    struct free_list {
+        void* head;
+        size_t block_size;
+        uint32_t free_count;
+    } size_classes[16];
+    
+    // Large allocations: buddy allocator (>4KB)
+    struct buddy_allocator* large_allocator;
+    
+    // Defragmentation support
+    bool defrag_enabled;
+    uint64_t last_defrag_time;
+} lgx_persistent_heap_t;
+
+void* lgx_heap_alloc(size_t size) {
+    if (size <= 4096) {
+        // Small allocation: use segregated free list
+        int class_index = size_to_class(size);
+        struct free_list* list = &g_heap.size_classes[class_index];
+        
+        if (list->head) {
+            // Pop from free list (O(1))
+            void* ptr = list->head;
+            list->head = *(void**)ptr;
+            list->free_count--;
+            return ptr;
+        } else {
+            // Allocate new slab from large allocator
+            void* slab = buddy_alloc(g_heap.large_allocator, 64 * 1024, 4096);
+            partition_slab(slab, list->block_size, list);
+            return lgx_heap_alloc(size);  // Retry
+        }
+    } else {
+        // Large allocation: use buddy allocator
+        return buddy_alloc(g_heap.large_allocator, size, 16);
+    }
+}
+
+void lgx_heap_free(void* ptr) {
+    // Determine if small or large allocation
+    if (is_small_allocation(ptr)) {
+        // Return to free list
+        int class_index = ptr_to_class(ptr);
+        struct free_list* list = &g_heap.size_classes[class_index];
+        
+        *(void**)ptr = list->head;
+        list->head = ptr;
+        list->free_count++;
+    } else {
+        // Free in buddy allocator
+        buddy_free(g_heap.large_allocator, ptr);
+    }
+}
+```
+
+**Defragmentation Strategy:**
+- Trigger: During loading screens (when frame rate doesn't matter)
+- Method: Compact free lists, coalesce buddy blocks
+- Time budget: 100 ms per defragmentation pass
+- Frequency: Every 10 minutes of gameplay, or when fragmentation >5%
+
+**Performance Characteristics:**
+- Small allocations (<4KB): O(1), ~50-100 ns
+- Large allocations (>4KB): O(log n), ~200-500 ns
+- Fragmentation: <5% over 8-hour sessions (with defragmentation)
+
+**Use Cases:**
+- Level data (geometry, textures, audio)
+- Asset caches (shader cache, texture cache)
+- Long-lived game objects (player state, inventory)
+- Networking buffers
+- Logging buffers
+
+### 4.4 Unified Intent-Based API
+
+**Purpose:** Automatically route allocations to the right allocator
+
+```c
+typedef enum lgx_allocation_lifetime {
+    LGX_LIFETIME_FRAME,         // Frame arena
+    LGX_LIFETIME_LEVEL,         // Persistent heap
+    LGX_LIFETIME_SESSION,       // Persistent heap
+} lgx_allocation_lifetime_t;
+
+typedef enum lgx_allocation_usage {
+    LGX_USAGE_CPU_ONLY,         // Frame arena or persistent heap
+    LGX_USAGE_GPU_ONLY,         // GPU pool (device-local)
+    LGX_USAGE_CPU_TO_GPU,       // GPU pool (host-visible)
+    LGX_USAGE_GPU_TO_CPU,       // GPU pool (host-cached)
+} lgx_allocation_usage_t;
+
+typedef struct lgx_allocation_intent {
+    size_t size;
+    lgx_allocation_lifetime_t lifetime;
+    lgx_allocation_usage_t usage;
+    size_t alignment;           // 0 = default (16 bytes)
+} lgx_allocation_intent_t;
+
+void* lgx_alloc_with_intent(const lgx_allocation_intent_t* intent) {
+    // Route to appropriate allocator
+    if (intent->usage == LGX_USAGE_CPU_ONLY) {
+        if (intent->lifetime == LGX_LIFETIME_FRAME) {
+            return lgx_frame_alloc(intent->size);
+        } else {
+            return lgx_heap_alloc(intent->size);
+        }
+    } else {
+        // GPU allocation
+        lgx_gpu_memory_type_t type;
+        if (intent->usage == LGX_USAGE_GPU_ONLY) {
+            type = LGX_GPU_DEVICE_LOCAL;
+        } else if (intent->usage == LGX_USAGE_CPU_TO_GPU) {
+            type = LGX_GPU_HOST_VISIBLE;
+        } else {
+            type = LGX_GPU_HOST_CACHED;
+        }
+        
+        size_t alignment = intent->alignment ? intent->alignment : 256;
+        return lgx_gpu_alloc(intent->size, alignment, type);
+    }
+}
+```
+
+**Convenience Macros:**
+```c
+// Common allocation patterns
+#define lgx_alloc_frame(size) \
+    lgx_alloc_with_intent(&(lgx_allocation_intent_t){ \
+        .size = size, \
+        .lifetime = LGX_LIFETIME_FRAME, \
+        .usage = LGX_USAGE_CPU_ONLY \
+    })
+
+#define lgx_alloc_persistent(size) \
+    lgx_alloc_with_intent(&(lgx_allocation_intent_t){ \
+        .size = size, \
+        .lifetime = LGX_LIFETIME_SESSION, \
+        .usage = LGX_USAGE_CPU_ONLY \
+    })
+
+#define lgx_alloc_gpu_texture(size) \
+    lgx_alloc_with_intent(&(lgx_allocation_intent_t){ \
+        .size = size, \
+        .lifetime = LGX_LIFETIME_LEVEL, \
+        .usage = LGX_USAGE_GPU_ONLY, \
+        .alignment = 4096 \
+    })
+```
+
+### 4.5 Memory Budget and Capacity Planning
+
+**Total Memory Budget: 2.5 GB**
+- Frame arenas: 192 MB (3 × 64 MB)
+- GPU device-local: 2 GB
+- GPU host-visible: 256 MB
+- GPU host-cached: 64 MB
+- Persistent heap: 512 MB (grows as needed)
+- Runtime overhead: <200 MB
+
+**Allocation Distribution (Typical Game):**
+- Frame arena: 80% of allocations, 10% of memory
+- GPU pool: 15% of allocations, 85% of memory
+- Persistent heap: 5% of allocations, 5% of memory
+
+**Performance Targets:**
+- Frame arena: P99 < 0.1 μs (100 ns)
+- GPU pool: P99 < 10 μs
+- Persistent heap: P99 < 20 μs
+- Overall: 95% of allocations < 0.1 μs (frame arena)
+
+### 4.1 Memory Pool Architecture (DEPRECATED - Phase 0 Only)
+
+**Note:** The following architecture was used in Phase 0 for prototyping and optimization experiments. Phase 1+ uses specialized allocators (frame arena, GPU pool, persistent heap) instead.
 
 **Size Classes (Initial - to be validated via profiling)**
 - Small: 16B, 32B, 64B, 128B, 256B, 512B

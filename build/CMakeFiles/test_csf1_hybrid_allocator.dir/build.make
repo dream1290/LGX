@@ -93,6 +93,8 @@ test_csf1_hybrid_allocator_EXTERNAL_OBJECTS =
 test_csf1_hybrid_allocator: CMakeFiles/test_csf1_hybrid_allocator.dir/tests/phase0/test_csf1_hybrid_allocator.c.o
 test_csf1_hybrid_allocator: CMakeFiles/test_csf1_hybrid_allocator.dir/build.make
 test_csf1_hybrid_allocator: liblgx_runtime.so.1.0.0
+test_csf1_hybrid_allocator: /usr/lib/x86_64-linux-gnu/libvulkan.so
+test_csf1_hybrid_allocator: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_csf1_hybrid_allocator: CMakeFiles/test_csf1_hybrid_allocator.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable test_csf1_hybrid_allocator"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_csf1_hybrid_allocator.dir/link.txt --verbose=$(VERBOSE)

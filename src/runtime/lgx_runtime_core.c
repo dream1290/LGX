@@ -389,20 +389,7 @@ lgx_result_t lgx_runtime_health_check(lgx_hardware_status_t* status) {
     return LGX_SUCCESS;
 }
 
-/**
- * Get allocation usage stats
- */
-lgx_result_t lgx_alloc_get_usage_stats(void* ptr, lgx_allocation_usage_t* usage) {
-    if (!ptr || !usage) {
-        return LGX_ERROR_INVALID_PARAM;
-    }
-    
-    if (!g_runtime.initialized || !g_runtime.memory_manager) {
-        return LGX_ERROR_NOT_INITIALIZED;
-    }
-    
-    return lgx_memory_manager_get_usage_stats(g_runtime.memory_manager, ptr, usage);
-}
+// lgx_alloc_get_usage_stats is now implemented in lgx_intent_allocator.c
 
 /**
  * Validate allocation intent
@@ -419,20 +406,7 @@ lgx_result_t lgx_alloc_validate_intent(void* ptr) {
     return lgx_memory_manager_validate_intent(g_runtime.memory_manager, ptr);
 }
 
-/**
- * Extended intent-based allocation
- */
-void* lgx_alloc_with_intent_ex(const void* intent, size_t intent_type_id) {
-    if (!intent) {
-        return NULL;
-    }
-    
-    if (!g_runtime.initialized || !g_runtime.memory_manager) {
-        return NULL;
-    }
-    
-    return lgx_memory_manager_alloc_with_intent_ex(g_runtime.memory_manager, intent, intent_type_id);
-}
+// lgx_alloc_with_intent_ex is now implemented in lgx_intent_allocator.c
 
 // Private implementation functions
 

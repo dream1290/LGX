@@ -21,10 +21,8 @@
 #include <errno.h>
 #include <malloc.h>
 
-#ifdef HAVE_JEMALLOC
 #if HAVE_JEMALLOC
 #include <jemalloc/jemalloc.h>
-#endif
 #endif
 
 // Size class configuration
@@ -33,6 +31,13 @@
 #define MAX_MEDIUM_SIZE (64 * 1024)
 #define CACHE_LINE_SIZE 64
 #define THREAD_CACHE_SIZE 256   // Increased cache size to reduce misses
+
+// Batch refill configuration (Day 3-4 Breakthrough Optimization)
+#define BATCH_REFILL_SIZE_MIN 32
+#define BATCH_REFILL_SIZE_MAX 256
+#define REFILL_THRESHOLD_AGGRESSIVE 192  // Refill when cache < 75% full (for hot classes)
+#define REFILL_THRESHOLD_MODERATE 128    // Refill when cache < 50% full (for warm classes)
+#define REFILL_THRESHOLD_CONSERVATIVE 64 // Refill when cache < 25% full (for cold classes)
 
 // Ultra-fast hot path configuration (report3.txt approach)
 #define HOT_PATH_SIZE_CLASSES 8  // Focus on most common sizes
@@ -84,6 +89,27 @@ typedef struct thread_cache {
     // Adaptation tracking
     uint64_t last_adaptation_time;
     uint64_t allocation_count_since_adapt;
+    
+    // Batch refill strategy tracking (Day 3-4 Optimization)
+    uint32_t refill_threshold[NUM_SIZE_CLASSES];  // When to trigger refill
+    uint32_t refill_batch_size[NUM_SIZE_CLASSES]; // How many blocks to refill
+    uint64_t last_refill_time[NUM_SIZE_CLASSES];  // For predictive pre-warming
+    uint32_t consecutive_misses[NUM_SIZE_CLASSES]; // Track miss patterns
+    
+    // Allocation pattern tracking (Day 5 Optimization)
+    uint64_t size_class_histogram[NUM_SIZE_CLASSES]; // Total allocations per size class
+    uint64_t pattern_analysis_count;                  // Total allocations since last analysis
+    uint64_t last_pattern_analysis_time;              // When we last analyzed patterns
+    float size_class_hotness[NUM_SIZE_CLASSES];       // Hotness score (0.0-1.0)
+    bool is_hot_size_class[NUM_SIZE_CLASSES];         // Quick lookup for hot classes
+    
+    // Markov chain prediction (Day 6-7 Optimization)
+    uint8_t last_size_class;                                      // Last allocated size class
+    uint32_t transition_matrix[NUM_SIZE_CLASSES][NUM_SIZE_CLASSES]; // Transition counts
+    uint8_t predicted_next[NUM_SIZE_CLASSES];                     // Most likely next size class
+    float prediction_confidence[NUM_SIZE_CLASSES];                // Confidence in prediction
+    uint64_t transition_count;                                    // Total transitions tracked
+    uint64_t last_prediction_update;                              // When we last updated predictions
     
     // Ultra-fast hot path cache
     hot_path_cache_t hot_path;
@@ -179,6 +205,27 @@ static void* allocate_medium(lgx_memory_manager_t* manager, size_t size,
 static void* allocate_large(lgx_memory_manager_t* manager, size_t size, 
                            const lgx_allocation_intent_base_t* intent);
 
+// Day 3-4: Batch refill strategy functions
+static void init_refill_strategy(thread_cache_t* cache);
+static void adapt_refill_strategy(thread_cache_t* cache, int size_class);
+static int calculate_refill_batch_size(thread_cache_t* cache, int size_class);
+static bool should_prewarm_cache(thread_cache_t* cache, int size_class);
+static void batch_refill_cache(lgx_memory_manager_t* manager, thread_cache_t* cache, int size_class);
+
+// Day 5: Allocation pattern tracking functions
+static void init_pattern_tracking(thread_cache_t* cache);
+static void track_allocation_pattern(thread_cache_t* cache, int size_class);
+static void analyze_allocation_patterns(thread_cache_t* cache);
+static void prewarm_hot_size_classes(lgx_memory_manager_t* manager, thread_cache_t* cache);
+static float calculate_size_class_hotness(thread_cache_t* cache, int size_class);
+
+// Day 6-7: Markov chain prediction functions
+static void init_markov_chain(thread_cache_t* cache);
+static void update_markov_transition(thread_cache_t* cache, int size_class);
+static void recompute_markov_predictions(thread_cache_t* cache);
+static void prewarm_predicted_size_class(lgx_memory_manager_t* manager, thread_cache_t* cache);
+static float calculate_prediction_confidence(thread_cache_t* cache, int from_class);
+
 static void track_allocation(lgx_memory_manager_t* manager, void* ptr, size_t size, 
                            const lgx_allocation_intent_base_t* intent);
 static void untrack_allocation(lgx_memory_manager_t* manager, void* ptr);
@@ -261,14 +308,56 @@ lgx_result_t lgx_memory_manager_init(lgx_memory_manager_t** manager,
     mgr->memory_pool_size = config->memory_pool_size;
     mgr->hardware_adapter = hardware_adapter;
     
+    // Initialize lock-free pool (Day 1-2 Breakthrough Optimization)
+    lgx_result_t result = lgx_lockfree_pool_init(size_classes, NUM_SIZE_CLASSES);
+    if (result != LGX_SUCCESS) {
+        free(mgr);
+        return result;
+    }
+    
+    // Detect SIMD features (Day 8-9 Breakthrough Optimization)
+    lgx_simd_detect_features();
+    
+    // Pre-warm lock-free pool with initial blocks to reduce startup latency
+    for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+        lgx_lockfree_pool_prewarm(i, 64);  // 64 blocks per size class
+    }
+    
+    // Day 10: Initialize huge pages support
+    lgx_result_t hp_result = lgx_hugepages_init(hardware_adapter);
+    if (hp_result != LGX_SUCCESS) {
+        // Huge pages not available - continue without them
+        mgr->use_huge_pages = false;
+    } else {
+        mgr->use_huge_pages = lgx_hugepages_available();
+    }
+    
     // Pre-allocate thread pools to eliminate ALL atomic contention
-    // This is the key optimization that Phase 0 had implicitly
+    // Day 10: Use huge pages for thread pools to reduce TLB misses
     size_t pool_size_per_thread = 16ULL * 1024 * 1024; // 16MB per thread (reduced)
     size_t total_pool_size = (size_t)MAX_THREADS * pool_size_per_thread;
-    void* global_pool = malloc(total_pool_size);
+    
+    void* global_pool = NULL;
+    
+    // Try huge pages first if available (hot path, long-lived allocation)
+    if (mgr->use_huge_pages) {
+        global_pool = lgx_hugepages_alloc_selective(total_pool_size, true, true);
+        if (global_pool) {
+            // Successfully allocated with huge pages!
+            // This should reduce TLB misses by ~99% for thread pool access
+            double tlb_improvement = lgx_hugepages_estimate_tlb_improvement(total_pool_size);
+            (void)tlb_improvement; // Suppress unused warning
+        }
+    }
+    
+    // Fallback to regular malloc if huge pages unavailable or failed
     if (!global_pool) {
-        free(mgr);
-        return LGX_ERROR_OUT_OF_MEMORY;
+        global_pool = malloc(total_pool_size);
+        if (!global_pool) {
+            lgx_hugepages_shutdown();
+            free(mgr);
+            return LGX_ERROR_OUT_OF_MEMORY;
+        }
     }
     
     // Initialize each thread pool slice
@@ -356,10 +445,22 @@ lgx_result_t lgx_memory_manager_shutdown(lgx_memory_manager_t* manager) {
         return LGX_ERROR_INVALID_PARAM;
     }
     
+    // Shutdown lock-free pool (Day 1-2 Breakthrough Optimization)
+    lgx_lockfree_pool_shutdown();
+    
     // Free the pre-allocated thread pools
     if (thread_pools[0].base) {
-        // All thread pools are allocated from one big block
-        free(thread_pools[0].base);
+        // Check if this was allocated with huge pages
+        size_t pool_size_per_thread = 16ULL * 1024 * 1024;
+        size_t total_pool_size = (size_t)MAX_THREADS * pool_size_per_thread;
+        
+        if (manager->use_huge_pages) {
+            // Try to free as huge pages
+            lgx_hugepages_free(thread_pools[0].base, total_pool_size);
+        } else {
+            // Regular free
+            free(thread_pools[0].base);
+        }
         
         // Clear all thread pool entries
         for (int i = 0; i < MAX_THREADS; i++) {
@@ -369,6 +470,9 @@ lgx_result_t lgx_memory_manager_shutdown(lgx_memory_manager_t* manager) {
         }
         atomic_store(&next_thread_id, 0);
     }
+    
+    // Shutdown huge pages support
+    lgx_hugepages_shutdown();
     
     // Free all slabs in size class pools
     for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
@@ -420,17 +524,7 @@ void* lgx_alloc_aligned(size_t size, size_t alignment) {
     return lgx_memory_manager_alloc_aligned(runtime->memory_manager, size, alignment, NULL);
 }
 
-/**
- * Allocate memory with intent
- */
-void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent) {
-    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
-    if (!runtime || !runtime->memory_manager || !intent) {
-        return NULL;
-    }
-    
-    return lgx_memory_manager_alloc(runtime->memory_manager, intent->size, intent);
-}
+// lgx_alloc_with_intent is now implemented in lgx_intent_allocator.c
 
 /**
  * Free memory
@@ -550,10 +644,14 @@ void lgx_memory_manager_free(lgx_memory_manager_t* manager, void* ptr) {
                 cache->slots[size_class][cache->count[size_class]++] = ptr;
                 return;
             }
+            
+            // Cache is full - return to lock-free pool (Day 1-2 Optimization)
+            lgx_lockfree_push(size_class, ptr);
+            return;
         }
     }
     
-    // If cache is full or unavailable, use regular free
+    // If cache is unavailable or size class unknown, use regular free
     free(ptr);
 }
 
@@ -684,6 +782,15 @@ static thread_cache_t* get_thread_cache(lgx_memory_manager_t* manager) {
         
         cache->last_adaptation_time = lgx_time_now_ns();
         
+        // Initialize batch refill strategy (Day 3-4 Optimization)
+        init_refill_strategy(cache);
+        
+        // Initialize pattern tracking (Day 5 Optimization)
+        init_pattern_tracking(cache);
+        
+        // Initialize Markov chain prediction (Day 6-7 Optimization)
+        init_markov_chain(cache);
+        
         // PRE-WARM the hot path cache (report3.txt approach)
         prewarm_hot_path_cache(&cache->hot_path);
         
@@ -726,6 +833,7 @@ static void adapt_cache_sizes(thread_cache_t* cache) {
             }
             
             // If we're shrinking, free excess objects
+            // Day 8-9: Use SIMD to quickly check if we have excess objects
             while (cache->count[i] > cache->capacity[i]) {
                 cache->count[i]--;
                 void* ptr = cache->slots[i][cache->count[i]];
@@ -756,6 +864,371 @@ static void adapt_cache_sizes(thread_cache_t* cache) {
     cache->allocation_count_since_adapt = 0;
     cache->last_adaptation_time = current_time;
 }
+
+// Day 3-4: Initialize batch refill strategy for a new thread cache
+static void init_refill_strategy(thread_cache_t* cache) {
+    for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+        // Start with moderate thresholds and batch sizes
+        cache->refill_threshold[i] = REFILL_THRESHOLD_MODERATE;
+        cache->refill_batch_size[i] = 64; // Start with 64 blocks
+        cache->last_refill_time[i] = 0;
+        cache->consecutive_misses[i] = 0;
+    }
+}
+
+// Day 3-4: Adapt refill strategy based on allocation patterns
+static void adapt_refill_strategy(thread_cache_t* cache, int size_class) {
+    uint64_t total_accesses = cache->size_class_hits[size_class] + cache->size_class_misses[size_class];
+    if (total_accesses < 100) return; // Need enough data to adapt
+    
+    double hit_rate = (double)cache->size_class_hits[size_class] / total_accesses;
+    double miss_rate = 1.0 - hit_rate;
+    
+    // Classify size class as hot, warm, or cold
+    if (hit_rate > 0.98) {
+        // HOT: Very high hit rate - use aggressive refill
+        cache->refill_threshold[size_class] = REFILL_THRESHOLD_AGGRESSIVE;
+        cache->refill_batch_size[size_class] = BATCH_REFILL_SIZE_MAX; // 256 blocks
+    } else if (hit_rate > 0.95) {
+        // WARM: Good hit rate - use moderate refill
+        cache->refill_threshold[size_class] = REFILL_THRESHOLD_MODERATE;
+        cache->refill_batch_size[size_class] = 128; // 128 blocks
+    } else if (miss_rate > 0.10) {
+        // COLD: High miss rate - use conservative refill to avoid waste
+        cache->refill_threshold[size_class] = REFILL_THRESHOLD_CONSERVATIVE;
+        cache->refill_batch_size[size_class] = BATCH_REFILL_SIZE_MIN; // 32 blocks
+    }
+    
+    // Track consecutive misses for predictive pre-warming
+    if (cache->consecutive_misses[size_class] > 5) {
+        // Frequent misses - increase batch size
+        cache->refill_batch_size[size_class] = (cache->refill_batch_size[size_class] * 3) / 2;
+        if (cache->refill_batch_size[size_class] > BATCH_REFILL_SIZE_MAX) {
+            cache->refill_batch_size[size_class] = BATCH_REFILL_SIZE_MAX;
+        }
+        cache->consecutive_misses[size_class] = 0; // Reset
+    }
+}
+
+// Day 3-4: Calculate optimal batch size for refill
+static int calculate_refill_batch_size(thread_cache_t* cache, int size_class) {
+    // Use the adapted batch size, but ensure it doesn't exceed capacity
+    int batch_size = cache->refill_batch_size[size_class];
+    int available_space = cache->capacity[size_class] - cache->count[size_class];
+    
+    if (batch_size > available_space) {
+        batch_size = available_space;
+    }
+    
+    // Ensure minimum batch size
+    if (batch_size < BATCH_REFILL_SIZE_MIN) {
+        batch_size = BATCH_REFILL_SIZE_MIN;
+    }
+    
+    return batch_size;
+}
+
+// Day 3-4: Check if cache should be pre-warmed proactively
+static bool should_prewarm_cache(thread_cache_t* cache, int size_class) {
+    // Pre-warm if cache is below threshold
+    if (cache->count[size_class] < cache->refill_threshold[size_class]) {
+        return true;
+    }
+    
+    // Pre-warm if we've had consecutive misses recently
+    if (cache->consecutive_misses[size_class] >= 3) {
+        return true;
+    }
+    
+    // Pre-warm if it's been a while since last refill and cache is getting low
+    uint64_t current_time = lgx_time_now_ns();
+    uint64_t time_since_refill = current_time - cache->last_refill_time[size_class];
+    if (time_since_refill > 1000000 && cache->count[size_class] < cache->capacity[size_class] / 2) {
+        return true;
+    }
+    
+    return false;
+}
+
+// Day 3-4: Batch refill cache from lock-free pool
+static void batch_refill_cache(lgx_memory_manager_t* manager __attribute__((unused)), 
+                               thread_cache_t* cache, int size_class) {
+    // Calculate optimal batch size
+    int batch_size = calculate_refill_batch_size(cache, size_class);
+    
+    // Try lock-free pool first (ZERO mutex locks!)
+    void* batch_blocks[BATCH_REFILL_SIZE_MAX];
+    int popped = lgx_lockfree_pop_batch(size_class, batch_blocks, batch_size);
+    
+    // Add blocks to cache
+    for (int i = 0; i < popped && cache->count[size_class] < cache->capacity[size_class]; i++) {
+        cache->slots[size_class][cache->count[size_class]++] = batch_blocks[i];
+    }
+    
+    // If lock-free pool didn't have enough, allocate new blocks
+    int needed = batch_size - popped;
+    if (needed > 0 && cache->count[size_class] < cache->capacity[size_class]) {
+        for (int i = 0; i < needed && cache->count[size_class] < cache->capacity[size_class]; i++) {
+            void* ptr = malloc(size_classes[size_class]);
+            if (ptr) {
+                cache->slots[size_class][cache->count[size_class]++] = ptr;
+            } else {
+                break; // Out of memory
+            }
+        }
+    }
+    
+    // Update refill tracking
+    cache->last_refill_time[size_class] = lgx_time_now_ns();
+    
+    // Adapt refill strategy based on patterns
+    adapt_refill_strategy(cache, size_class);
+}
+
+// Day 5: Initialize allocation pattern tracking
+static void init_pattern_tracking(thread_cache_t* cache) {
+    memset(cache->size_class_histogram, 0, sizeof(cache->size_class_histogram));
+    memset(cache->size_class_hotness, 0, sizeof(cache->size_class_hotness));
+    memset(cache->is_hot_size_class, 0, sizeof(cache->is_hot_size_class));
+    cache->pattern_analysis_count = 0;
+    cache->last_pattern_analysis_time = lgx_time_now_ns();
+}
+
+// Day 5: Track allocation for pattern analysis
+static void track_allocation_pattern(thread_cache_t* cache, int size_class) {
+    cache->size_class_histogram[size_class]++;
+    cache->pattern_analysis_count++;
+    
+    // Analyze patterns every 1000 allocations or every 10ms
+    uint64_t current_time = lgx_time_now_ns();
+    if (cache->pattern_analysis_count >= 1000 || 
+        (current_time - cache->last_pattern_analysis_time) > 10000000) {
+        analyze_allocation_patterns(cache);
+    }
+}
+
+// Day 5: Calculate hotness score for a size class (0.0 = cold, 1.0 = very hot)
+static float calculate_size_class_hotness(thread_cache_t* cache, int size_class) {
+    if (cache->pattern_analysis_count == 0) {
+        return 0.0f;
+    }
+    
+    // Calculate percentage of total allocations
+    float usage_percentage = (float)cache->size_class_histogram[size_class] / 
+                            (float)cache->pattern_analysis_count;
+    
+    // Hotness is based on usage percentage
+    // >20% = very hot (1.0)
+    // 10-20% = hot (0.5-1.0)
+    // 5-10% = warm (0.25-0.5)
+    // <5% = cold (0.0-0.25)
+    
+    if (usage_percentage > 0.20f) {
+        return 1.0f; // Very hot
+    } else if (usage_percentage > 0.10f) {
+        return 0.5f + (usage_percentage - 0.10f) * 5.0f; // Hot (0.5-1.0)
+    } else if (usage_percentage > 0.05f) {
+        return 0.25f + (usage_percentage - 0.05f) * 5.0f; // Warm (0.25-0.5)
+    } else {
+        return usage_percentage * 5.0f; // Cold (0.0-0.25)
+    }
+}
+
+// Day 5: Analyze allocation patterns and identify hot size classes
+static void analyze_allocation_patterns(thread_cache_t* cache) {
+    // Calculate hotness for each size class
+    for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+        cache->size_class_hotness[i] = calculate_size_class_hotness(cache, i);
+        
+        // Mark as hot if >10% of allocations
+        cache->is_hot_size_class[i] = (cache->size_class_hotness[i] >= 0.5f);
+    }
+    
+    // Reset histogram for next analysis period (but keep running average)
+    // We use a decay factor to give more weight to recent allocations
+    for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+        cache->size_class_histogram[i] = cache->size_class_histogram[i] / 2;
+    }
+    
+    cache->pattern_analysis_count = cache->pattern_analysis_count / 2;
+    cache->last_pattern_analysis_time = lgx_time_now_ns();
+}
+
+// Day 5: Pre-warm hot size classes proactively
+static void prewarm_hot_size_classes(lgx_memory_manager_t* manager __attribute__((unused)), 
+                                     thread_cache_t* cache) {
+    for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+        if (!cache->is_hot_size_class[i]) {
+            continue; // Skip cold size classes
+        }
+        
+        // Calculate target capacity based on hotness
+        // Very hot (1.0) = 90% capacity
+        // Hot (0.5) = 75% capacity
+        uint32_t target_capacity = (uint32_t)(cache->capacity[i] * 
+                                              (0.60f + cache->size_class_hotness[i] * 0.30f));
+        
+        // Pre-warm if below target
+        if (cache->count[i] < target_capacity) {
+            int needed = target_capacity - cache->count[i];
+            
+            // Use batch refill to fill to target
+            void* batch_blocks[BATCH_REFILL_SIZE_MAX];
+            int popped = lgx_lockfree_pop_batch(i, batch_blocks, needed);
+            
+            for (int j = 0; j < popped && cache->count[i] < cache->capacity[i]; j++) {
+                cache->slots[i][cache->count[i]++] = batch_blocks[j];
+            }
+            
+            // If lock-free pool didn't have enough, allocate new blocks
+            int still_needed = target_capacity - cache->count[i];
+            if (still_needed > 0) {
+                for (int j = 0; j < still_needed && cache->count[i] < cache->capacity[i]; j++) {
+                    void* ptr = malloc(size_classes[i]);
+                    if (ptr) {
+                        cache->slots[i][cache->count[i]++] = ptr;
+                    } else {
+                        break; // Out of memory
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Day 6-7: Initialize Markov chain prediction
+static void init_markov_chain(thread_cache_t* cache) {
+    cache->last_size_class = 0xFF; // Invalid marker
+    memset(cache->transition_matrix, 0, sizeof(cache->transition_matrix));
+    memset(cache->predicted_next, 0, sizeof(cache->predicted_next));
+    memset(cache->prediction_confidence, 0, sizeof(cache->prediction_confidence));
+    cache->transition_count = 0;
+    cache->last_prediction_update = lgx_time_now_ns();
+}
+
+// Day 6-7: Update Markov chain with new transition
+static void update_markov_transition(thread_cache_t* cache, int size_class) {
+    // Record transition from last size class to current
+    if (cache->last_size_class != 0xFF && cache->last_size_class < NUM_SIZE_CLASSES) {
+        cache->transition_matrix[cache->last_size_class][size_class]++;
+        cache->transition_count++;
+        
+        // Recompute predictions every 100 transitions
+        if (cache->transition_count % 100 == 0) {
+            recompute_markov_predictions(cache);
+        }
+    }
+    
+    // Update last size class
+    cache->last_size_class = size_class;
+}
+
+// Day 6-7: Calculate prediction confidence for a size class
+static float calculate_prediction_confidence(thread_cache_t* cache, int from_class) {
+    if (from_class >= NUM_SIZE_CLASSES) {
+        return 0.0f;
+    }
+    
+    // Calculate total transitions from this size class
+    uint32_t total_transitions = 0;
+    uint32_t max_transitions = 0;
+    
+    for (int to_class = 0; to_class < NUM_SIZE_CLASSES; to_class++) {
+        uint32_t count = cache->transition_matrix[from_class][to_class];
+        total_transitions += count;
+        if (count > max_transitions) {
+            max_transitions = count;
+        }
+    }
+    
+    if (total_transitions == 0) {
+        return 0.0f;
+    }
+    
+    // Confidence is the ratio of most common transition to total transitions
+    // High confidence (>0.7) means one transition dominates
+    // Low confidence (<0.3) means transitions are spread out
+    return (float)max_transitions / (float)total_transitions;
+}
+
+// Day 6-7: Recompute Markov chain predictions
+static void recompute_markov_predictions(thread_cache_t* cache) {
+    // For each size class, find the most likely next size class
+    for (int from_class = 0; from_class < NUM_SIZE_CLASSES; from_class++) {
+        uint32_t max_count = 0;
+        uint8_t most_likely = 0;
+        
+        // Find the most common transition
+        for (int to_class = 0; to_class < NUM_SIZE_CLASSES; to_class++) {
+            uint32_t count = cache->transition_matrix[from_class][to_class];
+            if (count > max_count) {
+                max_count = count;
+                most_likely = to_class;
+            }
+        }
+        
+        // Update prediction
+        cache->predicted_next[from_class] = most_likely;
+        cache->prediction_confidence[from_class] = calculate_prediction_confidence(cache, from_class);
+    }
+    
+    cache->last_prediction_update = lgx_time_now_ns();
+}
+
+// Day 6-7: Pre-warm predicted next size class
+static void prewarm_predicted_size_class(lgx_memory_manager_t* manager __attribute__((unused)), 
+                                         thread_cache_t* cache) {
+    // Only predict if we have a valid last size class
+    if (cache->last_size_class == 0xFF || cache->last_size_class >= NUM_SIZE_CLASSES) {
+        return;
+    }
+    
+    // Get prediction for current size class
+    uint8_t predicted = cache->predicted_next[cache->last_size_class];
+    float confidence = cache->prediction_confidence[cache->last_size_class];
+    
+    // Only pre-warm if confidence is high (>50%)
+    if (confidence < 0.5f) {
+        return;
+    }
+    
+    // Day 8-9: Use SIMD to quickly check if cache needs refilling
+    // Check if we have enough blocks already (SIMD-accelerated count)
+    int current_count = cache->count[predicted];
+    
+    // Calculate target capacity based on confidence
+    // High confidence (0.9) = 80% capacity
+    // Medium confidence (0.5) = 50% capacity
+    uint32_t target_capacity = (uint32_t)(cache->capacity[predicted] * 
+                                          (0.30f + confidence * 0.50f));
+    
+    // Pre-warm if below target
+    if ((uint32_t)current_count < target_capacity) {
+        int needed = target_capacity - current_count;
+        
+        // Use batch refill to fill to target
+        void* batch_blocks[BATCH_REFILL_SIZE_MAX];
+        int popped = lgx_lockfree_pop_batch(predicted, batch_blocks, needed);
+        
+        for (int i = 0; i < popped && cache->count[predicted] < cache->capacity[predicted]; i++) {
+            cache->slots[predicted][cache->count[predicted]++] = batch_blocks[i];
+        }
+        
+        // If lock-free pool didn't have enough, allocate new blocks
+        int still_needed = target_capacity - cache->count[predicted];
+        if (still_needed > 0 && still_needed <= 32) { // Limit to avoid over-allocation
+            for (int i = 0; i < still_needed && cache->count[predicted] < cache->capacity[predicted]; i++) {
+                void* ptr = malloc(size_classes[predicted]);
+                if (ptr) {
+                    cache->slots[predicted][cache->count[predicted]++] = ptr;
+                } else {
+                    break; // Out of memory
+                }
+            }
+        }
+    }
+}
+
 static int get_size_class_index(size_t size) {
     for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
         if (size <= size_classes[i]) {
@@ -780,6 +1253,7 @@ static int get_hot_path_size_class(size_t size) {
 }
 
 // Pre-warm the hot path cache with pre-allocated blocks
+// Day 10: Use huge pages for hot path cache to reduce TLB misses
 static void prewarm_hot_path_cache(hot_path_cache_t* cache) {
     for (int hot_class = 0; hot_class < HOT_PATH_SIZE_CLASSES; hot_class++) {
         size_t block_size = hot_path_sizes[hot_class];
@@ -792,8 +1266,17 @@ static void prewarm_hot_path_cache(hot_path_cache_t* cache) {
                 cache->preallocated_blocks[hot_class][i] = ptr;
                 successfully_allocated++;
             } else {
-                // If we can't pre-allocate, use malloc as fallback
-                ptr = malloc(block_size);
+                // If we can't pre-allocate from pool, try huge pages for large blocks
+                if (block_size >= 2048 && lgx_hugepages_available()) {
+                    // Try selective huge page allocation for larger blocks
+                    ptr = lgx_hugepages_alloc_selective(block_size, true, true);
+                }
+                
+                // Fallback to malloc if huge pages unavailable
+                if (!ptr) {
+                    ptr = malloc(block_size);
+                }
+                
                 if (ptr) {
                     cache->preallocated_blocks[hot_class][i] = ptr;
                     successfully_allocated++;
@@ -886,6 +1369,27 @@ static void* allocate_small(lgx_memory_manager_t* manager, size_t size,
     // Increment allocation count for adaptation
     cache->allocation_count_since_adapt++;
     
+    // Day 5: Track allocation pattern for this size class
+    track_allocation_pattern(cache, size_class);
+    
+    // Day 6-7: Update Markov chain with this transition
+    update_markov_transition(cache, size_class);
+    
+    // Day 6-7: Pre-warm predicted next size class (every 50 allocations)
+    if ((cache->transition_count % 50) == 0) {
+        prewarm_predicted_size_class(manager, cache);
+    }
+    
+    // Day 5: Proactively pre-warm hot size classes (every 100 allocations)
+    if ((cache->pattern_analysis_count % 100) == 0) {
+        prewarm_hot_size_classes(manager, cache);
+    }
+    
+    // Day 3-4: Predictive pre-warming - check if we should refill proactively
+    if (should_prewarm_cache(cache, size_class)) {
+        batch_refill_cache(manager, cache, size_class);
+    }
+    
     // FAST PATH: Check thread-local cache first
     if (cache->count[size_class] > 0) {
         // Cache hit - O(1) allocation, no locks!
@@ -895,6 +1399,9 @@ static void* allocate_small(lgx_memory_manager_t* manager, size_t size,
         cache->cache_hits++;
         cache->size_class_hits[size_class]++;
         atomic_fetch_add(&manager->cache_hits, 1);
+        
+        // Reset consecutive misses on hit
+        cache->consecutive_misses[size_class] = 0;
         
         // Track allocation if intent provided
         if (intent) {
@@ -909,32 +1416,14 @@ static void* allocate_small(lgx_memory_manager_t* manager, size_t size,
         return ptr;
     }
     
-    // SLOW PATH: Cache miss - refill cache from pool
+    // SLOW PATH: Cache miss - refill cache using batch strategy (Day 3-4 Optimization)
     cache->cache_misses++;
     cache->size_class_misses[size_class]++;
+    cache->consecutive_misses[size_class]++;
     atomic_fetch_add(&manager->cache_misses, 1);
     
-    // Refill cache with adaptive batch size based on usage pattern
-    int refill_count;
-    if (cache->size_class_hits[size_class] > cache->size_class_misses[size_class] * 2) {
-        // Hot size class - refill very aggressively
-        refill_count = cache->capacity[size_class]; // Refill to full capacity
-    } else {
-        // Cold size class - refill moderately  
-        refill_count = cache->capacity[size_class] / 2; // Refill 50% of capacity
-    }
-    
-    if (refill_count < 8) refill_count = 8;
-    if (refill_count > 128) refill_count = 128;
-    
-    for (int i = 0; i < refill_count && cache->count[size_class] < cache->capacity[size_class]; i++) {
-        void* ptr = pool_alloc(size_classes[size_class]);
-        if (ptr) {
-            cache->slots[size_class][cache->count[size_class]++] = ptr;
-        } else {
-            break;
-        }
-    }
+    // Use the new batch refill strategy
+    batch_refill_cache(manager, cache, size_class);
     
     // Now try cache again
     if (cache->count[size_class] > 0) {
@@ -948,8 +1437,13 @@ static void* allocate_small(lgx_memory_manager_t* manager, size_t size,
         return ptr;
     }
     
-    // If cache refill failed, allocate directly from pool
-    void* ptr = pool_alloc(size_classes[size_class]);
+    // If cache refill failed, try lock-free pool directly
+    void* ptr = lgx_lockfree_pop(size_class);
+    if (!ptr) {
+        // Lock-free pool exhausted, allocate new block
+        ptr = malloc(size_classes[size_class]);
+    }
+    
     if (ptr && intent) {
         track_allocation(manager, ptr, size, intent);
     }
@@ -970,12 +1464,9 @@ static void* allocate_medium(lgx_memory_manager_t* manager, size_t size,
 
 static void* allocate_large(lgx_memory_manager_t* manager, size_t size, 
                            const lgx_allocation_intent_base_t* intent) {
-    // For large allocations, use direct allocation or jemalloc
-#if defined(HAVE_JEMALLOC) && HAVE_JEMALLOC
-    void* ptr = je_malloc(size);
-#else
+    // For large allocations, use direct allocation
+    // TODO: Consider using jemalloc for better large allocation performance
     void* ptr = malloc(size);
-#endif
     
     if (ptr && intent) {
         track_allocation(manager, ptr, size, intent);

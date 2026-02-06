@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wextra -Werror -fPIC -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined CMakeFiles/test_basic_functionality.dir/test_basic_functionality.c.o -o test_basic_functionality  -Wl,-rpath,/home/karl/Projects/LGX/build ../../liblgx_runtime.so.1.0.0 -lm -ldl 

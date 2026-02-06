@@ -97,10 +97,66 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_memory_manager.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s
 
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o: CMakeFiles/lgx_runtime.dir/flags.make
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o: /home/karl/Projects/LGX/src/runtime/lgx_lockfree_pool.c
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_lockfree_pool.c
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/karl/Projects/LGX/src/runtime/lgx_lockfree_pool.c > CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.i
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_lockfree_pool.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.s
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o: CMakeFiles/lgx_runtime.dir/flags.make
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o: /home/karl/Projects/LGX/src/runtime/lgx_simd_ops.c
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_simd_ops.c
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/karl/Projects/LGX/src/runtime/lgx_simd_ops.c > CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.i
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_simd_ops.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.s
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o: CMakeFiles/lgx_runtime.dir/flags.make
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o: /home/karl/Projects/LGX/src/runtime/lgx_hugepages.c
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_hugepages.c
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/karl/Projects/LGX/src/runtime/lgx_hugepages.c > CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.i
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_hugepages.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.s
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o: CMakeFiles/lgx_runtime.dir/flags.make
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o: /home/karl/Projects/LGX/src/runtime/lgx_frame_arena.c
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_frame_arena.c
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/karl/Projects/LGX/src/runtime/lgx_frame_arena.c > CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.i
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_frame_arena.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.s
+
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o: /home/karl/Projects/LGX/src/runtime/lgx_hardware_adapter.c
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_hardware_adapter.c
 
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.i: cmake_force
@@ -114,7 +170,7 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.s: cmake_force
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o: /home/karl/Projects/LGX/src/runtime/lgx_capability_detector.c
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_capability_detector.c
 
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.i: cmake_force
@@ -128,7 +184,7 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.s: cmake_force
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o: /home/karl/Projects/LGX/src/runtime/lgx_lifecycle_manager.c
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_lifecycle_manager.c
 
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.i: cmake_force
@@ -142,7 +198,7 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.s: cmake_force
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o: /home/karl/Projects/LGX/src/runtime/lgx_platform_services.c
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_platform_services.c
 
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.i: cmake_force
@@ -156,7 +212,7 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.s: cmake_force
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o: /home/karl/Projects/LGX/src/runtime/lgx_telemetry.c
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_telemetry.c
 
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.i: cmake_force
@@ -170,7 +226,7 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.s: cmake_force
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o: /home/karl/Projects/LGX/src/runtime/lgx_error_handler.c
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_error_handler.c
 
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.i: cmake_force
@@ -184,7 +240,7 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.s: cmake_force
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o: /home/karl/Projects/LGX/src/runtime/lgx_health_monitor.c
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_health_monitor.c
 
 CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.i: cmake_force
@@ -198,7 +254,7 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.s: cmake_force
 CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o: CMakeFiles/lgx_runtime.dir/flags.make
 CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o: /home/karl/Projects/LGX/src/lgx_allocator_prototype.c
 CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o -MF CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o.d -o CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o -c /home/karl/Projects/LGX/src/lgx_allocator_prototype.c
 
 CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.i: cmake_force
@@ -209,10 +265,56 @@ CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/lgx_allocator_prototype.c -o CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.s
 
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o: CMakeFiles/lgx_runtime.dir/flags.make
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o: /home/karl/Projects/LGX/src/runtime/lgx_gpu_pool.c
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_gpu_pool.c
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/karl/Projects/LGX/src/runtime/lgx_gpu_pool.c > CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.i
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_gpu_pool.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.s
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o: CMakeFiles/lgx_runtime.dir/flags.make
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o: /home/karl/Projects/LGX/src/runtime/lgx_persistent_heap.c
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_persistent_heap.c
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/karl/Projects/LGX/src/runtime/lgx_persistent_heap.c > CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.i
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_persistent_heap.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.s
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o: CMakeFiles/lgx_runtime.dir/flags.make
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o: /home/karl/Projects/LGX/src/runtime/lgx_intent_allocator.c
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o: CMakeFiles/lgx_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o -MF CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o.d -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o -c /home/karl/Projects/LGX/src/runtime/lgx_intent_allocator.c
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/karl/Projects/LGX/src/runtime/lgx_intent_allocator.c > CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.i
+
+CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/karl/Projects/LGX/src/runtime/lgx_intent_allocator.c -o CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.s
+
 # Object files for target lgx_runtime
 lgx_runtime_OBJECTS = \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_runtime_core.c.o" \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o" \
+"CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o" \
+"CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o" \
+"CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o" \
+"CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o" \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o" \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o" \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o" \
@@ -220,13 +322,20 @@ lgx_runtime_OBJECTS = \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o" \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o" \
 "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o" \
-"CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o"
+"CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o" \
+"CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o" \
+"CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o" \
+"CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o"
 
 # External object files for target lgx_runtime
 lgx_runtime_EXTERNAL_OBJECTS =
 
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_runtime_core.c.o
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o
+liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o
+liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o
+liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o
+liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o
@@ -235,9 +344,14 @@ liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o
+liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o
+liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o
+liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/build.make
+liblgx_runtime.so.1.0.0: /usr/lib/x86_64-linux-gnu/libvulkan.so
+liblgx_runtime.so.1.0.0: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking C shared library liblgx_runtime.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking C shared library liblgx_runtime.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lgx_runtime.dir/link.txt --verbose=$(VERBOSE)
 	$(CMAKE_COMMAND) -E cmake_symlink_library liblgx_runtime.so.1.0.0 liblgx_runtime.so.1 liblgx_runtime.so
 

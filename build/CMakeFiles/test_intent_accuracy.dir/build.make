@@ -93,6 +93,8 @@ test_intent_accuracy_EXTERNAL_OBJECTS =
 test_intent_accuracy: CMakeFiles/test_intent_accuracy.dir/tests/phase0/test_intent_accuracy.c.o
 test_intent_accuracy: CMakeFiles/test_intent_accuracy.dir/build.make
 test_intent_accuracy: liblgx_runtime.so.1.0.0
+test_intent_accuracy: /usr/lib/x86_64-linux-gnu/libvulkan.so
+test_intent_accuracy: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_intent_accuracy: CMakeFiles/test_intent_accuracy.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable test_intent_accuracy"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_intent_accuracy.dir/link.txt --verbose=$(VERBOSE)
