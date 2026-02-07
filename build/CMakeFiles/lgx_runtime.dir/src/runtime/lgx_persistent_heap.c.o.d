@@ -87,4 +87,6 @@ CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
  /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/assert.h
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/stdatomic.h \
+ /usr/include/assert.h

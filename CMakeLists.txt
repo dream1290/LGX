@@ -64,6 +64,7 @@ set(LGX_RUNTIME_SOURCES
     src/runtime/lgx_telemetry.c
     src/runtime/lgx_error_handler.c
     src/runtime/lgx_health_monitor.c
+    src/runtime/lgx_performance_counters.c
     
     # Legacy Phase 0 sources (temporarily disabled)
     # src/lgx_runtime.c
@@ -73,6 +74,7 @@ set(LGX_RUNTIME_SOURCES
 # Add GPU pool if Vulkan is available
 if(Vulkan_FOUND)
     list(APPEND LGX_RUNTIME_SOURCES src/runtime/lgx_gpu_pool.c)
+    list(APPEND LGX_RUNTIME_SOURCES src/runtime/lgx_gpu_capability.c)
 endif()
 
 # Add persistent heap allocator (Month 3)

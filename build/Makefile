@@ -315,6 +315,19 @@ test_gpu_buddy_allocator/fast:
 .PHONY : test_gpu_buddy_allocator/fast
 
 #=============================================================================
+# Target rules for targets named test_gpu_capability
+
+# Build rule for target.
+test_gpu_capability: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu_capability
+.PHONY : test_gpu_capability
+
+# fast build rule for target.
+test_gpu_capability/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_capability.dir/build.make CMakeFiles/test_gpu_capability.dir/build
+.PHONY : test_gpu_capability/fast
+
+#=============================================================================
 # Target rules for targets named test_gpu_detection
 
 # Build rule for target.
@@ -378,6 +391,19 @@ test_hardware_adaptation: cmake_check_build_system
 test_hardware_adaptation/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_adaptation.dir/build.make CMakeFiles/test_hardware_adaptation.dir/build
 .PHONY : test_hardware_adaptation/fast
+
+#=============================================================================
+# Target rules for targets named test_hardware_tier
+
+# Build rule for target.
+test_hardware_tier: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_hardware_tier
+.PHONY : test_hardware_tier
+
+# fast build rule for target.
+test_hardware_tier/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_tier.dir/build.make CMakeFiles/test_hardware_tier.dir/build
+.PHONY : test_hardware_tier/fast
 
 #=============================================================================
 # Target rules for targets named test_hierarchical_intents
@@ -495,6 +521,19 @@ test_persistent_heap_perf: cmake_check_build_system
 test_persistent_heap_perf/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/build
 .PHONY : test_persistent_heap_perf/fast
+
+#=============================================================================
+# Target rules for targets named test_simd_fallback
+
+# Build rule for target.
+test_simd_fallback: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_simd_fallback
+.PHONY : test_simd_fallback
+
+# fast build rule for target.
+test_simd_fallback/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_simd_fallback.dir/build.make CMakeFiles/test_simd_fallback.dir/build
+.PHONY : test_simd_fallback/fast
 
 #=============================================================================
 # Target rules for targets named test_tiered_performance
@@ -669,6 +708,30 @@ src/runtime/lgx_frame_arena.s: src/runtime/lgx_frame_arena.c.s
 src/runtime/lgx_frame_arena.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.s
 .PHONY : src/runtime/lgx_frame_arena.c.s
+
+src/runtime/lgx_gpu_capability.o: src/runtime/lgx_gpu_capability.c.o
+.PHONY : src/runtime/lgx_gpu_capability.o
+
+# target to build an object file
+src/runtime/lgx_gpu_capability.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_capability.c.o
+.PHONY : src/runtime/lgx_gpu_capability.c.o
+
+src/runtime/lgx_gpu_capability.i: src/runtime/lgx_gpu_capability.c.i
+.PHONY : src/runtime/lgx_gpu_capability.i
+
+# target to preprocess a source file
+src/runtime/lgx_gpu_capability.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_capability.c.i
+.PHONY : src/runtime/lgx_gpu_capability.c.i
+
+src/runtime/lgx_gpu_capability.s: src/runtime/lgx_gpu_capability.c.s
+.PHONY : src/runtime/lgx_gpu_capability.s
+
+# target to generate assembly for a file
+src/runtime/lgx_gpu_capability.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_capability.c.s
+.PHONY : src/runtime/lgx_gpu_capability.c.s
 
 src/runtime/lgx_gpu_pool.o: src/runtime/lgx_gpu_pool.c.o
 .PHONY : src/runtime/lgx_gpu_pool.o
@@ -861,6 +924,30 @@ src/runtime/lgx_memory_manager.s: src/runtime/lgx_memory_manager.c.s
 src/runtime/lgx_memory_manager.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s
 .PHONY : src/runtime/lgx_memory_manager.c.s
+
+src/runtime/lgx_performance_counters.o: src/runtime/lgx_performance_counters.c.o
+.PHONY : src/runtime/lgx_performance_counters.o
+
+# target to build an object file
+src/runtime/lgx_performance_counters.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.o
+.PHONY : src/runtime/lgx_performance_counters.c.o
+
+src/runtime/lgx_performance_counters.i: src/runtime/lgx_performance_counters.c.i
+.PHONY : src/runtime/lgx_performance_counters.i
+
+# target to preprocess a source file
+src/runtime/lgx_performance_counters.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.i
+.PHONY : src/runtime/lgx_performance_counters.c.i
+
+src/runtime/lgx_performance_counters.s: src/runtime/lgx_performance_counters.c.s
+.PHONY : src/runtime/lgx_performance_counters.s
+
+# target to generate assembly for a file
+src/runtime/lgx_performance_counters.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.s
+.PHONY : src/runtime/lgx_performance_counters.c.s
 
 src/runtime/lgx_persistent_heap.o: src/runtime/lgx_persistent_heap.c.o
 .PHONY : src/runtime/lgx_persistent_heap.o
@@ -1222,6 +1309,30 @@ tests/phase0/test_gpu_buddy_allocator.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_buddy_allocator.dir/build.make CMakeFiles/test_gpu_buddy_allocator.dir/tests/phase0/test_gpu_buddy_allocator.c.s
 .PHONY : tests/phase0/test_gpu_buddy_allocator.c.s
 
+tests/phase0/test_gpu_capability.o: tests/phase0/test_gpu_capability.c.o
+.PHONY : tests/phase0/test_gpu_capability.o
+
+# target to build an object file
+tests/phase0/test_gpu_capability.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_capability.dir/build.make CMakeFiles/test_gpu_capability.dir/tests/phase0/test_gpu_capability.c.o
+.PHONY : tests/phase0/test_gpu_capability.c.o
+
+tests/phase0/test_gpu_capability.i: tests/phase0/test_gpu_capability.c.i
+.PHONY : tests/phase0/test_gpu_capability.i
+
+# target to preprocess a source file
+tests/phase0/test_gpu_capability.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_capability.dir/build.make CMakeFiles/test_gpu_capability.dir/tests/phase0/test_gpu_capability.c.i
+.PHONY : tests/phase0/test_gpu_capability.c.i
+
+tests/phase0/test_gpu_capability.s: tests/phase0/test_gpu_capability.c.s
+.PHONY : tests/phase0/test_gpu_capability.s
+
+# target to generate assembly for a file
+tests/phase0/test_gpu_capability.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_capability.dir/build.make CMakeFiles/test_gpu_capability.dir/tests/phase0/test_gpu_capability.c.s
+.PHONY : tests/phase0/test_gpu_capability.c.s
+
 tests/phase0/test_gpu_detection.o: tests/phase0/test_gpu_detection.c.o
 .PHONY : tests/phase0/test_gpu_detection.o
 
@@ -1341,6 +1452,30 @@ tests/phase0/test_hardware_adaptation.s: tests/phase0/test_hardware_adaptation.c
 tests/phase0/test_hardware_adaptation.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_adaptation.dir/build.make CMakeFiles/test_hardware_adaptation.dir/tests/phase0/test_hardware_adaptation.c.s
 .PHONY : tests/phase0/test_hardware_adaptation.c.s
+
+tests/phase0/test_hardware_tier.o: tests/phase0/test_hardware_tier.c.o
+.PHONY : tests/phase0/test_hardware_tier.o
+
+# target to build an object file
+tests/phase0/test_hardware_tier.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_tier.dir/build.make CMakeFiles/test_hardware_tier.dir/tests/phase0/test_hardware_tier.c.o
+.PHONY : tests/phase0/test_hardware_tier.c.o
+
+tests/phase0/test_hardware_tier.i: tests/phase0/test_hardware_tier.c.i
+.PHONY : tests/phase0/test_hardware_tier.i
+
+# target to preprocess a source file
+tests/phase0/test_hardware_tier.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_tier.dir/build.make CMakeFiles/test_hardware_tier.dir/tests/phase0/test_hardware_tier.c.i
+.PHONY : tests/phase0/test_hardware_tier.c.i
+
+tests/phase0/test_hardware_tier.s: tests/phase0/test_hardware_tier.c.s
+.PHONY : tests/phase0/test_hardware_tier.s
+
+# target to generate assembly for a file
+tests/phase0/test_hardware_tier.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_tier.dir/build.make CMakeFiles/test_hardware_tier.dir/tests/phase0/test_hardware_tier.c.s
+.PHONY : tests/phase0/test_hardware_tier.c.s
 
 tests/phase0/test_hierarchical_intents.o: tests/phase0/test_hierarchical_intents.c.o
 .PHONY : tests/phase0/test_hierarchical_intents.o
@@ -1558,6 +1693,30 @@ tests/phase0/test_persistent_heap_perf.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/tests/phase0/test_persistent_heap_perf.c.s
 .PHONY : tests/phase0/test_persistent_heap_perf.c.s
 
+tests/phase0/test_simd_fallback.o: tests/phase0/test_simd_fallback.c.o
+.PHONY : tests/phase0/test_simd_fallback.o
+
+# target to build an object file
+tests/phase0/test_simd_fallback.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_simd_fallback.dir/build.make CMakeFiles/test_simd_fallback.dir/tests/phase0/test_simd_fallback.c.o
+.PHONY : tests/phase0/test_simd_fallback.c.o
+
+tests/phase0/test_simd_fallback.i: tests/phase0/test_simd_fallback.c.i
+.PHONY : tests/phase0/test_simd_fallback.i
+
+# target to preprocess a source file
+tests/phase0/test_simd_fallback.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_simd_fallback.dir/build.make CMakeFiles/test_simd_fallback.dir/tests/phase0/test_simd_fallback.c.i
+.PHONY : tests/phase0/test_simd_fallback.c.i
+
+tests/phase0/test_simd_fallback.s: tests/phase0/test_simd_fallback.c.s
+.PHONY : tests/phase0/test_simd_fallback.s
+
+# target to generate assembly for a file
+tests/phase0/test_simd_fallback.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_simd_fallback.dir/build.make CMakeFiles/test_simd_fallback.dir/tests/phase0/test_simd_fallback.c.s
+.PHONY : tests/phase0/test_simd_fallback.c.s
+
 tests/phase0/test_tiered_performance.o: tests/phase0/test_tiered_performance.c.o
 .PHONY : tests/phase0/test_tiered_performance.o
 
@@ -1611,11 +1770,13 @@ help:
 	@echo "... test_frame_arena"
 	@echo "... test_frame_arena_polish"
 	@echo "... test_gpu_buddy_allocator"
+	@echo "... test_gpu_capability"
 	@echo "... test_gpu_detection"
 	@echo "... test_gpu_perf_simple"
 	@echo "... test_gpu_performance"
 	@echo "... test_gpu_pool"
 	@echo "... test_hardware_adaptation"
+	@echo "... test_hardware_tier"
 	@echo "... test_hierarchical_intents"
 	@echo "... test_intent_accuracy"
 	@echo "... test_intent_allocator"
@@ -1625,6 +1786,7 @@ help:
 	@echo "... test_persistent_heap"
 	@echo "... test_persistent_heap_buddy"
 	@echo "... test_persistent_heap_perf"
+	@echo "... test_simd_fallback"
 	@echo "... test_tiered_performance"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
@@ -1638,6 +1800,9 @@ help:
 	@echo "... src/runtime/lgx_frame_arena.o"
 	@echo "... src/runtime/lgx_frame_arena.i"
 	@echo "... src/runtime/lgx_frame_arena.s"
+	@echo "... src/runtime/lgx_gpu_capability.o"
+	@echo "... src/runtime/lgx_gpu_capability.i"
+	@echo "... src/runtime/lgx_gpu_capability.s"
 	@echo "... src/runtime/lgx_gpu_pool.o"
 	@echo "... src/runtime/lgx_gpu_pool.i"
 	@echo "... src/runtime/lgx_gpu_pool.s"
@@ -1662,6 +1827,9 @@ help:
 	@echo "... src/runtime/lgx_memory_manager.o"
 	@echo "... src/runtime/lgx_memory_manager.i"
 	@echo "... src/runtime/lgx_memory_manager.s"
+	@echo "... src/runtime/lgx_performance_counters.o"
+	@echo "... src/runtime/lgx_performance_counters.i"
+	@echo "... src/runtime/lgx_performance_counters.s"
 	@echo "... src/runtime/lgx_persistent_heap.o"
 	@echo "... src/runtime/lgx_persistent_heap.i"
 	@echo "... src/runtime/lgx_persistent_heap.s"
@@ -1707,6 +1875,9 @@ help:
 	@echo "... tests/phase0/test_gpu_buddy_allocator.o"
 	@echo "... tests/phase0/test_gpu_buddy_allocator.i"
 	@echo "... tests/phase0/test_gpu_buddy_allocator.s"
+	@echo "... tests/phase0/test_gpu_capability.o"
+	@echo "... tests/phase0/test_gpu_capability.i"
+	@echo "... tests/phase0/test_gpu_capability.s"
 	@echo "... tests/phase0/test_gpu_detection.o"
 	@echo "... tests/phase0/test_gpu_detection.i"
 	@echo "... tests/phase0/test_gpu_detection.s"
@@ -1722,6 +1893,9 @@ help:
 	@echo "... tests/phase0/test_hardware_adaptation.o"
 	@echo "... tests/phase0/test_hardware_adaptation.i"
 	@echo "... tests/phase0/test_hardware_adaptation.s"
+	@echo "... tests/phase0/test_hardware_tier.o"
+	@echo "... tests/phase0/test_hardware_tier.i"
+	@echo "... tests/phase0/test_hardware_tier.s"
 	@echo "... tests/phase0/test_hierarchical_intents.o"
 	@echo "... tests/phase0/test_hierarchical_intents.i"
 	@echo "... tests/phase0/test_hierarchical_intents.s"
@@ -1749,6 +1923,9 @@ help:
 	@echo "... tests/phase0/test_persistent_heap_perf.o"
 	@echo "... tests/phase0/test_persistent_heap_perf.i"
 	@echo "... tests/phase0/test_persistent_heap_perf.s"
+	@echo "... tests/phase0/test_simd_fallback.o"
+	@echo "... tests/phase0/test_simd_fallback.i"
+	@echo "... tests/phase0/test_simd_fallback.s"
 	@echo "... tests/phase0/test_tiered_performance.o"
 	@echo "... tests/phase0/test_tiered_performance.i"
 	@echo "... tests/phase0/test_tiered_performance.s"

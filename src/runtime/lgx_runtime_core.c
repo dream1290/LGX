@@ -432,31 +432,37 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
     
     // Initialize subsystems in dependency order
     
-    // 1. Error Handler (needed by all other subsystems)
+    // 1. Performance Counters (needed by all other subsystems)
+    result = lgx_counters_init();
+    if (result != LGX_SUCCESS) {
+        return result;
+    }
+    
+    // 2. Error Handler (needed by all other subsystems)
     result = lgx_error_handler_init(&g_runtime.error_handler);
     if (result != LGX_SUCCESS) {
         return result;
     }
     
-    // 2. Hardware Adapter (needed for capability detection)
+    // 3. Hardware Adapter (needed for capability detection)
     result = lgx_hardware_adapter_init(&g_runtime.hardware_adapter);
     if (result != LGX_SUCCESS) {
         return result;
     }
     
-    // 3. Capability Detector (depends on hardware adapter)
+    // 4. Capability Detector (depends on hardware adapter)
     result = lgx_capability_detector_init(&g_runtime.capability_detector, g_runtime.hardware_adapter);
     if (result != LGX_SUCCESS) {
         return result;
     }
     
-    // 4. Memory Manager (core functionality)
+    // 5. Memory Manager (core functionality)
     result = lgx_memory_manager_init(&g_runtime.memory_manager, config, g_runtime.hardware_adapter);
     if (result != LGX_SUCCESS) {
         return result;
     }
     
-    // 5. Platform Services (filesystem, timing, logging)
+    // 6. Platform Services (filesystem, timing, logging)
     result = lgx_platform_services_init(&g_runtime.platform_services, config);
     if (result != LGX_SUCCESS) {
         return result;
@@ -465,19 +471,19 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
     // Set global platform services for logging API
     lgx_set_platform_services(g_runtime.platform_services);
     
-    // 6. Lifecycle Manager (suspend/resume support)
+    // 7. Lifecycle Manager (suspend/resume support)
     result = lgx_lifecycle_manager_init(&g_runtime.lifecycle_manager);
     if (result != LGX_SUCCESS) {
         return result;
     }
     
-    // 7. Health Monitor (monitors all other subsystems)
+    // 8. Health Monitor (monitors all other subsystems)
     result = lgx_health_monitor_init(&g_runtime.health_monitor, &g_runtime);
     if (result != LGX_SUCCESS) {
         return result;
     }
     
-    // 8. Telemetry (optional, depends on config)
+    // 9. Telemetry (optional, depends on config)
     if (config->flags & LGX_CONFIG_ENABLE_TELEMETRY) {
         result = lgx_telemetry_init(&g_runtime.telemetry, config);
         if (result != LGX_SUCCESS) {
@@ -531,6 +537,9 @@ static lgx_result_t shutdown_subsystems(void) {
         lgx_error_handler_shutdown(g_runtime.error_handler);
         g_runtime.error_handler = NULL;
     }
+    
+    // Shutdown performance counters last
+    lgx_counters_shutdown();
     
     return LGX_SUCCESS;
 }

@@ -1,22 +1,55 @@
 /**
  * LGX Allocator Prototype - Compatibility Layer
  * 
- * Provides compatibility functions for Phase 0 tests to work with Phase 1 implementation.
- * These functions delegate to the Phase 1 runtime.
+ * DEPRECATED: This compatibility layer is deprecated and will be removed in Phase 2.
+ * Use the specialized allocators instead:
+ * - lgx_frame_alloc() for per-frame temporary allocations
+ * - lgx_heap_alloc() for persistent allocations
+ * - lgx_gpu_alloc() for GPU memory
+ * 
+ * These functions delegate to the Phase 1 runtime for backward compatibility only.
  */
+
+// Suppress deprecation warnings in this file (we're implementing the deprecated API)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include "lgx_allocator_prototype.h"
 #include "lgx_runtime.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 // Global state for prototype compatibility
 static bool g_prototype_initialized = false;
+static bool g_deprecation_warning_shown = false;
+
+/**
+ * Show deprecation warning (once per process)
+ */
+static void show_deprecation_warning(void) {
+    if (g_deprecation_warning_shown) {
+        return;
+    }
+    
+    fprintf(stderr, 
+        "[LGX WARNING] Prototype allocator API is DEPRECATED and will be removed in Phase 2.\n"
+        "  Please migrate to specialized allocators:\n"
+        "  - lgx_frame_alloc() for per-frame temporary allocations\n"
+        "  - lgx_heap_alloc() for persistent allocations\n"
+        "  - lgx_gpu_alloc() for GPU memory\n"
+        "  See documentation for migration guide.\n\n");
+    
+    g_deprecation_warning_shown = true;
+}
 
 /**
  * Initialize the prototype allocator (compatibility)
+ * DEPRECATED: Use lgx_runtime_init() directly instead.
  */
 void lgx_allocator_prototype_init(void) {
+    show_deprecation_warning();
+    
     if (g_prototype_initialized) {
         return;
     }
@@ -38,8 +71,10 @@ void lgx_allocator_prototype_init(void) {
 
 /**
  * Cleanup the prototype allocator (compatibility)
+ * DEPRECATED: Use lgx_runtime_shutdown() directly instead.
  */
 void lgx_allocator_prototype_cleanup(void) {
+    show_deprecation_warning();
     if (!g_prototype_initialized) {
         return;
     }
@@ -50,8 +85,10 @@ void lgx_allocator_prototype_cleanup(void) {
 
 /**
  * Allocate memory using prototype interface (compatibility)
+ * DEPRECATED: Use lgx_frame_alloc(), lgx_heap_alloc(), or lgx_gpu_alloc() instead.
  */
 void* lgx_alloc_prototype(size_t size) {
+    show_deprecation_warning();
     if (!g_prototype_initialized) {
         // Try to initialize if not already done
         lgx_allocator_prototype_init();
@@ -65,8 +102,10 @@ void* lgx_alloc_prototype(size_t size) {
 
 /**
  * Free memory using prototype interface (compatibility)
+ * DEPRECATED: Use lgx_frame_reset(), lgx_heap_free(), or lgx_gpu_free() instead.
  */
 void lgx_free_prototype(void* ptr) {
+    show_deprecation_warning();
     if (!g_prototype_initialized || !ptr) {
         return;
     }
@@ -76,8 +115,10 @@ void lgx_free_prototype(void* ptr) {
 
 /**
  * Get cache statistics (compatibility)
+ * DEPRECATED: Use lgx_memory_stats() instead.
  */
 void lgx_get_cache_stats(uint64_t* hits, uint64_t* misses) {
+    show_deprecation_warning();
     if (!hits || !misses || !g_prototype_initialized) {
         if (hits) *hits = 0;
         if (misses) *misses = 0;
@@ -96,3 +137,7 @@ void lgx_get_cache_stats(uint64_t* hits, uint64_t* misses) {
     *hits = mem_stats.cache_hits;
     *misses = mem_stats.cache_misses;
 }
+
+
+// Restore warnings
+#pragma GCC diagnostic pop

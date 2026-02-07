@@ -109,6 +109,7 @@ void test_basic_allocation(VkInstance instance, VkPhysicalDevice physical_device
         
         // Note: VK_NULL_HANDLE is 0, so we can't test != VK_NULL_HANDLE reliably
         // The allocation succeeded, so the memory handle should be valid
+        (void)memory;  // Suppress unused variable warning
         TEST_ASSERT(true, "Valid Vulkan memory handle");
         TEST_ASSERT(size >= 1024, "Allocated size >= requested size");
         TEST_ASSERT(offset % 256 == 0, "Offset aligned to 256 bytes");
@@ -298,16 +299,16 @@ void test_host_visible_mapping(VkInstance instance, VkPhysicalDevice physical_de
         if (mapped_ptr) {
             TEST_ASSERT(mapped_ptr != NULL, "CPU-mapped pointer available");
             
-            // Write test pattern
+            // Write test pattern (only 64 elements to avoid buffer overflow)
             uint32_t* data = (uint32_t*)mapped_ptr;
-            for (int i = 0; i < 256; i++) {
-                data[i] = i * 0x12345678;
+            for (size_t i = 0; i < 64; i++) {
+                data[i] = (uint32_t)(i * 0x12345678U);
             }
             
             // Verify test pattern
             bool pattern_ok = true;
-            for (int i = 0; i < 256; i++) {
-                if (data[i] != i * 0x12345678) {
+            for (size_t i = 0; i < 64; i++) {
+                if (data[i] != (uint32_t)(i * 0x12345678U)) {
                     pattern_ok = false;
                     break;
                 }

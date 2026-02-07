@@ -129,6 +129,7 @@ int main() {
     
     lgx_result_t result = lgx_runtime_init(config);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     
     // Prepare thread data
     pthread_t threads[NUM_THREADS];
@@ -151,6 +152,7 @@ int main() {
     for (int i = 0; i < NUM_THREADS; i++) {
         int ret = pthread_create(&threads[i], NULL, allocation_thread, &thread_data[i]);
         assert(ret == 0);
+        (void)ret;  // Suppress unused warning
     }
     
     // Wait for all threads to complete

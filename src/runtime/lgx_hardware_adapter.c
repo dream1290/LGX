@@ -240,42 +240,56 @@ static void detect_gpu(lgx_hardware_adapter_t* adapter) {
         return;
     }
     
-    // Check for AMD/Intel via DRM
-    if (access("/dev/dri/card0", F_OK) == 0) {
-        adapter->gpu_available = true;
+    // Check for AMD/Intel via DRM (check card0, card1, etc.)
+    for (int card_num = 0; card_num < 4; card_num++) {
+        char card_path[64];
+        snprintf(card_path, sizeof(card_path), "/dev/dri/card%d", card_num);
         
-        // Try to determine vendor from sysfs
-        FILE* vendor_file = fopen("/sys/class/drm/card0/device/vendor", "r");
-        if (vendor_file) {
-            char vendor_id[16];
-            if (fgets(vendor_id, sizeof(vendor_id), vendor_file)) {
-                // Vendor IDs: 0x1002 = AMD, 0x8086 = Intel, 0x10de = NVIDIA
-                if (strstr(vendor_id, "0x1002")) {
-                    strcpy(adapter->gpu_vendor, "AMD");
-                } else if (strstr(vendor_id, "0x8086")) {
-                    strcpy(adapter->gpu_vendor, "Intel");
-                } else if (strstr(vendor_id, "0x10de")) {
-                    strcpy(adapter->gpu_vendor, "NVIDIA");
-                } else {
-                    strcpy(adapter->gpu_vendor, "Unknown");
+        if (access(card_path, F_OK) == 0) {
+            adapter->gpu_available = true;
+            
+            // Try to determine vendor from sysfs
+            char vendor_path[128];
+            snprintf(vendor_path, sizeof(vendor_path), "/sys/class/drm/card%d/device/vendor", card_num);
+            FILE* vendor_file = fopen(vendor_path, "r");
+            if (vendor_file) {
+                char vendor_id[16];
+                if (fgets(vendor_id, sizeof(vendor_id), vendor_file)) {
+                    // Vendor IDs: 0x1002 = AMD, 0x8086 = Intel, 0x10de = NVIDIA
+                    if (strstr(vendor_id, "0x1002")) {
+                        strcpy(adapter->gpu_vendor, "AMD");
+                    } else if (strstr(vendor_id, "0x8086")) {
+                        strcpy(adapter->gpu_vendor, "Intel");
+                    } else if (strstr(vendor_id, "0x10de")) {
+                        strcpy(adapter->gpu_vendor, "NVIDIA");
+                    } else {
+                        strcpy(adapter->gpu_vendor, "Unknown");
+                    }
                 }
+                fclose(vendor_file);
+            } else {
+                strcpy(adapter->gpu_vendor, "AMD/Intel");
             }
-            fclose(vendor_file);
-        } else {
-            strcpy(adapter->gpu_vendor, "AMD/Intel");
-        }
-        
-        // Get driver version from kernel module version
-        // For AMD: check amdgpu module
-        FILE* amdgpu_version = fopen("/sys/module/amdgpu/version", "r");
-        if (amdgpu_version) {
-            if (fgets(adapter->driver_version, sizeof(adapter->driver_version), amdgpu_version)) {
-                // Remove trailing newline
-                adapter->driver_version[strcspn(adapter->driver_version, "\n")] = '\0';
+            
+            // Get driver version from kernel module version
+            // For AMD: check amdgpu module
+            FILE* amdgpu_version = fopen("/sys/module/amdgpu/version", "r");
+            if (amdgpu_version) {
+                if (fgets(adapter->driver_version, sizeof(adapter->driver_version), amdgpu_version)) {
+                    // Remove trailing newline
+                    adapter->driver_version[strcspn(adapter->driver_version, "\n")] = '\0';
+                }
+                fclose(amdgpu_version);
+                return;
             }
-            fclose(amdgpu_version);
-            return;
+            
+            // Found a GPU, stop searching
+            break;
         }
+    }
+    
+    // If we found a GPU but haven't returned yet, continue with Intel driver detection
+    if (adapter->gpu_available) {
         
         // For Intel: check i915 module
         FILE* i915_version = fopen("/sys/module/i915/version", "r");

@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -O3 -DNDEBUG -O2 -DNDEBUG -march=native CMakeFiles/test_simd_fallback.dir/tests/phase0/test_simd_fallback.c.o -o test_simd_fallback  -Wl,-rpath,/home/karl/Projects/LGX/build liblgx_runtime.so.1.0.0 -lm -ldl /usr/lib/x86_64-linux-gnu/libvulkan.so /usr/lib/x86_64-linux-gnu/libjemalloc.so 

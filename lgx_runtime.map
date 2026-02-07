@@ -58,6 +58,21 @@ LGX_1.0 {
         lgx_gpu_pool_get_fragmentation;
         lgx_gpu_pool_get_peak_usage;
         
+        # GPU capability detection (Task 3.5.2.3)
+        lgx_gpu_detect_capabilities;
+        lgx_gpu_select_strategy;
+        lgx_gpu_get_recommended_pool_size;
+        lgx_gpu_get_memory_type_flags;
+        lgx_gpu_print_capabilities;
+        lgx_gpu_print_strategy;
+        
+        # SIMD operations (Task 3.5.2.4)
+        lgx_simd_detect_features;
+        lgx_simd_has_avx2;
+        lgx_simd_find_nonempty_slot;
+        lgx_simd_all_null;
+        lgx_simd_count_nonempty;
+        
         # Persistent heap allocator (Month 3 - Specialized Allocators)
         lgx_persistent_heap_init;
         lgx_persistent_heap_shutdown;
@@ -92,6 +107,24 @@ LGX_1.0 {
         lgx_time_*;
         lgx_log;
         lgx_time_now_ns;
+        lgx_set_log_filter;
+        
+        # Hardware adapter (internal but needed by tests)
+        lgx_hardware_adapter_init;
+        lgx_hardware_adapter_shutdown;
+        lgx_hardware_adapter_has_gpu;
+        lgx_hardware_adapter_get_gpu_vendor;
+        lgx_hardware_adapter_get_driver_version;
+        lgx_hardware_adapter_get_status;
+        
+        # Huge pages (internal but needed by tests)
+        lgx_hugepages_init;
+        lgx_hugepages_shutdown;
+        lgx_hugepages_alloc;
+        lgx_hugepages_free;
+        lgx_hugepages_alloc_selective;
+        lgx_hugepages_available;
+        lgx_hugepages_estimate_tlb_improvement;
         
         # Error handling
         lgx_get_last_error;
@@ -111,6 +144,12 @@ LGX_1.0 {
         lgx_register_counter;
         lgx_increment_counter;
         lgx_add_to_counter;
+        lgx_get_custom_counter;
+        lgx_get_custom_counter_name;
+        
+        # Observability
+        lgx_set_observability_level;
+        lgx_get_observability_level;
         
         # Telemetry (opt-in)
         lgx_telemetry_configure;

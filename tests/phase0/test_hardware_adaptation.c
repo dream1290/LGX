@@ -57,6 +57,7 @@ static void test_capability_queries(void) {
     uint32_t all_capabilities = 0;
     lgx_result_t result = lgx_runtime_query_capabilities(&all_capabilities);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     
     printf("  Bulk capability query: 0x%08X\n", all_capabilities);
     
@@ -76,6 +77,7 @@ static void test_health_check_api(void) {
     lgx_hardware_status_t health_status;
     lgx_result_t result = lgx_runtime_health_check(&health_status);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     
     printf("  Health check results:\n");
     printf("    Overall tier: %s\n", tier_to_string(health_status.achieved_tier));
@@ -84,6 +86,7 @@ static void test_health_check_api(void) {
     
     // Verify health status matches hardware status
     lgx_hardware_status_t hw_status = lgx_runtime_get_hardware_status();
+    (void)hw_status;  // Suppress unused warning
     assert(health_status.achieved_tier == hw_status.achieved_tier);
     assert(health_status.missing_capabilities == hw_status.missing_capabilities);
     
@@ -179,15 +182,18 @@ static void test_error_conditions(void) {
     // Test invalid parameters
     lgx_result_t result = lgx_runtime_query_capabilities(NULL);
     assert(result == LGX_ERROR_INVALID_PARAM);
+    (void)result;  // Suppress unused warning
     printf("  ✓ NULL parameter correctly rejected\n");
     
     result = lgx_runtime_health_check(NULL);
     assert(result == LGX_ERROR_INVALID_PARAM);
+    (void)result;  // Suppress unused warning
     printf("  ✓ NULL health check parameter correctly rejected\n");
     
     // Test capability check with invalid capability (should return false)
     bool has_invalid = lgx_runtime_has_capability((lgx_capability_t)0x80000000);
     assert(has_invalid == false);
+    (void)has_invalid;  // Suppress unused warning
     printf("  ✓ Invalid capability correctly returns false\n");
     
     printf("  ✓ Error conditions handled correctly\n\n");
@@ -254,6 +260,7 @@ int main(void) {
     lgx_config_destroy(config);
     result = lgx_runtime_shutdown();
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     
     printf("=== All Hardware Adaptation Tests Passed! ===\n");
     return 0;

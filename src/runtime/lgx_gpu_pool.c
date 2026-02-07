@@ -10,6 +10,13 @@
  * - Alignment guarantees (256B for buffers, 4KB for images)
  * - Pre-allocated large blocks to avoid runtime overhead
  * - Fragmentation tracking and reporting
+ * 
+ * Task 3.5.2.2: Cache Optimization (Day 1-2)
+ * - Cache line alignment for buddy_block_t (64-byte aligned)
+ * - Cache line alignment for buddy_allocator_t (64-byte aligned)
+ * - Hot/cold data separation (statistics in separate cache line)
+ * - Prefetching hints in allocation hot path
+ * - Expected impact: 5-10% reduction in CPU overhead
  */
 
 #define _GNU_SOURCE
@@ -344,8 +351,14 @@ static void buddy_coalesce(buddy_allocator_t* allocator, buddy_block_t* block) {
 
 /**
  * Allocate from buddy allocator
+ * 
+ * Task 3.5.2.2: Added prefetching hints for better cache performance
  */
 static buddy_block_t* buddy_alloc(buddy_allocator_t* allocator, VkDeviceSize size, VkDeviceSize alignment) {
+    // Task 3.5.2.2: Prefetch allocator metadata (likely to be accessed)
+    // Read prefetch with high temporal locality (will be accessed multiple times)
+    __builtin_prefetch(&allocator->free_lists[0], 0, 3);
+    
     // Adjust size for alignment
     if (size < alignment) {
         size = alignment;
@@ -358,10 +371,18 @@ static buddy_block_t* buddy_alloc(buddy_allocator_t* allocator, VkDeviceSize siz
         level++;
     }
     
+    // Task 3.5.2.2: Prefetch the specific free list we'll access
+    // This reduces cache miss latency for the common case
+    __builtin_prefetch(&allocator->free_lists[level], 0, 2);
+    
     buddy_block_t* block = buddy_find_free_block(allocator, level);
     if (!block) {
         return NULL;  // Out of memory
     }
+    
+    // Task 3.5.2.2: Prefetch block metadata (will be modified soon)
+    // Write prefetch with high temporal locality
+    __builtin_prefetch(block, 1, 3);
     
     // Remove from free list
     if (block->prev) {

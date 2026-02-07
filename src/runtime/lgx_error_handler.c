@@ -16,6 +16,160 @@
 static __thread lgx_error_context_ex_t g_last_error = {0};
 static __thread bool g_error_set = false;
 
+// Error metadata mapping
+typedef struct {
+    lgx_result_t code;
+    lgx_error_severity_t severity;
+    lgx_recovery_action_t recovery;
+    const char* recovery_steps;
+    bool recoverable;
+} lgx_error_metadata_t;
+
+static const lgx_error_metadata_t g_error_metadata[] = {
+    {
+        LGX_SUCCESS,
+        LGX_SEV_WARNING,
+        LGX_RECOVER_RETRY,
+        "No error occurred",
+        true
+    },
+    {
+        LGX_ERROR_INVALID_PARAM,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_ABORT,
+        "Check function parameters and ensure they are valid. Verify pointers are non-NULL and values are in valid ranges.",
+        true
+    },
+    {
+        LGX_ERROR_NOT_INITIALIZED,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_RETRY,
+        "Call lgx_runtime_init() before using any other runtime functions.",
+        true
+    },
+    {
+        LGX_ERROR_ALREADY_INITIALIZED,
+        LGX_SEV_WARNING,
+        LGX_RECOVER_RETRY,
+        "Runtime is already initialized. Call lgx_runtime_shutdown() first if you need to reinitialize.",
+        true
+    },
+    {
+        LGX_ERROR_INCOMPATIBLE_VERSION,
+        LGX_SEV_FATAL,
+        LGX_RECOVER_SHUTDOWN,
+        "Runtime version is incompatible with application. Update runtime library or rebuild application with matching headers.",
+        false
+    },
+    {
+        LGX_ERROR_OUT_OF_MEMORY,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_DEGRADE,
+        "System is out of memory. Free unused allocations, reduce memory pool sizes, or enable graceful degradation mode.",
+        true
+    },
+    {
+        LGX_ERROR_IO_ERROR,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_RETRY,
+        "I/O operation failed. Check file permissions, disk space, and filesystem health. Retry operation after resolving issues.",
+        true
+    },
+    {
+        LGX_ERROR_NOT_SUPPORTED,
+        LGX_SEV_WARNING,
+        LGX_RECOVER_DEGRADE,
+        "Feature not supported on this hardware/platform. Runtime will use software fallback if available.",
+        true
+    },
+    {
+        LGX_ERROR_LIBRARY_VERSION_MISMATCH,
+        LGX_SEV_FATAL,
+        LGX_RECOVER_SHUTDOWN,
+        "Dependent library version mismatch detected. Update system libraries or use pinned library versions.",
+        false
+    },
+    {
+        LGX_ERROR_GPU_UNAVAILABLE,
+        LGX_SEV_WARNING,
+        LGX_RECOVER_DEGRADE,
+        "GPU acceleration unavailable. Runtime will use CPU fallback. Check GPU drivers and Vulkan installation.",
+        true
+    },
+    {
+        LGX_ERROR_RESOURCE_LIMIT_EXCEEDED,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_DEGRADE,
+        "Resource limit exceeded. Reduce allocation rate, increase pool sizes, or enable resource throttling.",
+        true
+    },
+    {
+        LGX_ERROR_HARDWARE_DEGRADED,
+        LGX_SEV_WARNING,
+        LGX_RECOVER_DEGRADE,
+        "Hardware features degraded. Enable huge pages, configure NUMA, or update GPU drivers for optimal performance.",
+        true
+    },
+    {
+        LGX_ERROR_INTENT_VALIDATION_FAILED,
+        LGX_SEV_WARNING,
+        LGX_RECOVER_RETRY,
+        "Allocation intent validation failed. Review allocation patterns and adjust intent hints for better performance.",
+        true
+    },
+    {
+        LGX_ERROR_SYSTEM_ERROR,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_RETRY,
+        "System error occurred. Check system logs (dmesg, journalctl) for details. May require system administrator intervention.",
+        true
+    },
+    {
+        LGX_ERROR_INVALID_STATE,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_ABORT,
+        "Runtime is in invalid state for this operation. Ensure proper initialization and operation sequencing.",
+        true
+    },
+    {
+        LGX_ERROR_TIMEOUT,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_RETRY,
+        "Operation timed out. Retry with longer timeout, reduce system load, or check for deadlocks.",
+        true
+    },
+    {
+        LGX_ERROR_NOT_FOUND,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_ABORT,
+        "Requested resource not found. Verify resource exists and is accessible.",
+        true
+    }
+};
+
+static const size_t g_error_metadata_count = sizeof(g_error_metadata) / sizeof(g_error_metadata[0]);
+
+/**
+ * Get error metadata for a given error code
+ */
+static const lgx_error_metadata_t* get_error_metadata(lgx_result_t error) {
+    for (size_t i = 0; i < g_error_metadata_count; i++) {
+        if (g_error_metadata[i].code == error) {
+            return &g_error_metadata[i];
+        }
+    }
+    
+    // Return default metadata for unknown errors
+    static const lgx_error_metadata_t default_metadata = {
+        LGX_ERROR_SYSTEM_ERROR,
+        LGX_SEV_ERROR,
+        LGX_RECOVER_ABORT,
+        "Unknown error occurred. Check logs for details.",
+        true
+    };
+    return &default_metadata;
+}
+
 // Error handler state
 struct lgx_error_handler {
     pthread_mutex_t mutex;
@@ -73,6 +227,9 @@ lgx_result_t lgx_error_handler_set_error(lgx_error_handler_t* handler,
         return LGX_ERROR_INVALID_PARAM;
     }
     
+    // Get error metadata
+    const lgx_error_metadata_t* metadata = get_error_metadata(error);
+    
     // Set thread-local error context
     g_last_error.base.struct_size = sizeof(lgx_error_context_t);
     g_last_error.base.error_code = error;
@@ -82,11 +239,11 @@ lgx_result_t lgx_error_handler_set_error(lgx_error_handler_t* handler,
     g_last_error.base.line_number = line;
     g_last_error.base.timestamp_ns = lgx_time_now_ns();
     
-    // Set extended error context
-    g_last_error.severity = LGX_SEV_ERROR;
-    g_last_error.suggested_action = LGX_RECOVER_ABORT;
-    g_last_error.recovery_steps = "Check error code and retry";
-    g_last_error.recoverable = true;
+    // Set extended error context from metadata
+    g_last_error.severity = metadata->severity;
+    g_last_error.suggested_action = metadata->recovery;
+    g_last_error.recovery_steps = metadata->recovery_steps;
+    g_last_error.recoverable = metadata->recoverable;
     g_last_error.context_data = NULL;
     
     g_error_set = true;

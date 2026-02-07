@@ -363,6 +363,7 @@ int main(void) {
     
     lgx_result_t result = lgx_runtime_init(config);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     printf("✓ Runtime initialized successfully\n\n");
     
     // Initialize random seed for reproducible results

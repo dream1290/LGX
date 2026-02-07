@@ -28,9 +28,11 @@ static void test_base_intent_structure(void) {
     printf("  ✓ Base intent through ex function successful\n");
     
     // Verify usage stats
-    lgx_allocation_usage_t usage1, usage2;
+    lgx_allocation_usage_t usage1 = {0}, usage2 = {0};
     assert(lgx_alloc_get_usage_stats(ptr1, &usage1) == LGX_SUCCESS);
     assert(lgx_alloc_get_usage_stats(ptr2, &usage2) == LGX_SUCCESS);
+    (void)usage1;  // Suppress unused warning
+    (void)usage2;  // Suppress unused warning
     
     printf("  ✓ Usage stats accessible for both allocations\n");
     
@@ -62,8 +64,9 @@ static void test_l2_intent_structure(void) {
     printf("  ✓ L2 intent allocation successful\n");
     
     // Verify base intent properties are preserved
-    lgx_allocation_usage_t usage;
+    lgx_allocation_usage_t usage = {0};
     assert(lgx_alloc_get_usage_stats(ptr, &usage) == LGX_SUCCESS);
+    (void)usage;  // Suppress unused warning
     printf("  ✓ Usage stats accessible for L2 allocation\n");
     
     lgx_free(ptr);
@@ -85,6 +88,7 @@ static void test_intent_structure_validation(void) {
     
     void* ptr1 = lgx_alloc_with_intent(&invalid_base);
     assert(ptr1 == NULL);
+    (void)ptr1;  // Suppress unused warning
     printf("  ✓ Invalid base intent struct_size correctly rejected\n");
     
     // Test invalid struct_size for L2 intent
@@ -104,6 +108,7 @@ static void test_intent_structure_validation(void) {
     
     void* ptr2 = lgx_alloc_with_intent_ex(&invalid_l2, 1);
     assert(ptr2 == NULL);
+    (void)ptr2;  // Suppress unused warning
     printf("  ✓ Invalid L2 intent struct_size correctly rejected\n");
     
     // Test unknown intent type
@@ -118,6 +123,7 @@ static void test_intent_structure_validation(void) {
     
     void* ptr3 = lgx_alloc_with_intent_ex(&valid_base, 999); // Unknown type
     assert(ptr3 == NULL);
+    (void)ptr3;  // Suppress unused warning
     printf("  ✓ Unknown intent type correctly rejected\n");
     
     printf("  ✓ Intent structure validation test passed\n\n");
@@ -228,6 +234,7 @@ int main(void) {
     
     lgx_result_t result = lgx_runtime_init(config);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     printf("✓ Runtime initialized successfully\n\n");
     
     // Run hierarchical intent tests

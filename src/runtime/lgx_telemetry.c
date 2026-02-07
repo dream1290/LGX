@@ -17,6 +17,7 @@ struct lgx_telemetry {
     pthread_mutex_t mutex;
     bool enabled;
     bool user_consent;
+    lgx_observability_level_t observability_level;
     
     // Telemetry data
     uint64_t frame_count;
@@ -52,6 +53,7 @@ lgx_result_t lgx_telemetry_init(lgx_telemetry_t** telemetry,
     
     tel->enabled = false;
     tel->user_consent = false;
+    tel->observability_level = LGX_OBS_NORMAL;  // Default to normal
     
     // Initialize counters
     tel->frame_count = 0;
@@ -209,4 +211,42 @@ lgx_result_t lgx_telemetry_export(lgx_telemetry_t* telemetry, const char* output
     
     pthread_mutex_unlock(&telemetry->mutex);
     return LGX_SUCCESS;
+}
+
+/**
+ * Set observability level
+ */
+void lgx_set_observability_level(lgx_observability_level_t level) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->telemetry) {
+        return;
+    }
+    
+    pthread_mutex_lock(&runtime->telemetry->mutex);
+    runtime->telemetry->observability_level = level;
+    pthread_mutex_unlock(&runtime->telemetry->mutex);
+}
+
+/**
+ * Get observability level
+ */
+lgx_observability_level_t lgx_get_observability_level(void) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->telemetry) {
+        return LGX_OBS_NONE;
+    }
+    
+    pthread_mutex_lock(&runtime->telemetry->mutex);
+    lgx_observability_level_t level = runtime->telemetry->observability_level;
+    pthread_mutex_unlock(&runtime->telemetry->mutex);
+    
+    return level;
+}
+
+/**
+ * Check if observability level allows operation
+ */
+bool lgx_observability_allows(lgx_observability_level_t required_level) {
+    lgx_observability_level_t current = lgx_get_observability_level();
+    return current >= required_level;
 }

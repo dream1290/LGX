@@ -1,3 +1,14 @@
+/**
+ * CSF-1 Comparison Test
+ * 
+ * This test uses the DEPRECATED prototype allocator API for backward compatibility testing.
+ * Deprecation warnings are suppressed since this is intentional legacy test code.
+ */
+
+// Suppress deprecation warnings (testing deprecated API intentionally)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include "../include/lgx_runtime.h"
 #include "../include/lgx_allocator_prototype.h"
 #include <stdio.h>
@@ -329,3 +340,6 @@ int main() {
     
     return 0;
 }
+
+// Restore warnings
+#pragma GCC diagnostic pop

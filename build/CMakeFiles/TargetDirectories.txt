@@ -9,11 +9,13 @@
 /home/karl/Projects/LGX/build/CMakeFiles/test_frame_arena.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_frame_arena_polish.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_gpu_buddy_allocator.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_gpu_capability.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_gpu_detection.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_gpu_perf_simple.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_gpu_performance.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_gpu_pool.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_hardware_adaptation.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_hardware_tier.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_hierarchical_intents.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_intent_accuracy.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_intent_allocator.dir
@@ -23,6 +25,7 @@
 /home/karl/Projects/LGX/build/CMakeFiles/test_persistent_heap.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_persistent_heap_buddy.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_persistent_heap_perf.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_simd_fallback.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_tiered_performance.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_phase0_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_unit_tests.dir

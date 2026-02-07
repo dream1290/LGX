@@ -16,13 +16,13 @@
 #define NUM_ITERATIONS 10000
 #define WARMUP_ITERATIONS 100
 
-static uint64_t get_time_ns(void) {
+__attribute__((unused)) static uint64_t get_time_ns(void) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 
-static int compare_uint64(const void* a, const void* b) {
+__attribute__((unused)) static int compare_uint64(const void* a, const void* b) {
     uint64_t ua = *(const uint64_t*)a;
     uint64_t ub = *(const uint64_t*)b;
     if (ua < ub) return -1;
@@ -30,7 +30,7 @@ static int compare_uint64(const void* a, const void* b) {
     return 0;
 }
 
-static uint64_t calculate_percentile(uint64_t* sorted_times, int count, double percentile) {
+__attribute__((unused)) static uint64_t calculate_percentile(uint64_t* sorted_times, int count, double percentile) {
     if (count == 0) return 0;
     int index = (int)((percentile / 100.0) * (count - 1));
     if (index >= count) index = count - 1;

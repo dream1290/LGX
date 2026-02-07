@@ -26,6 +26,7 @@ int main() {
         uint64_t end_time = lgx_time_now_ns();
         
         assert(result == LGX_SUCCESS);
+        (void)result;  // Suppress unused warning
         
         init_times[i] = end_time - start_time;
         
@@ -76,10 +77,12 @@ int main() {
     lgx_runtime_config_t* config = lgx_config_create();
     lgx_result_t result = lgx_runtime_init(config);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     
     lgx_performance_characteristics_t perf_chars;
     result = lgx_runtime_get_performance_characteristics(&perf_chars);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     
     printf("Kernel Version: %s\n", perf_chars.kernel_version);
     printf("CPU Model: %s\n", perf_chars.cpu_model);

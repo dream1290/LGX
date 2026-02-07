@@ -51,7 +51,7 @@ static void manually_update_access_pattern(void* ptr, lgx_access_pattern_t patte
     (void)confidence;
     
     // For prototype, we'll just validate that the API works
-    lgx_allocation_usage_t usage;
+    lgx_allocation_usage_t usage = {0};
     lgx_result_t result = lgx_alloc_get_usage_stats(ptr, &usage);
     if (result == LGX_SUCCESS) {
         printf("    Current usage: access_count=%lu, pattern=%d, confidence=%.2f\n",
@@ -87,7 +87,7 @@ static void test_sequential_pattern_detection(void) {
     lgx_result_t validation_result = lgx_alloc_validate_intent(ptr);
     printf("  Intent validation result: %s\n", lgx_result_to_string(validation_result));
     
-    lgx_allocation_usage_t usage;
+    lgx_allocation_usage_t usage = {0};
     assert(lgx_alloc_get_usage_stats(ptr, &usage) == LGX_SUCCESS);
     printf("  Intent mismatch detected: %s\n", 
            usage.intent_mismatch_detected ? "Yes" : "No");
@@ -124,7 +124,7 @@ static void test_pattern_mismatch_detection(void) {
     lgx_result_t validation_result = lgx_alloc_validate_intent(ptr);
     printf("  Intent validation result: %s\n", lgx_result_to_string(validation_result));
     
-    lgx_allocation_usage_t usage;
+    lgx_allocation_usage_t usage = {0};
     assert(lgx_alloc_get_usage_stats(ptr, &usage) == LGX_SUCCESS);
     printf("  Intent mismatch detected: %s\n", 
            usage.intent_mismatch_detected ? "Yes" : "No");
@@ -154,7 +154,7 @@ static void test_lifetime_accuracy_validation(void) {
     // Free quickly (within frame time) - should match intent
     usleep(10000); // 10ms < 33ms frame time
     
-    lgx_allocation_usage_t frame_usage;
+    lgx_allocation_usage_t frame_usage = {0};
     assert(lgx_alloc_get_usage_stats(frame_ptr, &frame_usage) == LGX_SUCCESS);
     printf("  Frame allocation lifetime: %lu ms\n", frame_usage.actual_lifetime_ms);
     
@@ -179,7 +179,7 @@ static void test_lifetime_accuracy_validation(void) {
     // But free quickly (mismatch)
     usleep(5000); // 5ms - much shorter than session
     
-    lgx_allocation_usage_t session_usage;
+    lgx_allocation_usage_t session_usage = {0};
     assert(lgx_alloc_get_usage_stats(session_ptr, &session_usage) == LGX_SUCCESS);
     printf("  Session allocation actual lifetime: %lu ms\n", session_usage.actual_lifetime_ms);
     
@@ -214,7 +214,7 @@ static void test_adaptive_intent_behavior(void) {
     // For prototype, we simulate the learning process
     manually_update_access_pattern(ptr, LGX_ACCESS_WRITE_ONCE, 51, 0.90);
     
-    lgx_allocation_usage_t usage;
+    lgx_allocation_usage_t usage = {0};
     assert(lgx_alloc_get_usage_stats(ptr, &usage) == LGX_SUCCESS);
     printf("  Learned pattern: %d, confidence: %.2f\n", 
            usage.observed_pattern, usage.pattern_confidence);
@@ -317,6 +317,7 @@ int main(void) {
     
     lgx_result_t result = lgx_runtime_init(config);
     assert(result == LGX_SUCCESS);
+    (void)result;  // Suppress unused warning
     printf("✓ Runtime initialized successfully\n\n");
     
     // Run intent accuracy tests

@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: LGX Runtime Core
 Description: High-performance deterministic runtime for Linux gaming
 Version: @PROJECT_VERSION@
-URL: https://github.com/lgx-platform/lgx-runtime-core
+URL: https://github.com/lgx-platform/LGX
 Requires: 
 Libs: -L${libdir} -llgx_runtime
 Libs.private: -lpthread -lm -ldl

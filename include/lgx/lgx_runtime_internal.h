@@ -219,6 +219,7 @@ typedef struct VkPhysicalDevice_T* VkPhysicalDevice;
 typedef struct VkDevice_T* VkDevice;
 typedef struct VkDeviceMemory_T* VkDeviceMemory;
 typedef uint64_t VkDeviceSize;
+typedef uint32_t VkMemoryPropertyFlags;
 
 typedef enum {
     LGX_GPU_DEVICE_LOCAL = 0,
@@ -245,6 +246,37 @@ VkDeviceSize lgx_gpu_get_size(lgx_gpu_allocation_t* alloc);
 void* lgx_gpu_get_mapped_ptr(lgx_gpu_allocation_t* alloc);
 float lgx_gpu_pool_get_fragmentation(lgx_gpu_memory_type_t type);
 VkDeviceSize lgx_gpu_pool_get_peak_usage(lgx_gpu_memory_type_t type);
+
+// GPU capability detection API (Task 3.5.2.3)
+// GPU capability structure
+typedef struct lgx_gpu_capabilities {
+    bool supports_device_local;      // Device-only memory (fastest)
+    bool supports_host_visible;      // CPU-accessible memory
+    bool supports_host_cached;       // Cached host-visible memory
+    bool supports_host_coherent;     // Coherent host-visible memory
+    bool supports_resizable_bar;     // ReBAR (large host-visible memory)
+    size_t max_device_local_mb;      // How much VRAM available
+    size_t max_host_visible_mb;      // How much host-visible available
+    uint32_t device_local_heap_index;
+    uint32_t host_visible_heap_index;
+} lgx_gpu_capabilities_t;
+
+// GPU allocation strategy
+typedef enum lgx_gpu_allocation_strategy {
+    LGX_GPU_STRATEGY_DEVICE_LOCAL = 0,   // Fastest, GPU-only
+    LGX_GPU_STRATEGY_HOST_VISIBLE = 1,   // Slower, CPU-accessible
+    LGX_GPU_STRATEGY_RESIZABLE_BAR = 2,  // ReBAR: Large host-visible
+    LGX_GPU_STRATEGY_FALLBACK = 3,       // Minimum viable
+} lgx_gpu_allocation_strategy_t;
+
+lgx_result_t lgx_gpu_detect_capabilities(VkPhysicalDevice physical_device, 
+                                         lgx_gpu_capabilities_t* caps);
+lgx_gpu_allocation_strategy_t lgx_gpu_select_strategy(const lgx_gpu_capabilities_t* caps);
+size_t lgx_gpu_get_recommended_pool_size(lgx_gpu_allocation_strategy_t strategy,
+                                         const lgx_gpu_capabilities_t* caps);
+VkMemoryPropertyFlags lgx_gpu_get_memory_type_flags(lgx_gpu_allocation_strategy_t strategy);
+void lgx_gpu_print_capabilities(const lgx_gpu_capabilities_t* caps);
+void lgx_gpu_print_strategy(lgx_gpu_allocation_strategy_t strategy);
 
 // Persistent heap API functions (Month 3 - Specialized Allocators)
 typedef struct {
@@ -299,6 +331,14 @@ lgx_result_t lgx_health_monitor_shutdown(lgx_health_monitor_t* monitor);
 
 // Platform services global setter
 void lgx_set_platform_services(lgx_platform_services_t* services);
+
+// Performance counter API functions (Section 5.2)
+lgx_result_t lgx_counters_init(void);
+lgx_result_t lgx_counters_shutdown(void);
+void lgx_increment_builtin_counter(lgx_counter_t counter);
+void lgx_add_to_builtin_counter(lgx_counter_t counter, uint64_t value);
+uint64_t lgx_get_custom_counter(lgx_custom_counter_t counter);
+const char* lgx_get_custom_counter_name(lgx_custom_counter_t counter);
 
 #ifdef __cplusplus
 }

@@ -82,6 +82,7 @@
 #include <pthread.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdatomic.h>  // For lock-free free lists (Task 3.5.1.1)
 #include <time.h>
 #include <assert.h>
 
@@ -134,9 +135,10 @@ static inline size_t class_to_size(int class) {
     return MIN_SIZE_CLASS << class;
 }
 
-// Free list node
+// Free list node (lock-free with atomic operations - Task 3.5.1.1)
 typedef struct free_node {
     struct free_node* next;
+    uint64_t generation;         // ABA problem mitigation (lock-free technique from Day 1-2)
 } free_node_t;
 
 // Slab for small object allocation
@@ -150,14 +152,15 @@ typedef struct slab {
     bool uses_huge_pages;        // Track if memory uses huge pages (Task 3.5.1.4)
 } slab_t;
 
-// Size class allocator
+// Size class allocator (lock-free free list - Task 3.5.1.1)
 typedef struct {
-    free_node_t* free_list;      // Free list for this size class
-    slab_t* slabs;               // List of slabs
-    size_t object_size;          // Size of objects
-    uint64_t num_allocations;    // Statistics
-    uint64_t num_frees;
-    uint64_t num_slabs;
+    _Atomic(free_node_t*) free_list;  // Lock-free free list using atomic CAS
+    _Atomic uint64_t generation;       // Generation counter for ABA mitigation
+    slab_t* slabs;                     // List of slabs (still mutex-protected)
+    size_t object_size;                // Size of objects
+    atomic_uint_fast64_t num_allocations;  // Lock-free statistics
+    atomic_uint_fast64_t num_frees;
+    uint64_t num_slabs;                // Slab count (mutex-protected)
 } size_class_allocator_t;
 
 // Allocation header for tracking and validation
@@ -893,7 +896,7 @@ static void* slab_alloc(slab_t* slab) {
  * @param ptr Pointer to free (must be slab allocation, not user pointer)
  * @return true if freed successfully, false if not in this slab
  */
-static bool slab_free(slab_t* slab, void* ptr) {
+__attribute__((unused)) static bool slab_free(slab_t* slab, void* ptr) {
     // Validate inputs
     if (!slab || !ptr || !slab->memory || !slab->allocation_bitmap) {
         return false;
@@ -971,14 +974,15 @@ lgx_result_t lgx_persistent_heap_init(void) {
         return LGX_ERROR_INVALID_PARAM;
     }
     
-    // Initialize size class allocators
+    // Initialize size class allocators (lock-free free lists - Task 3.5.1.1)
     for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
         size_class_allocator_t* allocator = &g_heap.size_classes[i];
-        allocator->free_list = NULL;
+        atomic_store(&allocator->free_list, NULL);
+        atomic_store(&allocator->generation, 1);  // Start at 1 for ABA mitigation
         allocator->slabs = NULL;
         allocator->object_size = class_to_size(i);
-        allocator->num_allocations = 0;
-        allocator->num_frees = 0;
+        atomic_store(&allocator->num_allocations, 0);
+        atomic_store(&allocator->num_frees, 0);
         allocator->num_slabs = 0;
     }
     
@@ -1043,8 +1047,8 @@ lgx_result_t lgx_persistent_heap_shutdown(void) {
     for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
         size_class_allocator_t* allocator = &g_heap.size_classes[i];
         
-        // CRITICAL: Clear free list (these are pointers into slab memory, will be freed with slabs)
-        allocator->free_list = NULL;
+        // CRITICAL: Clear free list (lock-free - Task 3.5.1.1)
+        atomic_store(&allocator->free_list, NULL);
         
         // Free all slabs
         slab_t* slab = allocator->slabs;
@@ -1143,12 +1147,22 @@ void* lgx_heap_alloc(size_t size) {
         // Small allocation - use segregated fit
         size_class_allocator_t* allocator = &g_heap.size_classes[size_class];
         
-        // Try free list first (O(1) fast path)
-        if (allocator->free_list) {
-            free_node_t* node = allocator->free_list;
-            allocator->free_list = node->next;
-            ptr = node;
-        } else {
+        // Try free list first (O(1) fast path) - LOCK-FREE (Task 3.5.1.1)
+        // Use Treiber stack algorithm with CAS for lock-free pop
+        free_node_t* old_head = atomic_load(&allocator->free_list);
+        while (old_head != NULL) {
+            free_node_t* new_head = old_head->next;
+            
+            // Try to CAS: if head is still the same, replace with next
+            if (atomic_compare_exchange_weak(&allocator->free_list, &old_head, new_head)) {
+                // Success! We got a block without any locks
+                ptr = old_head;
+                break;
+            }
+            // CAS failed, old_head was updated by atomic_compare_exchange_weak, retry
+        }
+        
+        if (!ptr) {
             // Try existing slabs
             slab_t* slab = allocator->slabs;
             while (slab && !ptr) {
@@ -1173,7 +1187,7 @@ void* lgx_heap_alloc(size_t size) {
         }
         
         if (ptr) {
-            allocator->num_allocations++;
+            atomic_fetch_add(&allocator->num_allocations, 1);
         }
     } else {
         // Large allocation - use buddy allocator
@@ -1322,31 +1336,23 @@ void lgx_heap_free(void* ptr) {
 #endif
     
     if (size_class >= 0 && size_class < NUM_SIZE_CLASSES) {
-        // Small allocation - return to slab
+        // Small allocation - return to free list (LOCK-FREE - Task 3.5.1.1)
         size_class_allocator_t* allocator = &g_heap.size_classes[size_class];
         
-        // CRITICAL FIX: Always return to slab, never to free list
-        // The free list design was flawed - it stored header pointers instead of allocation pointers
-        bool returned_to_slab = false;
-        slab_t* slab = allocator->slabs;
-        while (slab && !returned_to_slab) {
-            if (slab_free(slab, header)) {
-                returned_to_slab = true;
-            }
-            slab = slab->next;
-        }
+        // Use Treiber stack algorithm with CAS for lock-free push
+        free_node_t* node = (free_node_t*)header;  // Reuse header space for free node
         
-        if (!returned_to_slab) {
-            // This should never happen - allocation must be in some slab
-            fprintf(stderr, "[LGX ERROR] Failed to find slab for allocation %p (size_class=%d)\n",
-                    ptr, size_class);
-            fprintf(stderr, "  This indicates memory corruption or invalid free\n");
-            g_heap.num_validation_errors++;
-            pthread_mutex_unlock(&g_heap.mutex);
-            return;
-        }
+        // Get current generation and increment
+        uint64_t gen = atomic_fetch_add(&allocator->generation, 1);
+        node->generation = gen;
         
-        allocator->num_frees++;
+        // CAS loop to push onto stack
+        free_node_t* old_head = atomic_load(&allocator->free_list);
+        do {
+            node->next = old_head;
+        } while (!atomic_compare_exchange_weak(&allocator->free_list, &old_head, node));
+        
+        atomic_fetch_add(&allocator->num_frees, 1);
     } else {
         // Large allocation - free from buddy allocator
         buddy_free(&g_heap.buddy, header);

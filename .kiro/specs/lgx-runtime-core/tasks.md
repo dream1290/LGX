@@ -302,44 +302,44 @@ Games don't need a faster general-purpose allocator. They need specialized alloc
 **Goal:** Leverage Phase 0 work for persistent heap and GPU pool
 
 - [ ] 3.5.1 Adapt lock-free pool for persistent heap
-  - [ ] 3.5.1.1 Use lock-free techniques from Day 1-2 for free lists
+  - [x] 3.5.1.1 Use lock-free techniques from Day 1-2 for free lists
   - [ ] 3.5.1.2 Apply batch refill strategy from Day 3-4
   - [x] 3.5.1.3 Use pattern tracking from Day 5 for size class tuning
   - [x] 3.5.1.4 Apply huge pages from Day 10 for large allocations
 
-- [ ] 3.5.2 Adapt SIMD operations for GPU pool
+- [x] 3.5.2 Adapt SIMD operations for GPU pool
   - [x] 3.5.2.1 Use AVX2 from Day 8-9 for buddy allocator search
-  - [ ] 3.5.2.2 Apply cache optimization techniques
-  - [ ] 3.5.2.3 Use hardware detection for capability adaptation
-  - [ ] 3.5.2.4 Implement graceful degradation without SIMD
+  - [x] 3.5.2.2 Apply cache optimization techniques
+  - [x] 3.5.2.3 Use hardware detection for capability adaptation
+  - [x] 3.5.2.4 Implement graceful degradation without SIMD
 
-- [ ] 3.5.3 Remove deprecated general-purpose allocator
-  - [ ] 3.5.3.1 Mark Phase 0 allocator as deprecated
-  - [ ] 3.5.3.2 Migrate existing code to specialized allocators
-  - [ ] 3.5.3.3 Remove malloc/free wrappers
-  - [ ] 3.5.3.4 Update documentation to reflect new approach
+- [x] 3.5.3 Remove deprecated general-purpose allocator
+  - [x] 3.5.3.1 Mark Phase 0 allocator as deprecated
+  - [x] 3.5.3.2 Migrate existing code to specialized allocators
+  - [x] 3.5.3.3 Remove malloc/free wrappers
+  - [x] 3.5.3.4 Update documentation to reflect new approach
 
 ## 4. Hardware Adaptation and Graceful Degradation (NEW)
 
 **Key Innovation:** Handle hardware diversity gracefully with software fallbacks
 
-- [ ] 4.1 Implement hardware tier classification
-  - [ ] 4.1.1 Implement hardware capability detection (GPU, NUMA, huge pages, etc.)
-  - [ ] 4.1.2 Implement tier classification logic (OPTIMAL, COMPATIBLE, DEGRADED)
-  - [ ] 4.1.3 Implement performance impact estimation for each tier
-  - [ ] 4.1.4 Add remediation guidance for degraded configurations
+- [x] 4.1 Implement hardware tier classification
+  - [x] 4.1.1 Implement hardware capability detection (GPU, NUMA, huge pages, etc.)
+  - [x] 4.1.2 Implement tier classification logic (OPTIMAL, COMPATIBLE, DEGRADED)
+  - [x] 4.1.3 Implement performance impact estimation for each tier
+  - [x] 4.1.4 Add remediation guidance for degraded configurations
 
-- [ ] 4.2 Implement graceful degradation framework
-  - [ ] 4.2.1 Implement software fallbacks for missing hardware features
-  - [ ] 4.2.2 Implement degradation reporting with user-friendly explanations
-  - [ ] 4.2.3 Implement feature flag system for optional capabilities
-  - [ ] 4.2.4 Add degradation impact measurement and reporting
+- [x] 4.2 Implement graceful degradation framework
+  - [x] 4.2.1 Implement software fallbacks for missing hardware features
+  - [x] 4.2.2 Implement degradation reporting with user-friendly explanations
+  - [x] 4.2.3 Implement feature flag system for optional capabilities
+  - [x] 4.2.4 Add degradation impact measurement and reporting
 
 - [ ] 4.3 Implement hardware diversity testing
   - [ ] 4.3.1 Test on various GPU vendors (NVIDIA, AMD, Intel)
   - [ ] 4.3.2 Test on different NUMA configurations (2-socket, 4-socket, asymmetric)
   - [ ] 4.3.3 Test with different kernel versions and configurations
-  - [ ] 4.3.4 Document hardware compatibility matrix
+  - [x] 4.3.4 Document hardware compatibility matrix
 
 ## 5. Enhanced Error Handling and Observability (REVISED)
 
@@ -350,14 +350,14 @@ Games don't need a faster general-purpose allocator. They need specialized alloc
 - Enhanced telemetry with privacy framework
 
 - [ ] 5.1 Implement enhanced error handling system
-  - [ ] 5.1.1 Define all error codes with severity levels and recovery actions
-  - [ ] 5.1.2 Implement thread-local error context with recovery guidance
-  - [ ] 5.1.3 Implement `lgx_get_last_error_ex()` with structured recovery recommendations
-  - [ ] 5.1.4 Implement error callback system with context propagation
-  - [ ] 5.1.5 Add error context tracking (function, file, line, timestamp)
+  - [x] 5.1.1 Define all error codes with severity levels and recovery actions
+  - [x] 5.1.2 Implement thread-local error context with recovery guidance
+  - [x] 5.1.3 Implement `lgx_get_last_error_ex()` with structured recovery recommendations
+  - [x] 5.1.4 Implement error callback system with context propagation
+  - [x] 5.1.5 Add error context tracking (function, file, line, timestamp)
 
 - [ ] 5.2 Implement tiered observability system
-  - [ ] 5.2.1 Implement observability level configuration (NONE to EXHAUSTIVE)
+  - [x] 5.2.1 Implement observability level configuration (NONE to EXHAUSTIVE)
   - [ ] 5.2.2 Implement performance counter registry with custom counters
   - [ ] 5.2.3 Implement structured logging with subsystem filtering
   - [ ] 5.2.4 Add observability overhead measurement and validation
