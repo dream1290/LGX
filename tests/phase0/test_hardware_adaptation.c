@@ -74,20 +74,22 @@ static void test_capability_queries(void) {
 static void test_health_check_api(void) {
     printf("Testing health check API...\n");
     
-    lgx_hardware_status_t health_status;
+    lgx_health_status_t health_status;
+    health_status.struct_size = sizeof(lgx_health_status_t);
     lgx_result_t result = lgx_runtime_health_check(&health_status);
     assert(result == LGX_SUCCESS);
     (void)result;  // Suppress unused warning
     
     printf("  Health check results:\n");
-    printf("    Overall tier: %s\n", tier_to_string(health_status.achieved_tier));
+    printf("    Overall health: %d\n", health_status.overall_health);
+    printf("    Hardware tier: %s\n", tier_to_string(health_status.hardware_tier));
     printf("    System health: %s\n", 
-           (health_status.achieved_tier >= LGX_HW_TIER_COMPATIBLE) ? "Good" : "Degraded");
+           (health_status.hardware_tier >= LGX_HW_TIER_COMPATIBLE) ? "Good" : "Degraded");
     
-    // Verify health status matches hardware status
+    // Verify health status includes hardware status
     lgx_hardware_status_t hw_status = lgx_runtime_get_hardware_status();
     (void)hw_status;  // Suppress unused warning
-    assert(health_status.achieved_tier == hw_status.achieved_tier);
+    assert(health_status.hardware_tier == hw_status.achieved_tier);
     assert(health_status.missing_capabilities == hw_status.missing_capabilities);
     
     printf("  ✓ Health check API working correctly\n\n");

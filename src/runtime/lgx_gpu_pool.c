@@ -806,6 +806,22 @@ struct lgx_gpu_allocation {
  * Allocate GPU memory
  */
 lgx_gpu_allocation_t* lgx_gpu_alloc(VkDeviceSize size, VkDeviceSize alignment, lgx_gpu_memory_type_t type) {
+    // Chaos testing: inject GPU hang
+    if (lgx_chaos_should_hang_gpu()) {
+        // Simulate GPU hang by sleeping for a long time
+        struct timespec ts = { .tv_sec = 1, .tv_nsec = 0 };
+        nanosleep(&ts, NULL);
+        return NULL;
+    }
+    
+    // Chaos testing: inject allocation failure
+    if (lgx_chaos_should_fail_allocation()) {
+        return NULL;
+    }
+    
+    // Chaos testing: inject latency spike
+    lgx_chaos_inject_latency();
+    
     if (!g_gpu_pool.initialized || type >= LGX_GPU_MEMORY_TYPE_COUNT) {
         return NULL;
     }

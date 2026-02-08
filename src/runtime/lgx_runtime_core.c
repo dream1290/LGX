@@ -378,15 +378,24 @@ lgx_hardware_status_t lgx_runtime_get_hardware_status(void) {
 }
 
 /**
- * Health check
+ * Health check - comprehensive system health assessment
  */
-lgx_result_t lgx_runtime_health_check(lgx_hardware_status_t* status) {
+lgx_result_t lgx_runtime_health_check(lgx_health_status_t* status) {
     if (!status) {
         return LGX_ERROR_INVALID_PARAM;
     }
     
-    *status = lgx_runtime_get_hardware_status();
-    return LGX_SUCCESS;
+    if (!g_runtime.initialized) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    if (!g_runtime.health_monitor) {
+        // Health monitor not available, return error
+        return LGX_ERROR_NOT_SUPPORTED;
+    }
+    
+    // Perform comprehensive health check
+    return lgx_health_monitor_check(g_runtime.health_monitor, status);
 }
 
 // lgx_alloc_get_usage_stats is now implemented in lgx_intent_allocator.c
@@ -492,11 +501,21 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
         }
     }
     
+    // 10. Trace Event System (optional, for performance profiling)
+    result = lgx_trace_init();
+    if (result != LGX_SUCCESS) {
+        // Trace system failure is not fatal
+        lgx_log(LGX_LOG_WARN, "Trace event system initialization failed");
+    }
+    
     return LGX_SUCCESS;
 }
 
 static lgx_result_t shutdown_subsystems(void) {
     // Shutdown in reverse order
+    
+    // Shutdown trace system first
+    lgx_trace_shutdown();
     
     if (g_runtime.telemetry) {
         lgx_telemetry_shutdown(g_runtime.telemetry);
@@ -542,4 +561,51 @@ static lgx_result_t shutdown_subsystems(void) {
     lgx_counters_shutdown();
     
     return LGX_SUCCESS;
+}
+
+/**
+ * Enable/disable telemetry (public API wrapper)
+ */
+lgx_result_t lgx_telemetry_set_enabled(bool opt_in) {
+    if (!g_runtime.initialized || !g_runtime.telemetry) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    return lgx_telemetry_enable(g_runtime.telemetry, opt_in);
+}
+
+/**
+ * Suspend runtime (public API)
+ * 
+ * Suspends the runtime and saves critical state.
+ * Must complete in <100ms per AC-5.
+ */
+lgx_result_t lgx_runtime_suspend(void) {
+    if (!g_runtime.initialized) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    if (!g_runtime.lifecycle_manager) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    return lgx_lifecycle_manager_suspend(g_runtime.lifecycle_manager);
+}
+
+/**
+ * Resume runtime (public API)
+ * 
+ * Resumes the runtime and restores saved state.
+ * Must complete in <100ms per AC-5.
+ */
+lgx_result_t lgx_runtime_resume(void) {
+    if (!g_runtime.initialized) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    if (!g_runtime.lifecycle_manager) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    return lgx_lifecycle_manager_resume(g_runtime.lifecycle_manager);
 }

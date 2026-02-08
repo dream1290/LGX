@@ -65,6 +65,8 @@ set(LGX_RUNTIME_SOURCES
     src/runtime/lgx_error_handler.c
     src/runtime/lgx_health_monitor.c
     src/runtime/lgx_performance_counters.c
+    src/runtime/lgx_chaos_testing.c
+    src/runtime/lgx_trace_events.c
     
     # Legacy Phase 0 sources (temporarily disabled)
     # src/lgx_runtime.c

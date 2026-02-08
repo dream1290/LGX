@@ -107,7 +107,9 @@ void lgx_time_sleep_ms(uint32_t milliseconds);
 bool lgx_runtime_has_capability(lgx_capability_t cap);
 lgx_result_t lgx_runtime_query_capabilities(uint32_t* capabilities);
 lgx_hardware_status_t lgx_runtime_get_hardware_status(void);
-lgx_result_t lgx_runtime_health_check(lgx_hardware_status_t* status);
+
+// Health check API
+lgx_result_t lgx_runtime_health_check(lgx_health_status_t* status);
 
 // Error handling
 const char* lgx_result_to_string(lgx_result_t result);
@@ -149,6 +151,13 @@ lgx_result_t lgx_fs_close(lgx_file_t* file);
 void lgx_log(lgx_log_level_t level, const char* format, ...);
 void lgx_set_log_filter(lgx_log_level_t min_level);
 
+// Structured logging with subsystem filtering
+void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level, 
+                    const char* format, ...);
+void lgx_set_subsystem_filter(uint32_t subsystem_mask);  // Bitmask of enabled subsystems
+uint32_t lgx_get_subsystem_filter(void);
+const char* lgx_subsystem_to_string(lgx_log_subsystem_t subsystem);
+
 // Lifecycle management
 lgx_result_t lgx_runtime_suspend(void);
 lgx_result_t lgx_runtime_resume(void);
@@ -181,6 +190,68 @@ typedef struct {
 } lgx_intent_stats_t;
 
 lgx_result_t lgx_intent_get_stats(lgx_intent_stats_t* stats);
+
+#ifdef __cplusplus
+}
+#endif
+
+// Telemetry with privacy framework
+lgx_result_t lgx_telemetry_configure(const lgx_telemetry_config_t* config);
+lgx_result_t lgx_telemetry_set_enabled(bool opt_in);
+lgx_privacy_policy_t lgx_telemetry_get_privacy_policy(void);
+lgx_result_t lgx_telemetry_export_collected_data(const char* output_path);
+
+// Telemetry recording (internal use)
+lgx_result_t lgx_telemetry_record_allocation(size_t size);
+lgx_result_t lgx_telemetry_record_allocation_failure(size_t requested_size);
+
+// Chaos testing framework
+lgx_result_t lgx_runtime_enable_chaos_testing(const lgx_chaos_config_t* config);
+lgx_result_t lgx_runtime_disable_chaos_testing(void);
+bool lgx_runtime_is_chaos_testing_enabled(void);
+lgx_chaos_config_t lgx_runtime_get_chaos_config(void);
+
+// Trace event system
+lgx_result_t lgx_trace_init(void);
+lgx_result_t lgx_trace_shutdown(void);
+lgx_result_t lgx_trace_enable(bool enabled);
+bool lgx_trace_is_enabled(void);
+
+void lgx_trace_begin(const char* name, uint64_t data);
+void lgx_trace_end(const char* name);
+void lgx_trace_instant(const char* name, uint64_t data);
+
+lgx_result_t lgx_trace_export(const char* output_path);
+lgx_result_t lgx_trace_clear(void);
+
+// Trace statistics
+typedef struct {
+    uint64_t total_events;
+    uint64_t begin_events;
+    uint64_t end_events;
+    uint64_t instant_events;
+    uint64_t dropped_events;
+    size_t buffer_capacity;
+    size_t buffer_used;
+} lgx_trace_stats_t;
+
+lgx_result_t lgx_trace_get_stats(lgx_trace_stats_t* stats);
+
+// Integration with external profiling tools
+lgx_result_t lgx_trace_enable_perf_integration(bool enabled);
+lgx_result_t lgx_trace_enable_valgrind_integration(bool enabled);
+lgx_result_t lgx_trace_enable_tracy_integration(bool enabled);
+
+// Convenience macros for scoped tracing
+#define LGX_TRACE_SCOPE(name) \
+    lgx_trace_begin(name, 0); \
+    __attribute__((cleanup(lgx_trace_scope_cleanup))) int __trace_scope_##__LINE__ = 0; \
+    (void)__trace_scope_##__LINE__
+
+static inline void lgx_trace_scope_cleanup(int* dummy) {
+    (void)dummy;
+    lgx_trace_end("");
+}
 
 #ifdef __cplusplus
 }

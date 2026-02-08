@@ -1,0 +1,129 @@
+name: Chaos Testing
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * *'  # Run nightly at 2 AM UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  chaos-memory-pressure:
+    name: Memory Pressure Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+    
+    - name: Build runtime (Debug)
+      run: |
+        mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        make -j$(nproc)
+    
+    - name: Run memory pressure chaos tests
+      run: |
+        cd build/tests/phase0
+        ./test_chaos_memory_pressure || exit 1
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: chaos-memory-results
+        path: build/test_results_memory.json
+
+  chaos-latency-spikes:
+    name: Latency Spike Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+    
+    - name: Build runtime (Debug)
+      run: |
+        mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        make -j$(nproc)
+    
+    - name: Run latency spike chaos tests
+      run: |
+        cd build/tests/phase0
+        ./test_chaos_latency_spikes || exit 1
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: chaos-latency-results
+        path: build/test_results_latency.json
+
+  chaos-io-errors:
+    name: I/O Error Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+    
+    - name: Build runtime (Debug)
+      run: |
+        mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        make -j$(nproc)
+    
+    - name: Run I/O error chaos tests
+      run: |
+        cd build/tests/phase0
+        ./test_chaos_io_errors || exit 1
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: chaos-io-results
+        path: build/test_results_io.json
+
+  chaos-combined:
+    name: Combined Chaos Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+    
+    - name: Build runtime (Debug)
+      run: |
+        mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        make -j$(nproc)
+    
+    - name: Run combined chaos tests
+      run: |
+        cd build/tests/phase0
+        ./test_chaos_combined --duration=60 || exit 1
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: chaos-combined-results
+        path: build/test_results_combined.json

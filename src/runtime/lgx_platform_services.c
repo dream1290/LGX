@@ -21,6 +21,7 @@ struct lgx_platform_services {
     pthread_mutex_t log_mutex;
     FILE* log_file;
     lgx_log_level_t min_log_level;
+    uint32_t subsystem_filter;  // Bitmask of enabled subsystems (0 = all enabled)
     
     // Configuration
     const char* log_path;
@@ -47,6 +48,7 @@ lgx_result_t lgx_platform_services_init(lgx_platform_services_t** services,
     
     ps->log_path = config->log_path;
     ps->min_log_level = LGX_LOG_INFO;
+    ps->subsystem_filter = 0;  // 0 = all subsystems enabled
     ps->log_file = NULL;
     
     // Open log file if specified
@@ -89,6 +91,14 @@ int lgx_platform_services_fs_open(lgx_platform_services_t* services,
         return -1;
     }
     
+    // Chaos testing: inject I/O error
+    if (lgx_chaos_should_fail_io()) {
+        return -1;
+    }
+    
+    // Chaos testing: inject latency spike
+    lgx_chaos_inject_latency();
+    
     return open(path, flags);
 }
 
@@ -98,6 +108,14 @@ ssize_t lgx_platform_services_fs_read(lgx_platform_services_t* services,
         return -1;
     }
     
+    // Chaos testing: inject I/O error
+    if (lgx_chaos_should_fail_io()) {
+        return -1;
+    }
+    
+    // Chaos testing: inject latency spike
+    lgx_chaos_inject_latency();
+    
     return read(fd, buffer, size);
 }
 
@@ -106,6 +124,14 @@ ssize_t lgx_platform_services_fs_write(lgx_platform_services_t* services,
     if (!services || fd < 0 || !buffer) {
         return -1;
     }
+    
+    // Chaos testing: inject I/O error
+    if (lgx_chaos_should_fail_io()) {
+        return -1;
+    }
+    
+    // Chaos testing: inject latency spike
+    lgx_chaos_inject_latency();
     
     return write(fd, buffer, size);
 }
@@ -219,4 +245,223 @@ void lgx_set_log_filter(lgx_log_level_t min_level) {
     if (g_platform_services) {
         g_platform_services->min_log_level = min_level;
     }
+}
+
+/**
+ * Subsystem name mapping
+ */
+const char* lgx_subsystem_to_string(lgx_log_subsystem_t subsystem) {
+    switch (subsystem) {
+        case LGX_SUBSYSTEM_CORE:       return "CORE";
+        case LGX_SUBSYSTEM_MEMORY:     return "MEMORY";
+        case LGX_SUBSYSTEM_GPU:        return "GPU";
+        case LGX_SUBSYSTEM_FILESYSTEM: return "FS";
+        case LGX_SUBSYSTEM_TELEMETRY:  return "TELEMETRY";
+        case LGX_SUBSYSTEM_LIFECYCLE:  return "LIFECYCLE";
+        case LGX_SUBSYSTEM_HARDWARE:   return "HARDWARE";
+        case LGX_SUBSYSTEM_SECURITY:   return "SECURITY";
+        default: return "UNKNOWN";
+    }
+}
+
+/**
+ * Structured logging with subsystem filtering
+ */
+void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level, 
+                    const char* format, ...) {
+    if (!g_platform_services) {
+        return;
+    }
+    
+    // Check log level filter
+    if (level < g_platform_services->min_log_level) {
+        return;
+    }
+    
+    // Check subsystem filter (0 = all enabled, otherwise check bitmask)
+    if (g_platform_services->subsystem_filter != 0) {
+        uint32_t subsystem_bit = (1U << subsystem);
+        if ((g_platform_services->subsystem_filter & subsystem_bit) == 0) {
+            return;  // Subsystem filtered out
+        }
+    }
+    
+    pthread_mutex_lock(&g_platform_services->log_mutex);
+    
+    // Get current time
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    
+    // Format timestamp
+    char timestamp[32];
+    struct tm* tm_info = localtime(&ts.tv_sec);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", tm_info);
+    
+    // Choose output stream
+    FILE* output = g_platform_services->log_file ? g_platform_services->log_file : stderr;
+    
+    // Write log entry with subsystem tag
+    fprintf(output, "[%s.%03ld] [%s] [%s] ", 
+            timestamp, ts.tv_nsec / 1000000, 
+            log_level_to_string(level),
+            lgx_subsystem_to_string(subsystem));
+    
+    va_list args;
+    va_start(args, format);
+    vfprintf(output, format, args);
+    va_end(args);
+    
+    fprintf(output, "\n");
+    fflush(output);
+    
+    pthread_mutex_unlock(&g_platform_services->log_mutex);
+}
+
+/**
+ * Set subsystem filter
+ */
+void lgx_set_subsystem_filter(uint32_t subsystem_mask) {
+    if (g_platform_services) {
+        g_platform_services->subsystem_filter = subsystem_mask;
+    }
+}
+
+/**
+ * Get subsystem filter
+ */
+uint32_t lgx_get_subsystem_filter(void) {
+    if (g_platform_services) {
+        return g_platform_services->subsystem_filter;
+    }
+    return 0;
+}
+
+/**
+ * Filesystem API Implementation
+ */
+
+// File handle structure
+struct lgx_file {
+    FILE* fp;
+    char path[256];
+    bool is_open;
+};
+
+/**
+ * Open a file
+ */
+lgx_result_t lgx_fs_open(const char* path, const char* mode, lgx_file_t** file) {
+    if (!path || !mode || !file) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    // Chaos testing: inject I/O error
+    if (lgx_chaos_should_fail_io()) {
+        return LGX_ERROR_IO_ERROR;
+    }
+    
+    // Allocate file handle
+    lgx_file_t* f = calloc(1, sizeof(lgx_file_t));
+    if (!f) {
+        return LGX_ERROR_OUT_OF_MEMORY;
+    }
+    
+    // Open file
+    f->fp = fopen(path, mode);
+    if (!f->fp) {
+        free(f);
+        return LGX_ERROR_IO_ERROR;
+    }
+    
+    // Store path and mark as open
+    strncpy(f->path, path, sizeof(f->path) - 1);
+    f->path[sizeof(f->path) - 1] = '\0';
+    f->is_open = true;
+    
+    *file = f;
+    return LGX_SUCCESS;
+}
+
+/**
+ * Read from a file
+ */
+lgx_result_t lgx_fs_read(lgx_file_t* file, void* buffer, size_t size, size_t* bytes_read) {
+    if (!file || !buffer || !bytes_read) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    if (!file->is_open || !file->fp) {
+        return LGX_ERROR_INVALID_STATE;
+    }
+    
+    // Chaos testing: inject I/O error
+    if (lgx_chaos_should_fail_io()) {
+        return LGX_ERROR_IO_ERROR;
+    }
+    
+    // Read from file
+    size_t read = fread(buffer, 1, size, file->fp);
+    *bytes_read = read;
+    
+    // Check for errors
+    if (read < size && ferror(file->fp)) {
+        return LGX_ERROR_IO_ERROR;
+    }
+    
+    return LGX_SUCCESS;
+}
+
+/**
+ * Write to a file
+ */
+lgx_result_t lgx_fs_write(lgx_file_t* file, const void* buffer, size_t size) {
+    if (!file || !buffer) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    if (!file->is_open || !file->fp) {
+        return LGX_ERROR_INVALID_STATE;
+    }
+    
+    // Chaos testing: inject I/O error
+    if (lgx_chaos_should_fail_io()) {
+        return LGX_ERROR_IO_ERROR;
+    }
+    
+    // Write to file
+    size_t written = fwrite(buffer, 1, size, file->fp);
+    
+    // Check for errors
+    if (written < size) {
+        return LGX_ERROR_IO_ERROR;
+    }
+    
+    // Flush to ensure data is written
+    fflush(file->fp);
+    
+    return LGX_SUCCESS;
+}
+
+/**
+ * Close a file
+ */
+lgx_result_t lgx_fs_close(lgx_file_t* file) {
+    if (!file) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    if (!file->is_open) {
+        return LGX_ERROR_INVALID_STATE;
+    }
+    
+    // Close file
+    if (file->fp) {
+        fclose(file->fp);
+        file->fp = NULL;
+    }
+    
+    file->is_open = false;
+    free(file);
+    
+    return LGX_SUCCESS;
 }

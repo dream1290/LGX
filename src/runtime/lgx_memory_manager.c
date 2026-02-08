@@ -1351,6 +1351,14 @@ static void* allocate_ultra_fast(lgx_memory_manager_t* manager, size_t size) {
 
 static void* allocate_small(lgx_memory_manager_t* manager, size_t size, 
                            const lgx_allocation_intent_base_t* intent) {
+    // Chaos testing: inject allocation failure
+    if (lgx_chaos_should_fail_allocation()) {
+        return NULL;
+    }
+    
+    // Chaos testing: inject latency spike
+    lgx_chaos_inject_latency();
+    
     int size_class = get_size_class_index(size);
     if (size_class == -1) {
         return allocate_medium(manager, size, intent);
@@ -1453,6 +1461,14 @@ static void* allocate_small(lgx_memory_manager_t* manager, size_t size,
 
 static void* allocate_medium(lgx_memory_manager_t* manager, size_t size, 
                             const lgx_allocation_intent_base_t* intent) {
+    // Chaos testing: inject allocation failure
+    if (lgx_chaos_should_fail_allocation()) {
+        return NULL;
+    }
+    
+    // Chaos testing: inject latency spike
+    lgx_chaos_inject_latency();
+    
     // For medium allocations, use lock-based global pools
     // For now, fall back to malloc
     void* ptr = malloc(size);
@@ -1464,6 +1480,14 @@ static void* allocate_medium(lgx_memory_manager_t* manager, size_t size,
 
 static void* allocate_large(lgx_memory_manager_t* manager, size_t size, 
                            const lgx_allocation_intent_base_t* intent) {
+    // Chaos testing: inject allocation failure
+    if (lgx_chaos_should_fail_allocation()) {
+        return NULL;
+    }
+    
+    // Chaos testing: inject latency spike
+    lgx_chaos_inject_latency();
+    
     // For large allocations, use direct allocation
     // TODO: Consider using jemalloc for better large allocation performance
     void* ptr = malloc(size);

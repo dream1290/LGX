@@ -276,6 +276,19 @@ test_day10_hugepages/fast:
 .PHONY : test_day10_hugepages/fast
 
 #=============================================================================
+# Target rules for targets named test_filesystem
+
+# Build rule for target.
+test_filesystem: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_filesystem
+.PHONY : test_filesystem
+
+# fast build rule for target.
+test_filesystem/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_filesystem.dir/build.make CMakeFiles/test_filesystem.dir/build
+.PHONY : test_filesystem/fast
+
+#=============================================================================
 # Target rules for targets named test_frame_arena
 
 # Build rule for target.
@@ -471,6 +484,19 @@ test_intent_validation/fast:
 .PHONY : test_intent_validation/fast
 
 #=============================================================================
+# Target rules for targets named test_observability_overhead
+
+# Build rule for target.
+test_observability_overhead: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_observability_overhead
+.PHONY : test_observability_overhead
+
+# fast build rule for target.
+test_observability_overhead/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_observability_overhead.dir/build.make CMakeFiles/test_observability_overhead.dir/build
+.PHONY : test_observability_overhead/fast
+
+#=============================================================================
 # Target rules for targets named test_performance
 
 # Build rule for target.
@@ -523,6 +549,19 @@ test_persistent_heap_perf/fast:
 .PHONY : test_persistent_heap_perf/fast
 
 #=============================================================================
+# Target rules for targets named test_signal_handling
+
+# Build rule for target.
+test_signal_handling: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_signal_handling
+.PHONY : test_signal_handling
+
+# fast build rule for target.
+test_signal_handling/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_signal_handling.dir/build.make CMakeFiles/test_signal_handling.dir/build
+.PHONY : test_signal_handling/fast
+
+#=============================================================================
 # Target rules for targets named test_simd_fallback
 
 # Build rule for target.
@@ -536,6 +575,32 @@ test_simd_fallback/fast:
 .PHONY : test_simd_fallback/fast
 
 #=============================================================================
+# Target rules for targets named test_structured_logging
+
+# Build rule for target.
+test_structured_logging: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_structured_logging
+.PHONY : test_structured_logging
+
+# fast build rule for target.
+test_structured_logging/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_structured_logging.dir/build.make CMakeFiles/test_structured_logging.dir/build
+.PHONY : test_structured_logging/fast
+
+#=============================================================================
+# Target rules for targets named test_suspend_resume
+
+# Build rule for target.
+test_suspend_resume: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_suspend_resume
+.PHONY : test_suspend_resume
+
+# fast build rule for target.
+test_suspend_resume/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_suspend_resume.dir/build.make CMakeFiles/test_suspend_resume.dir/build
+.PHONY : test_suspend_resume/fast
+
+#=============================================================================
 # Target rules for targets named test_tiered_performance
 
 # Build rule for target.
@@ -547,6 +612,19 @@ test_tiered_performance: cmake_check_build_system
 test_tiered_performance/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tiered_performance.dir/build.make CMakeFiles/test_tiered_performance.dir/build
 .PHONY : test_tiered_performance/fast
+
+#=============================================================================
+# Target rules for targets named test_trace_events
+
+# Build rule for target.
+test_trace_events: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_trace_events
+.PHONY : test_trace_events
+
+# fast build rule for target.
+test_trace_events/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/build
+.PHONY : test_trace_events/fast
 
 #=============================================================================
 # Target rules for targets named run_phase0_tests
@@ -660,6 +738,30 @@ src/runtime/lgx_capability_detector.s: src/runtime/lgx_capability_detector.c.s
 src/runtime/lgx_capability_detector.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.s
 .PHONY : src/runtime/lgx_capability_detector.c.s
+
+src/runtime/lgx_chaos_testing.o: src/runtime/lgx_chaos_testing.c.o
+.PHONY : src/runtime/lgx_chaos_testing.o
+
+# target to build an object file
+src/runtime/lgx_chaos_testing.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_chaos_testing.c.o
+.PHONY : src/runtime/lgx_chaos_testing.c.o
+
+src/runtime/lgx_chaos_testing.i: src/runtime/lgx_chaos_testing.c.i
+.PHONY : src/runtime/lgx_chaos_testing.i
+
+# target to preprocess a source file
+src/runtime/lgx_chaos_testing.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_chaos_testing.c.i
+.PHONY : src/runtime/lgx_chaos_testing.c.i
+
+src/runtime/lgx_chaos_testing.s: src/runtime/lgx_chaos_testing.c.s
+.PHONY : src/runtime/lgx_chaos_testing.s
+
+# target to generate assembly for a file
+src/runtime/lgx_chaos_testing.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_chaos_testing.c.s
+.PHONY : src/runtime/lgx_chaos_testing.c.s
 
 src/runtime/lgx_error_handler.o: src/runtime/lgx_error_handler.c.o
 .PHONY : src/runtime/lgx_error_handler.o
@@ -1069,6 +1171,30 @@ src/runtime/lgx_telemetry.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.s
 .PHONY : src/runtime/lgx_telemetry.c.s
 
+src/runtime/lgx_trace_events.o: src/runtime/lgx_trace_events.c.o
+.PHONY : src/runtime/lgx_trace_events.o
+
+# target to build an object file
+src/runtime/lgx_trace_events.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.o
+.PHONY : src/runtime/lgx_trace_events.c.o
+
+src/runtime/lgx_trace_events.i: src/runtime/lgx_trace_events.c.i
+.PHONY : src/runtime/lgx_trace_events.i
+
+# target to preprocess a source file
+src/runtime/lgx_trace_events.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.i
+.PHONY : src/runtime/lgx_trace_events.c.i
+
+src/runtime/lgx_trace_events.s: src/runtime/lgx_trace_events.c.s
+.PHONY : src/runtime/lgx_trace_events.s
+
+# target to generate assembly for a file
+src/runtime/lgx_trace_events.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.s
+.PHONY : src/runtime/lgx_trace_events.c.s
+
 tests/phase0/test_csf1_comparison.o: tests/phase0/test_csf1_comparison.c.o
 .PHONY : tests/phase0/test_csf1_comparison.o
 
@@ -1236,6 +1362,30 @@ tests/phase0/test_day10_hugepages.s: tests/phase0/test_day10_hugepages.c.s
 tests/phase0/test_day10_hugepages.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_day10_hugepages.dir/build.make CMakeFiles/test_day10_hugepages.dir/tests/phase0/test_day10_hugepages.c.s
 .PHONY : tests/phase0/test_day10_hugepages.c.s
+
+tests/phase0/test_filesystem.o: tests/phase0/test_filesystem.c.o
+.PHONY : tests/phase0/test_filesystem.o
+
+# target to build an object file
+tests/phase0/test_filesystem.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_filesystem.dir/build.make CMakeFiles/test_filesystem.dir/tests/phase0/test_filesystem.c.o
+.PHONY : tests/phase0/test_filesystem.c.o
+
+tests/phase0/test_filesystem.i: tests/phase0/test_filesystem.c.i
+.PHONY : tests/phase0/test_filesystem.i
+
+# target to preprocess a source file
+tests/phase0/test_filesystem.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_filesystem.dir/build.make CMakeFiles/test_filesystem.dir/tests/phase0/test_filesystem.c.i
+.PHONY : tests/phase0/test_filesystem.c.i
+
+tests/phase0/test_filesystem.s: tests/phase0/test_filesystem.c.s
+.PHONY : tests/phase0/test_filesystem.s
+
+# target to generate assembly for a file
+tests/phase0/test_filesystem.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_filesystem.dir/build.make CMakeFiles/test_filesystem.dir/tests/phase0/test_filesystem.c.s
+.PHONY : tests/phase0/test_filesystem.c.s
 
 tests/phase0/test_frame_arena.o: tests/phase0/test_frame_arena.c.o
 .PHONY : tests/phase0/test_frame_arena.o
@@ -1597,6 +1747,30 @@ tests/phase0/test_intent_validation.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_validation.dir/build.make CMakeFiles/test_intent_validation.dir/tests/phase0/test_intent_validation.c.s
 .PHONY : tests/phase0/test_intent_validation.c.s
 
+tests/phase0/test_observability_overhead.o: tests/phase0/test_observability_overhead.c.o
+.PHONY : tests/phase0/test_observability_overhead.o
+
+# target to build an object file
+tests/phase0/test_observability_overhead.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_observability_overhead.dir/build.make CMakeFiles/test_observability_overhead.dir/tests/phase0/test_observability_overhead.c.o
+.PHONY : tests/phase0/test_observability_overhead.c.o
+
+tests/phase0/test_observability_overhead.i: tests/phase0/test_observability_overhead.c.i
+.PHONY : tests/phase0/test_observability_overhead.i
+
+# target to preprocess a source file
+tests/phase0/test_observability_overhead.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_observability_overhead.dir/build.make CMakeFiles/test_observability_overhead.dir/tests/phase0/test_observability_overhead.c.i
+.PHONY : tests/phase0/test_observability_overhead.c.i
+
+tests/phase0/test_observability_overhead.s: tests/phase0/test_observability_overhead.c.s
+.PHONY : tests/phase0/test_observability_overhead.s
+
+# target to generate assembly for a file
+tests/phase0/test_observability_overhead.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_observability_overhead.dir/build.make CMakeFiles/test_observability_overhead.dir/tests/phase0/test_observability_overhead.c.s
+.PHONY : tests/phase0/test_observability_overhead.c.s
+
 tests/phase0/test_performance.o: tests/phase0/test_performance.c.o
 .PHONY : tests/phase0/test_performance.o
 
@@ -1693,6 +1867,30 @@ tests/phase0/test_persistent_heap_perf.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/tests/phase0/test_persistent_heap_perf.c.s
 .PHONY : tests/phase0/test_persistent_heap_perf.c.s
 
+tests/phase0/test_signal_handling.o: tests/phase0/test_signal_handling.c.o
+.PHONY : tests/phase0/test_signal_handling.o
+
+# target to build an object file
+tests/phase0/test_signal_handling.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_signal_handling.dir/build.make CMakeFiles/test_signal_handling.dir/tests/phase0/test_signal_handling.c.o
+.PHONY : tests/phase0/test_signal_handling.c.o
+
+tests/phase0/test_signal_handling.i: tests/phase0/test_signal_handling.c.i
+.PHONY : tests/phase0/test_signal_handling.i
+
+# target to preprocess a source file
+tests/phase0/test_signal_handling.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_signal_handling.dir/build.make CMakeFiles/test_signal_handling.dir/tests/phase0/test_signal_handling.c.i
+.PHONY : tests/phase0/test_signal_handling.c.i
+
+tests/phase0/test_signal_handling.s: tests/phase0/test_signal_handling.c.s
+.PHONY : tests/phase0/test_signal_handling.s
+
+# target to generate assembly for a file
+tests/phase0/test_signal_handling.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_signal_handling.dir/build.make CMakeFiles/test_signal_handling.dir/tests/phase0/test_signal_handling.c.s
+.PHONY : tests/phase0/test_signal_handling.c.s
+
 tests/phase0/test_simd_fallback.o: tests/phase0/test_simd_fallback.c.o
 .PHONY : tests/phase0/test_simd_fallback.o
 
@@ -1717,6 +1915,54 @@ tests/phase0/test_simd_fallback.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_simd_fallback.dir/build.make CMakeFiles/test_simd_fallback.dir/tests/phase0/test_simd_fallback.c.s
 .PHONY : tests/phase0/test_simd_fallback.c.s
 
+tests/phase0/test_structured_logging.o: tests/phase0/test_structured_logging.c.o
+.PHONY : tests/phase0/test_structured_logging.o
+
+# target to build an object file
+tests/phase0/test_structured_logging.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_structured_logging.dir/build.make CMakeFiles/test_structured_logging.dir/tests/phase0/test_structured_logging.c.o
+.PHONY : tests/phase0/test_structured_logging.c.o
+
+tests/phase0/test_structured_logging.i: tests/phase0/test_structured_logging.c.i
+.PHONY : tests/phase0/test_structured_logging.i
+
+# target to preprocess a source file
+tests/phase0/test_structured_logging.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_structured_logging.dir/build.make CMakeFiles/test_structured_logging.dir/tests/phase0/test_structured_logging.c.i
+.PHONY : tests/phase0/test_structured_logging.c.i
+
+tests/phase0/test_structured_logging.s: tests/phase0/test_structured_logging.c.s
+.PHONY : tests/phase0/test_structured_logging.s
+
+# target to generate assembly for a file
+tests/phase0/test_structured_logging.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_structured_logging.dir/build.make CMakeFiles/test_structured_logging.dir/tests/phase0/test_structured_logging.c.s
+.PHONY : tests/phase0/test_structured_logging.c.s
+
+tests/phase0/test_suspend_resume.o: tests/phase0/test_suspend_resume.c.o
+.PHONY : tests/phase0/test_suspend_resume.o
+
+# target to build an object file
+tests/phase0/test_suspend_resume.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_suspend_resume.dir/build.make CMakeFiles/test_suspend_resume.dir/tests/phase0/test_suspend_resume.c.o
+.PHONY : tests/phase0/test_suspend_resume.c.o
+
+tests/phase0/test_suspend_resume.i: tests/phase0/test_suspend_resume.c.i
+.PHONY : tests/phase0/test_suspend_resume.i
+
+# target to preprocess a source file
+tests/phase0/test_suspend_resume.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_suspend_resume.dir/build.make CMakeFiles/test_suspend_resume.dir/tests/phase0/test_suspend_resume.c.i
+.PHONY : tests/phase0/test_suspend_resume.c.i
+
+tests/phase0/test_suspend_resume.s: tests/phase0/test_suspend_resume.c.s
+.PHONY : tests/phase0/test_suspend_resume.s
+
+# target to generate assembly for a file
+tests/phase0/test_suspend_resume.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_suspend_resume.dir/build.make CMakeFiles/test_suspend_resume.dir/tests/phase0/test_suspend_resume.c.s
+.PHONY : tests/phase0/test_suspend_resume.c.s
+
 tests/phase0/test_tiered_performance.o: tests/phase0/test_tiered_performance.c.o
 .PHONY : tests/phase0/test_tiered_performance.o
 
@@ -1740,6 +1986,30 @@ tests/phase0/test_tiered_performance.s: tests/phase0/test_tiered_performance.c.s
 tests/phase0/test_tiered_performance.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tiered_performance.dir/build.make CMakeFiles/test_tiered_performance.dir/tests/phase0/test_tiered_performance.c.s
 .PHONY : tests/phase0/test_tiered_performance.c.s
+
+tests/phase0/test_trace_events.o: tests/phase0/test_trace_events.c.o
+.PHONY : tests/phase0/test_trace_events.o
+
+# target to build an object file
+tests/phase0/test_trace_events.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/tests/phase0/test_trace_events.c.o
+.PHONY : tests/phase0/test_trace_events.c.o
+
+tests/phase0/test_trace_events.i: tests/phase0/test_trace_events.c.i
+.PHONY : tests/phase0/test_trace_events.i
+
+# target to preprocess a source file
+tests/phase0/test_trace_events.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/tests/phase0/test_trace_events.c.i
+.PHONY : tests/phase0/test_trace_events.c.i
+
+tests/phase0/test_trace_events.s: tests/phase0/test_trace_events.c.s
+.PHONY : tests/phase0/test_trace_events.s
+
+# target to generate assembly for a file
+tests/phase0/test_trace_events.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/tests/phase0/test_trace_events.c.s
+.PHONY : tests/phase0/test_trace_events.c.s
 
 # Help Target
 help:
@@ -1767,6 +2037,7 @@ help:
 	@echo "... test_csf4_abi_stability"
 	@echo "... test_csf5_telemetry_overhead"
 	@echo "... test_day10_hugepages"
+	@echo "... test_filesystem"
 	@echo "... test_frame_arena"
 	@echo "... test_frame_arena_polish"
 	@echo "... test_gpu_buddy_allocator"
@@ -1782,18 +2053,26 @@ help:
 	@echo "... test_intent_allocator"
 	@echo "... test_intent_mismatch_rates"
 	@echo "... test_intent_validation"
+	@echo "... test_observability_overhead"
 	@echo "... test_performance"
 	@echo "... test_persistent_heap"
 	@echo "... test_persistent_heap_buddy"
 	@echo "... test_persistent_heap_perf"
+	@echo "... test_signal_handling"
 	@echo "... test_simd_fallback"
+	@echo "... test_structured_logging"
+	@echo "... test_suspend_resume"
 	@echo "... test_tiered_performance"
+	@echo "... test_trace_events"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
 	@echo "... src/lgx_allocator_prototype.s"
 	@echo "... src/runtime/lgx_capability_detector.o"
 	@echo "... src/runtime/lgx_capability_detector.i"
 	@echo "... src/runtime/lgx_capability_detector.s"
+	@echo "... src/runtime/lgx_chaos_testing.o"
+	@echo "... src/runtime/lgx_chaos_testing.i"
+	@echo "... src/runtime/lgx_chaos_testing.s"
 	@echo "... src/runtime/lgx_error_handler.o"
 	@echo "... src/runtime/lgx_error_handler.i"
 	@echo "... src/runtime/lgx_error_handler.s"
@@ -1845,6 +2124,9 @@ help:
 	@echo "... src/runtime/lgx_telemetry.o"
 	@echo "... src/runtime/lgx_telemetry.i"
 	@echo "... src/runtime/lgx_telemetry.s"
+	@echo "... src/runtime/lgx_trace_events.o"
+	@echo "... src/runtime/lgx_trace_events.i"
+	@echo "... src/runtime/lgx_trace_events.s"
 	@echo "... tests/phase0/test_csf1_comparison.o"
 	@echo "... tests/phase0/test_csf1_comparison.i"
 	@echo "... tests/phase0/test_csf1_comparison.s"
@@ -1866,6 +2148,9 @@ help:
 	@echo "... tests/phase0/test_day10_hugepages.o"
 	@echo "... tests/phase0/test_day10_hugepages.i"
 	@echo "... tests/phase0/test_day10_hugepages.s"
+	@echo "... tests/phase0/test_filesystem.o"
+	@echo "... tests/phase0/test_filesystem.i"
+	@echo "... tests/phase0/test_filesystem.s"
 	@echo "... tests/phase0/test_frame_arena.o"
 	@echo "... tests/phase0/test_frame_arena.i"
 	@echo "... tests/phase0/test_frame_arena.s"
@@ -1911,6 +2196,9 @@ help:
 	@echo "... tests/phase0/test_intent_validation.o"
 	@echo "... tests/phase0/test_intent_validation.i"
 	@echo "... tests/phase0/test_intent_validation.s"
+	@echo "... tests/phase0/test_observability_overhead.o"
+	@echo "... tests/phase0/test_observability_overhead.i"
+	@echo "... tests/phase0/test_observability_overhead.s"
 	@echo "... tests/phase0/test_performance.o"
 	@echo "... tests/phase0/test_performance.i"
 	@echo "... tests/phase0/test_performance.s"
@@ -1923,12 +2211,24 @@ help:
 	@echo "... tests/phase0/test_persistent_heap_perf.o"
 	@echo "... tests/phase0/test_persistent_heap_perf.i"
 	@echo "... tests/phase0/test_persistent_heap_perf.s"
+	@echo "... tests/phase0/test_signal_handling.o"
+	@echo "... tests/phase0/test_signal_handling.i"
+	@echo "... tests/phase0/test_signal_handling.s"
 	@echo "... tests/phase0/test_simd_fallback.o"
 	@echo "... tests/phase0/test_simd_fallback.i"
 	@echo "... tests/phase0/test_simd_fallback.s"
+	@echo "... tests/phase0/test_structured_logging.o"
+	@echo "... tests/phase0/test_structured_logging.i"
+	@echo "... tests/phase0/test_structured_logging.s"
+	@echo "... tests/phase0/test_suspend_resume.o"
+	@echo "... tests/phase0/test_suspend_resume.i"
+	@echo "... tests/phase0/test_suspend_resume.s"
 	@echo "... tests/phase0/test_tiered_performance.o"
 	@echo "... tests/phase0/test_tiered_performance.i"
 	@echo "... tests/phase0/test_tiered_performance.s"
+	@echo "... tests/phase0/test_trace_events.o"
+	@echo "... tests/phase0/test_trace_events.i"
+	@echo "... tests/phase0/test_trace_events.s"
 .PHONY : help
 
 

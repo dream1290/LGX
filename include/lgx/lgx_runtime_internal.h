@@ -18,22 +18,6 @@
 extern "C" {
 #endif
 
-// Health status enumeration
-typedef enum {
-    LGX_HEALTH_GOOD = 0,
-    LGX_HEALTH_WARNING = 1,
-    LGX_HEALTH_CRITICAL = 2
-} lgx_health_level_t;
-
-// Health status structure
-typedef struct {
-    size_t struct_size;
-    lgx_health_level_t overall_health;
-    size_t memory_usage_mb;
-    float cpu_usage_percent;
-    uint32_t degraded_features;
-} lgx_health_status_t;
-
 // Error callback type (internal - different from public API)
 typedef void (*lgx_internal_error_callback_t)(lgx_result_t error, const char* message, 
                                               const char* recovery_guidance, void* user_data);
@@ -339,6 +323,18 @@ void lgx_increment_builtin_counter(lgx_counter_t counter);
 void lgx_add_to_builtin_counter(lgx_counter_t counter, uint64_t value);
 uint64_t lgx_get_custom_counter(lgx_custom_counter_t counter);
 const char* lgx_get_custom_counter_name(lgx_custom_counter_t counter);
+
+// Chaos testing internal API functions (Section 5.4)
+bool lgx_chaos_should_fail_allocation(void);
+bool lgx_chaos_should_inject_latency(uint64_t* latency_ns);
+void lgx_chaos_inject_latency(void);
+bool lgx_chaos_should_hang_gpu(void);
+bool lgx_chaos_should_fail_io(void);
+void lgx_chaos_get_stats(uint64_t* total_ops, uint64_t* failures, uint64_t* latency_spikes);
+
+// Trace event system internal API functions (Section 4.5)
+lgx_result_t lgx_trace_init(void);
+lgx_result_t lgx_trace_shutdown(void);
 
 #ifdef __cplusplus
 }

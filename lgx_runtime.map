@@ -103,11 +103,20 @@ LGX_1.0 {
         lgx_runtime_resume;
         
         # Platform services
-        lgx_fs_*;
+        lgx_fs_open;
+        lgx_fs_read;
+        lgx_fs_write;
+        lgx_fs_close;
         lgx_time_*;
         lgx_log;
         lgx_time_now_ns;
         lgx_set_log_filter;
+        
+        # Structured logging with subsystem filtering
+        lgx_log_tagged;
+        lgx_set_subsystem_filter;
+        lgx_get_subsystem_filter;
+        lgx_subsystem_to_string;
         
         # Hardware adapter (internal but needed by tests)
         lgx_hardware_adapter_init;
@@ -151,12 +160,40 @@ LGX_1.0 {
         lgx_set_observability_level;
         lgx_get_observability_level;
         
+        # Chaos testing framework
+        lgx_runtime_enable_chaos_testing;
+        lgx_runtime_disable_chaos_testing;
+        lgx_runtime_is_chaos_testing_enabled;
+        lgx_runtime_get_chaos_config;
+        lgx_chaos_should_fail_allocation;
+        lgx_chaos_should_inject_latency;
+        lgx_chaos_inject_latency;
+        lgx_chaos_should_hang_gpu;
+        lgx_chaos_should_fail_io;
+        lgx_chaos_get_stats;
+        
         # Telemetry (opt-in)
         lgx_telemetry_configure;
-        lgx_telemetry_enable;
-        lgx_telemetry_export;
+        lgx_telemetry_set_enabled;
         lgx_telemetry_get_privacy_policy;
         lgx_telemetry_export_collected_data;
+        lgx_telemetry_record_allocation;
+        lgx_telemetry_record_allocation_failure;
+        
+        # Trace event system
+        lgx_trace_init;
+        lgx_trace_shutdown;
+        lgx_trace_enable;
+        lgx_trace_is_enabled;
+        lgx_trace_begin;
+        lgx_trace_end;
+        lgx_trace_instant;
+        lgx_trace_export;
+        lgx_trace_clear;
+        lgx_trace_get_stats;
+        lgx_trace_enable_perf_integration;
+        lgx_trace_enable_valgrind_integration;
+        lgx_trace_enable_tracy_integration;
         
         # Integration contracts
         lgx_runtime_get_translate_context;
