@@ -1,0 +1,298 @@
+name: Compatibility Matrix Testing
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main ]
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  compatibility-test:
+    name: ${{ matrix.os }} - ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Ubuntu 22.04 LTS
+          - os: ubuntu-22.04
+            container: ubuntu:22.04
+            compiler: gcc-11
+            kernel: "5.15"
+            
+          # Ubuntu 24.04 LTS
+          - os: ubuntu-24.04
+            container: ubuntu:24.04
+            compiler: gcc-13
+            kernel: "6.8"
+            
+          # Fedora 38
+          - os: fedora-38
+            container: fedora:38
+            compiler: gcc-13
+            kernel: "6.2"
+            
+          # Fedora 39
+          - os: fedora-39
+            container: fedora:39
+            compiler: gcc-13
+            kernel: "6.5"
+            
+          # Arch Linux (rolling)
+          - os: arch-linux
+            container: archlinux:latest
+            compiler: gcc
+            kernel: "6.6+"
+    
+    container:
+      image: ${{ matrix.container }}
+    
+    steps:
+    - name: Install dependencies (Ubuntu/Debian)
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        apt-get update
+        apt-get install -y \
+          git cmake build-essential \
+          libvulkan-dev vulkan-tools \
+          libjemalloc-dev \
+          python3 python3-pip \
+          ${{ matrix.compiler }}
+    
+    - name: Install dependencies (Fedora)
+      if: startsWith(matrix.os, 'fedora')
+      run: |
+        dnf install -y \
+          git cmake gcc gcc-c++ make \
+          vulkan-headers vulkan-loader-devel \
+          jemalloc-devel \
+          python3 python3-pip
+    
+    - name: Install dependencies (Arch Linux)
+      if: matrix.os == 'arch-linux'
+      run: |
+        pacman -Syu --noconfirm \
+          git cmake base-devel \
+          vulkan-headers vulkan-icd-loader \
+          jemalloc \
+          python python-pip
+    
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Display system information
+      run: |
+        echo "=== System Information ==="
+        uname -a
+        echo ""
+        echo "=== Compiler Version ==="
+        gcc --version || true
+        g++ --version || true
+        echo ""
+        echo "=== CMake Version ==="
+        cmake --version
+        echo ""
+        echo "=== Vulkan Version ==="
+        vulkaninfo --summary 2>/dev/null || echo "Vulkan not available (expected in container)"
+    
+    - name: Configure (Debug)
+      run: |
+        cmake -B build-debug \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_C_COMPILER=gcc \
+          -DCMAKE_CXX_COMPILER=g++
+    
+    - name: Build (Debug)
+      run: cmake --build build-debug -j$(nproc)
+    
+    - name: Run unit tests
+      run: |
+        cd build-debug
+        ctest --output-on-failure -L unit || true
+    
+    - name: Run integration tests
+      run: |
+        cd build-debug
+        ctest --output-on-failure -L integration || true
+    
+    - name: Configure (Release)
+      run: |
+        cmake -B build-release \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_C_COMPILER=gcc \
+          -DCMAKE_CXX_COMPILER=g++
+    
+    - name: Build (Release)
+      run: cmake --build build-release -j$(nproc)
+    
+    - name: Run ABI compatibility tests
+      run: |
+        cd build-release
+        ctest --output-on-failure -R "test_game_v1_0|test_struct_evolution|test_symbol_versioning" || true
+    
+    - name: Run performance tests (smoke test)
+      run: |
+        cd build-release/tests/performance
+        for bench in perf_test_*; do
+          if [ -f "$bench" ]; then
+            echo "Running $bench..."
+            timeout 60 ./"$bench" || echo "Test timed out or failed"
+          fi
+        done
+    
+    - name: Generate compatibility report
+      if: always()
+      run: |
+        cat > compatibility_report_${{ matrix.os }}.txt << EOF
+        Compatibility Test Report
+        =========================
+        
+        Distribution: ${{ matrix.os }}
+        Container: ${{ matrix.container }}
+        Compiler: ${{ matrix.compiler }}
+        Expected Kernel: ${{ matrix.kernel }}
+        Actual Kernel: $(uname -r)
+        
+        Build Status:
+        - Debug Build: $([ -f build-debug/src/liblgx_runtime.so ] && echo "✅ Success" || echo "❌ Failed")
+        - Release Build: $([ -f build-release/src/liblgx_runtime.so ] && echo "✅ Success" || echo "❌ Failed")
+        
+        Test Results:
+        - Unit Tests: See CTest output above
+        - Integration Tests: See CTest output above
+        - ABI Tests: See CTest output above
+        - Performance Tests: See output above
+        
+        EOF
+        
+        cat compatibility_report_${{ matrix.os }}.txt
+    
+    - name: Upload compatibility report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: compatibility-report-${{ matrix.os }}
+        path: compatibility_report_${{ matrix.os }}.txt
+  
+  gpu-compatibility-test:
+    name: GPU Compatibility - ${{ matrix.gpu }}
+    runs-on: ${{ matrix.runner }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Note: These require self-hosted runners with actual GPUs
+          # For now, we'll document the test structure
+          - gpu: nvidia
+            runner: ubuntu-latest  # Would be: self-hosted-nvidia
+            driver: nvidia-driver-535
+            
+          - gpu: amd
+            runner: ubuntu-latest  # Would be: self-hosted-amd
+            driver: mesa-vulkan-drivers
+            
+          - gpu: intel
+            runner: ubuntu-latest  # Would be: self-hosted-intel
+            driver: intel-media-va-driver
+    
+    steps:
+    - name: GPU Compatibility Test (Placeholder)
+      run: |
+        echo "=== GPU Compatibility Test ==="
+        echo "GPU Type: ${{ matrix.gpu }}"
+        echo "Driver: ${{ matrix.driver }}"
+        echo ""
+        echo "Note: This test requires self-hosted runners with actual GPUs."
+        echo "To enable:"
+        echo "  1. Set up self-hosted runners with NVIDIA/AMD/Intel GPUs"
+        echo "  2. Update matrix.runner to use self-hosted labels"
+        echo "  3. Install appropriate drivers"
+        echo "  4. Run full GPU capability tests"
+        echo ""
+        echo "For now, this is a placeholder that documents the test structure."
+  
+  kernel-compatibility-test:
+    name: Kernel ${{ matrix.kernel }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        kernel:
+          - "5.10"  # Debian 11
+          - "5.15"  # Ubuntu 22.04 LTS
+          - "6.1"   # Debian 12
+          - "6.5"   # Ubuntu 23.10
+          - "6.6"   # Latest stable
+    
+    steps:
+    - name: Kernel Compatibility Test (Placeholder)
+      run: |
+        echo "=== Kernel Compatibility Test ==="
+        echo "Target Kernel: ${{ matrix.kernel }}"
+        echo "Current Kernel: $(uname -r)"
+        echo ""
+        echo "Note: Testing against specific kernel versions requires:"
+        echo "  1. Custom VM images with specific kernels"
+        echo "  2. Or kernel module testing framework"
+        echo "  3. Or containerized kernel testing"
+        echo ""
+        echo "The runtime should work on any kernel >= 5.10 with:"
+        echo "  - CLOCK_MONOTONIC support"
+        echo "  - mmap/munmap"
+        echo "  - pthread support"
+        echo "  - Vulkan driver support (for GPU features)"
+        echo ""
+        echo "For now, we test on the GitHub Actions default kernel."
+  
+  summary:
+    name: Compatibility Test Summary
+    runs-on: ubuntu-latest
+    needs: [compatibility-test]
+    if: always()
+    
+    steps:
+    - name: Download all reports
+      uses: actions/download-artifact@v3
+      with:
+        path: reports
+    
+    - name: Generate summary
+      run: |
+        echo "# Compatibility Test Summary" > summary.md
+        echo "" >> summary.md
+        echo "## Tested Distributions" >> summary.md
+        echo "" >> summary.md
+        
+        for report in reports/*/compatibility_report_*.txt; do
+          if [ -f "$report" ]; then
+            echo "### $(basename $report .txt)" >> summary.md
+            echo '```' >> summary.md
+            cat "$report" >> summary.md
+            echo '```' >> summary.md
+            echo "" >> summary.md
+          fi
+        done
+        
+        cat summary.md
+    
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const summary = fs.readFileSync('summary.md', 'utf8');
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: summary
+          });

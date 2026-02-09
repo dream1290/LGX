@@ -528,14 +528,36 @@ void* lgx_alloc_aligned(size_t size, size_t alignment) {
 
 /**
  * Free memory
+ * 
+ * This is the unified free function that handles allocations from different allocators:
+ * - Persistent heap allocations (freed via lgx_heap_free)
+ * - Memory manager allocations (freed via lgx_memory_manager_free)
+ * - Frame arena allocations (should not be freed individually - they're reset at frame boundaries)
+ * 
+ * Detection strategy:
+ * - Check if pointer is from persistent heap (validates magic number)
+ * - If not, use memory manager
  */
 void lgx_free(void* ptr) {
-    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
-    if (!runtime || !runtime->memory_manager || !ptr) {
+    if (!ptr) {
         return;
     }
     
-    lgx_memory_manager_free(runtime->memory_manager, ptr);
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime) {
+        return;
+    }
+    
+    // Check if this is a persistent heap allocation
+    if (lgx_persistent_heap_is_initialized() && lgx_heap_is_heap_pointer(ptr)) {
+        lgx_heap_free(ptr);
+        return;
+    }
+    
+    // Fall back to memory manager
+    if (runtime->memory_manager) {
+        lgx_memory_manager_free(runtime->memory_manager, ptr);
+    }
 }
 
 /**

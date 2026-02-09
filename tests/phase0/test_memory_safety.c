@@ -270,6 +270,7 @@ int main(void) {
     
     // Initialize memory safety system
     lgx_result_t result = lgx_memory_safety_init();
+    (void)result;  // Suppress unused variable warning
     assert(result == LGX_SUCCESS);
     printf("✓ Memory safety system initialized\n\n");
     

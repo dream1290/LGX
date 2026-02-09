@@ -28,23 +28,37 @@ CC=afl-gcc CXX=afl-g++ cmake -B "$BUILD_DIR" -S . \
 cmake --build "$BUILD_DIR" -j$(nproc)
 
 # Build fuzzing harness
-echo "Building AFL fuzzing harness..."
+echo "Building AFL fuzzing harnesses..."
 cd tests/fuzzing
+
+# API inputs fuzzer
 afl-gcc -o fuzz_api_inputs fuzz_api_inputs.c \
     -I../../include \
     -I../../include/lgx \
-    -L"$BUILD_DIR" \
+    -L"$BUILD_DIR/src" \
     -llgx_runtime \
     -lpthread \
     -lm \
     -ldl \
-    -Wl,-rpath,"$BUILD_DIR"
+    -Wl,-rpath,"$BUILD_DIR/src"
+
+# Lifecycle fuzzer
+afl-gcc -o fuzz_lifecycle fuzz_lifecycle.c \
+    -I../../include \
+    -I../../include/lgx \
+    -L"$BUILD_DIR/src" \
+    -llgx_runtime \
+    -lpthread \
+    -lm \
+    -ldl \
+    -Wl,-rpath,"$BUILD_DIR/src"
 
 echo "=== AFL Build Complete ==="
 echo ""
 echo "To run AFL fuzzing:"
 echo "  cd tests/fuzzing"
 echo "  afl-fuzz -i testcases -o findings ./fuzz_api_inputs"
+echo "  afl-fuzz -i testcases -o findings ./fuzz_lifecycle"
 echo ""
 echo "To view findings:"
 echo "  ls -la findings/crashes/"

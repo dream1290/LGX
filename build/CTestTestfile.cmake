@@ -92,3 +92,6 @@ add_test(test_timing_services "/home/karl/Projects/LGX/build/test_timing_service
 set_tests_properties(test_timing_services PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;170;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
 add_test(test_trace_events "/home/karl/Projects/LGX/build/test_trace_events")
 set_tests_properties(test_trace_events PROPERTIES  _BACKTRACE_TRIPLES "/home/karl/Projects/LGX/CMakeLists.txt;170;add_test;/home/karl/Projects/LGX/CMakeLists.txt;0;")
+subdirs("tests/unit")
+subdirs("tests/integration")
+subdirs("tests/abi")

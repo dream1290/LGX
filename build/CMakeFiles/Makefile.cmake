@@ -11,6 +11,9 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.28.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeSystem.cmake"
   "/home/karl/Projects/LGX/lgx_runtime.pc.in"
+  "/home/karl/Projects/LGX/tests/abi/CMakeLists.txt"
+  "/home/karl/Projects/LGX/tests/integration/CMakeLists.txt"
+  "/home/karl/Projects/LGX/tests/unit/CMakeLists.txt"
   "/usr/share/cmake-3.28/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake"
@@ -47,6 +50,9 @@ set(CMAKE_MAKEFILE_OUTPUTS
 set(CMAKE_MAKEFILE_PRODUCTS
   "lgx_runtime.pc"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
+  "tests/unit/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "tests/integration/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "tests/abi/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -101,4 +107,19 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/run_integration_tests.dir/DependInfo.cmake"
   "CMakeFiles/run_performance_tests.dir/DependInfo.cmake"
   "CMakeFiles/run_benchmarks.dir/DependInfo.cmake"
+  "tests/unit/CMakeFiles/unit_test_init_shutdown.dir/DependInfo.cmake"
+  "tests/unit/CMakeFiles/unit_test_version_compatibility.dir/DependInfo.cmake"
+  "tests/unit/CMakeFiles/unit_test_memory_allocation.dir/DependInfo.cmake"
+  "tests/unit/CMakeFiles/unit_test_platform_services.dir/DependInfo.cmake"
+  "tests/unit/CMakeFiles/unit_test_error_handler.dir/DependInfo.cmake"
+  "tests/unit/CMakeFiles/unit_test_health_monitor.dir/DependInfo.cmake"
+  "tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/DependInfo.cmake"
+  "tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/DependInfo.cmake"
+  "tests/integration/CMakeFiles/integration_test_memory_stress.dir/DependInfo.cmake"
+  "tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/DependInfo.cmake"
+  "tests/integration/CMakeFiles/integration_test_component_integration.dir/DependInfo.cmake"
+  "tests/abi/CMakeFiles/test_game_v1_0.dir/DependInfo.cmake"
+  "tests/abi/CMakeFiles/test_struct_evolution.dir/DependInfo.cmake"
+  "tests/abi/CMakeFiles/test_symbol_versioning.dir/DependInfo.cmake"
+  "tests/abi/CMakeFiles/run_abi_tests.dir/DependInfo.cmake"
   )

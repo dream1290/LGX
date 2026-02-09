@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -O3 -DNDEBUG -O2 -DNDEBUG -march=native CMakeFiles/test_game_v1_0.dir/test_game_v1_0.c.o -o test_game_v1_0  -Wl,-rpath,/home/karl/Projects/LGX/build-release ../../liblgx_runtime.so.1.0.0 -lm -ldl /usr/lib/x86_64-linux-gnu/libvulkan.so /usr/lib/x86_64-linux-gnu/libjemalloc.so 

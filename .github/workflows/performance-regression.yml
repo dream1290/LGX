@@ -1,0 +1,148 @@
+name: Performance Regression Detection
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  performance-test:
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Need full history for baseline comparison
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential python3 python3-pip
+    
+    - name: Build project (Release mode)
+      run: |
+        cmake -B build-release -DCMAKE_BUILD_TYPE=Release
+        cmake --build build-release -j$(nproc)
+    
+    - name: Run performance benchmarks
+      run: |
+        mkdir -p current_results
+        cd build-release/tests/performance
+        
+        # Run each benchmark
+        for bench in perf_test_*; do
+          if [ -f "$bench" ]; then
+            echo "Running $bench..."
+            ./"$bench" || true
+          fi
+        done
+        
+        # Copy results
+        cp benchmark_results_*.txt ../../../current_results/ 2>/dev/null || true
+    
+    - name: Download baseline results
+      id: download-baseline
+      continue-on-error: true
+      uses: actions/cache@v3
+      with:
+        path: performance_baseline
+        key: performance-baseline-${{ github.base_ref || 'main' }}
+        restore-keys: |
+          performance-baseline-main
+          performance-baseline-
+    
+    - name: Compare against baseline
+      id: compare
+      if: steps.download-baseline.outputs.cache-hit == 'true'
+      run: |
+        python3 scripts/compare_benchmarks.py \
+          --baseline performance_baseline \
+          --current current_results \
+          --threshold 5.0 \
+          --variance 2.0 \
+          > regression_report.txt 2>&1 || echo "REGRESSION_DETECTED=true" >> $GITHUB_OUTPUT
+        
+        cat regression_report.txt
+    
+    - name: Upload regression report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: regression-report
+        path: |
+          regression_report.txt
+          current_results/
+    
+    - name: Comment on PR
+      if: github.event_name == 'pull_request' && steps.download-baseline.outputs.cache-hit == 'true'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let report = 'Performance Regression Report\n\n';
+          
+          try {
+            report += fs.readFileSync('regression_report.txt', 'utf8');
+          } catch (e) {
+            report += 'Error reading regression report';
+          }
+          
+          // Truncate if too long (GitHub comment limit)
+          if (report.length > 65000) {
+            report = report.substring(0, 65000) + '\n\n... (truncated)';
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '```\n' + report + '\n```'
+          });
+    
+    - name: Fail if regression detected
+      if: steps.compare.outputs.REGRESSION_DETECTED == 'true'
+      run: |
+        echo "❌ Performance regression detected!"
+        echo "Review the regression report above."
+        echo ""
+        echo "Options:"
+        echo "  1. Fix the performance regression"
+        echo "  2. If the change is intentional, update the baseline:"
+        echo "     - Run: ./scripts/capture_baseline.sh"
+        echo "     - Commit the updated baseline"
+        exit 1
+    
+    - name: Update baseline (on main branch)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        # Copy current results as new baseline
+        mkdir -p performance_baseline
+        cp current_results/* performance_baseline/
+        
+        # Add metadata
+        cat > performance_baseline/metadata.txt << EOF
+        timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        git_commit=${{ github.sha }}
+        git_branch=${{ github.ref_name }}
+        workflow_run=${{ github.run_id }}
+        EOF
+    
+    - name: Save baseline cache (on main branch)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/cache/save@v3
+      with:
+        path: performance_baseline
+        key: performance-baseline-main-${{ github.sha }}
+    
+    - name: No baseline available
+      if: steps.download-baseline.outputs.cache-hit != 'true'
+      run: |
+        echo "⚠️  No baseline available for comparison"
+        echo "This is expected for the first run or new branches"
+        echo ""
+        echo "Current results have been captured and will be used as baseline"
+        echo "for future comparisons once this PR is merged."

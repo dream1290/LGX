@@ -170,14 +170,20 @@ foreach(test_file ${PHASE0_TESTS})
     add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
 
-# Phase 1 Unit Tests (disabled until tests are implemented)
-# add_subdirectory(tests/unit)
+# Phase 1 Unit Tests
+add_subdirectory(tests/unit)
 
-# Phase 1 Integration Tests (disabled until tests are implemented)
-# add_subdirectory(tests/integration)
+# Phase 1 Integration Tests
+add_subdirectory(tests/integration)
 
-# Phase 1 Performance Tests (disabled until tests are implemented)
-# add_subdirectory(tests/performance)
+# ABI Compatibility Tests
+add_subdirectory(tests/abi)
+
+# Performance Tests
+add_subdirectory(tests/performance)
+
+# Failure Injection Tests
+add_subdirectory(tests/failure_injection)
 
 # Benchmarks (disabled until benchmarks are implemented)
 # add_subdirectory(benchmarks)

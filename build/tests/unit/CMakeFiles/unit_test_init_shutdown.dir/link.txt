@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 CMakeFiles/unit_test_init_shutdown.dir/test_init_shutdown.c.o -o unit_test_init_shutdown  -Wl,-rpath,/home/karl/Projects/LGX/build ../../liblgx_runtime.so.1.0.0 -lm -ldl /usr/lib/x86_64-linux-gnu/libvulkan.so /usr/lib/x86_64-linux-gnu/libjemalloc.so 

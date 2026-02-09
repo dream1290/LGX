@@ -821,6 +821,201 @@ run_benchmarks/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_benchmarks.dir/build.make CMakeFiles/run_benchmarks.dir/build
 .PHONY : run_benchmarks/fast
 
+#=============================================================================
+# Target rules for targets named unit_test_init_shutdown
+
+# Build rule for target.
+unit_test_init_shutdown: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_init_shutdown
+.PHONY : unit_test_init_shutdown
+
+# fast build rule for target.
+unit_test_init_shutdown/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_init_shutdown.dir/build.make tests/unit/CMakeFiles/unit_test_init_shutdown.dir/build
+.PHONY : unit_test_init_shutdown/fast
+
+#=============================================================================
+# Target rules for targets named unit_test_version_compatibility
+
+# Build rule for target.
+unit_test_version_compatibility: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_version_compatibility
+.PHONY : unit_test_version_compatibility
+
+# fast build rule for target.
+unit_test_version_compatibility/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build.make tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build
+.PHONY : unit_test_version_compatibility/fast
+
+#=============================================================================
+# Target rules for targets named unit_test_memory_allocation
+
+# Build rule for target.
+unit_test_memory_allocation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_memory_allocation
+.PHONY : unit_test_memory_allocation
+
+# fast build rule for target.
+unit_test_memory_allocation/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build.make tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build
+.PHONY : unit_test_memory_allocation/fast
+
+#=============================================================================
+# Target rules for targets named unit_test_platform_services
+
+# Build rule for target.
+unit_test_platform_services: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_platform_services
+.PHONY : unit_test_platform_services
+
+# fast build rule for target.
+unit_test_platform_services/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_platform_services.dir/build.make tests/unit/CMakeFiles/unit_test_platform_services.dir/build
+.PHONY : unit_test_platform_services/fast
+
+#=============================================================================
+# Target rules for targets named unit_test_error_handler
+
+# Build rule for target.
+unit_test_error_handler: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_error_handler
+.PHONY : unit_test_error_handler
+
+# fast build rule for target.
+unit_test_error_handler/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_error_handler.dir/build.make tests/unit/CMakeFiles/unit_test_error_handler.dir/build
+.PHONY : unit_test_error_handler/fast
+
+#=============================================================================
+# Target rules for targets named unit_test_health_monitor
+
+# Build rule for target.
+unit_test_health_monitor: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_health_monitor
+.PHONY : unit_test_health_monitor
+
+# fast build rule for target.
+unit_test_health_monitor/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_health_monitor.dir/build.make tests/unit/CMakeFiles/unit_test_health_monitor.dir/build
+.PHONY : unit_test_health_monitor/fast
+
+#=============================================================================
+# Target rules for targets named integration_test_end_to_end_initialization
+
+# Build rule for target.
+integration_test_end_to_end_initialization: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_end_to_end_initialization
+.PHONY : integration_test_end_to_end_initialization
+
+# fast build rule for target.
+integration_test_end_to_end_initialization/fast:
+	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build.make tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build
+.PHONY : integration_test_end_to_end_initialization/fast
+
+#=============================================================================
+# Target rules for targets named integration_test_suspend_resume_cycle
+
+# Build rule for target.
+integration_test_suspend_resume_cycle: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_suspend_resume_cycle
+.PHONY : integration_test_suspend_resume_cycle
+
+# fast build rule for target.
+integration_test_suspend_resume_cycle/fast:
+	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build.make tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build
+.PHONY : integration_test_suspend_resume_cycle/fast
+
+#=============================================================================
+# Target rules for targets named integration_test_memory_stress
+
+# Build rule for target.
+integration_test_memory_stress: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_memory_stress
+.PHONY : integration_test_memory_stress
+
+# fast build rule for target.
+integration_test_memory_stress/fast:
+	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_memory_stress.dir/build.make tests/integration/CMakeFiles/integration_test_memory_stress.dir/build
+.PHONY : integration_test_memory_stress/fast
+
+#=============================================================================
+# Target rules for targets named integration_test_telemetry_collection
+
+# Build rule for target.
+integration_test_telemetry_collection: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_telemetry_collection
+.PHONY : integration_test_telemetry_collection
+
+# fast build rule for target.
+integration_test_telemetry_collection/fast:
+	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build.make tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build
+.PHONY : integration_test_telemetry_collection/fast
+
+#=============================================================================
+# Target rules for targets named integration_test_component_integration
+
+# Build rule for target.
+integration_test_component_integration: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_component_integration
+.PHONY : integration_test_component_integration
+
+# fast build rule for target.
+integration_test_component_integration/fast:
+	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_component_integration.dir/build.make tests/integration/CMakeFiles/integration_test_component_integration.dir/build
+.PHONY : integration_test_component_integration/fast
+
+#=============================================================================
+# Target rules for targets named test_game_v1_0
+
+# Build rule for target.
+test_game_v1_0: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_game_v1_0
+.PHONY : test_game_v1_0
+
+# fast build rule for target.
+test_game_v1_0/fast:
+	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_game_v1_0.dir/build.make tests/abi/CMakeFiles/test_game_v1_0.dir/build
+.PHONY : test_game_v1_0/fast
+
+#=============================================================================
+# Target rules for targets named test_struct_evolution
+
+# Build rule for target.
+test_struct_evolution: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_struct_evolution
+.PHONY : test_struct_evolution
+
+# fast build rule for target.
+test_struct_evolution/fast:
+	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_struct_evolution.dir/build.make tests/abi/CMakeFiles/test_struct_evolution.dir/build
+.PHONY : test_struct_evolution/fast
+
+#=============================================================================
+# Target rules for targets named test_symbol_versioning
+
+# Build rule for target.
+test_symbol_versioning: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_symbol_versioning
+.PHONY : test_symbol_versioning
+
+# fast build rule for target.
+test_symbol_versioning/fast:
+	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_symbol_versioning.dir/build.make tests/abi/CMakeFiles/test_symbol_versioning.dir/build
+.PHONY : test_symbol_versioning/fast
+
+#=============================================================================
+# Target rules for targets named run_abi_tests
+
+# Build rule for target.
+run_abi_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_abi_tests
+.PHONY : run_abi_tests
+
+# fast build rule for target.
+run_abi_tests/fast:
+	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/run_abi_tests.dir/build.make tests/abi/CMakeFiles/run_abi_tests.dir/build
+.PHONY : run_abi_tests/fast
+
 src/lgx_allocator_prototype.o: src/lgx_allocator_prototype.c.o
 .PHONY : src/lgx_allocator_prototype.o
 
@@ -2514,11 +2709,17 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... run_abi_tests"
 	@echo "... run_benchmarks"
 	@echo "... run_integration_tests"
 	@echo "... run_performance_tests"
 	@echo "... run_phase0_tests"
 	@echo "... run_unit_tests"
+	@echo "... integration_test_component_integration"
+	@echo "... integration_test_end_to_end_initialization"
+	@echo "... integration_test_memory_stress"
+	@echo "... integration_test_suspend_resume_cycle"
+	@echo "... integration_test_telemetry_collection"
 	@echo "... lgx_runtime"
 	@echo "... test_csf1_comparison"
 	@echo "... test_csf1_hybrid_allocator"
@@ -2530,6 +2731,7 @@ help:
 	@echo "... test_filesystem"
 	@echo "... test_frame_arena"
 	@echo "... test_frame_arena_polish"
+	@echo "... test_game_v1_0"
 	@echo "... test_gpu_buddy_allocator"
 	@echo "... test_gpu_capability"
 	@echo "... test_gpu_detection"
@@ -2556,14 +2758,22 @@ help:
 	@echo "... test_persistent_heap_perf"
 	@echo "... test_signal_handling"
 	@echo "... test_simd_fallback"
+	@echo "... test_struct_evolution"
 	@echo "... test_structured_logging"
 	@echo "... test_suspend_resume"
+	@echo "... test_symbol_versioning"
 	@echo "... test_telemetry_anonymization"
 	@echo "... test_telemetry_process"
 	@echo "... test_telemetry_simple"
 	@echo "... test_tiered_performance"
 	@echo "... test_timing_services"
 	@echo "... test_trace_events"
+	@echo "... unit_test_error_handler"
+	@echo "... unit_test_health_monitor"
+	@echo "... unit_test_init_shutdown"
+	@echo "... unit_test_memory_allocation"
+	@echo "... unit_test_platform_services"
+	@echo "... unit_test_version_compatibility"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
 	@echo "... src/lgx_allocator_prototype.s"

@@ -4,3 +4,4 @@
 1d8f3cd5b47a7657d0bc7cb673fbaa5d CMakeFiles/run_performance_tests
 e9e29ecdeb8d9d4f066be84f71439f80 CMakeFiles/run_phase0_tests
 824cc58112db2e59b799c8aeaa295465 CMakeFiles/run_unit_tests
+9e42894837a2115d4e01bf3afbae9cbb tests/abi/CMakeFiles/run_abi_tests

@@ -38,6 +38,14 @@
 #include <stdbool.h>
 #include <time.h>
 
+// Helper macro to set error context
+#define SET_ERROR(error_code) do { \
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state(); \
+    if (runtime && runtime->error_handler) { \
+        lgx_error_handler_set_error(runtime->error_handler, error_code, __func__, __FILE__, __LINE__); \
+    } \
+} while(0)
+
 // Intent validation tracking (per allocation)
 typedef struct {
     lgx_allocation_intent_base_t intent;  // Original intent
@@ -174,6 +182,7 @@ lgx_result_t lgx_intent_allocator_shutdown(void) {
 void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent) {
     if (!intent) {
         fprintf(stderr, "[LGX ERROR] lgx_alloc_with_intent: intent is NULL\n");
+        SET_ERROR(LGX_ERROR_INVALID_PARAM);
         return NULL;
     }
     
@@ -181,12 +190,14 @@ void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent) {
     if (intent->struct_size < sizeof(lgx_allocation_intent_base_t)) {
         fprintf(stderr, "[LGX ERROR] lgx_alloc_with_intent: invalid struct_size %zu (expected >= %zu)\n",
                 intent->struct_size, sizeof(lgx_allocation_intent_base_t));
+        SET_ERROR(LGX_ERROR_INVALID_PARAM);
         return NULL;
     }
     
     // Validate size
     if (intent->size == 0) {
         fprintf(stderr, "[LGX ERROR] lgx_alloc_with_intent: size is 0\n");
+        SET_ERROR(LGX_ERROR_INVALID_PARAM);
         return NULL;
     }
     

@@ -1286,6 +1286,27 @@ void* lgx_heap_alloc(size_t size) {
 }
 
 /**
+ * Check if a pointer is from the persistent heap (without freeing it)
+ * 
+ * This is a helper for lgx_free() to determine which allocator to use.
+ * 
+ * @param ptr User pointer (not header pointer)
+ * @return true if this is a persistent heap allocation, false otherwise
+ */
+bool lgx_heap_is_heap_pointer(void* ptr) {
+    if (!ptr || !g_heap.initialized) {
+        return false;
+    }
+    
+    // Get header (stored before user pointer)
+    allocation_header_t* header = (allocation_header_t*)((char*)ptr - sizeof(allocation_header_t));
+    
+    // Check magic number (this is safe because we're just reading, not writing)
+    // If the magic matches, it's very likely a persistent heap allocation
+    return (header->magic == ALLOC_MAGIC);
+}
+
+/**
  * Free from persistent heap
  * 
  * Validates pointer, detects double-free, updates statistics.

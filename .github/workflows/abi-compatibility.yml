@@ -1,0 +1,171 @@
+name: ABI Compatibility Tests
+
+on:
+  # Run on PRs (critical path only)
+  pull_request:
+    branches: [ main, develop ]
+  
+  # Run nightly (full matrix)
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM UTC daily
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Test mode (critical or full)'
+        required: true
+        default: 'critical'
+        type: choice
+        options:
+          - critical
+          - full
+
+jobs:
+  abi-compatibility:
+    name: ABI Compatibility Matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            libvulkan-dev \
+            libjemalloc-dev \
+            ninja-build
+      
+      - name: Configure CMake
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER=gcc
+      
+      - name: Build runtime
+        run: cmake --build build --target lgx_runtime
+      
+      - name: Build ABI tests
+        run: |
+          cmake --build build --target test_game_v1_0
+          cmake --build build --target test_struct_evolution
+          cmake --build build --target test_symbol_versioning
+      
+      - name: Determine test mode
+        id: test_mode
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "mode=full" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.test_mode }}" >> $GITHUB_OUTPUT
+          else
+            echo "mode=critical" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Run ABI compatibility tests
+        run: |
+          chmod +x scripts/lgx-abi-test-matrix.sh
+          ./scripts/lgx-abi-test-matrix.sh ${{ steps.test_mode.outputs.mode }}
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: abi-test-results-${{ steps.test_mode.outputs.mode }}
+          path: build/abi_test_results/
+          retention-days: 30
+      
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: abi-compatibility-report
+          path: build/abi_test_results/abi_compatibility_report.html
+          retention-days: 30
+      
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const resultsDir = 'build/abi_test_results';
+            
+            // Count test results
+            let passed = 0;
+            let failed = 0;
+            let total = 0;
+            
+            const files = fs.readdirSync(resultsDir).filter(f => f.endsWith('.txt'));
+            files.forEach(file => {
+              const content = fs.readFileSync(`${resultsDir}/${file}`, 'utf8');
+              total++;
+              if (content.includes('PASS')) {
+                passed++;
+              } else if (content.includes('FAIL')) {
+                failed++;
+              }
+            });
+            
+            const body = `## ABI Compatibility Test Results
+            
+            **Mode:** Critical Path
+            
+            | Metric | Count |
+            |--------|-------|
+            | Total Tests | ${total} |
+            | ✅ Passed | ${passed} |
+            | ❌ Failed | ${failed} |
+            
+            ${failed > 0 ? '⚠️ **Some ABI compatibility tests failed!**' : '✅ **All ABI compatibility tests passed!**'}
+            
+            Download the full report from the workflow artifacts.
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+      
+      - name: Fail if tests failed
+        if: failure()
+        run: exit 1
+
+  # Store results for trending
+  store-results:
+    name: Store Test Results
+    runs-on: ubuntu-latest
+    needs: abi-compatibility
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Download test results
+        uses: actions/download-artifact@v3
+        with:
+          name: abi-test-results-full
+          path: results/
+      
+      - name: Store results in database
+        run: |
+          # In a real implementation, this would store results in a database
+          # or S3 bucket for historical tracking and trending
+          echo "Storing results for date: $(date +%Y-%m-%d)"
+          echo "Results would be stored in a time-series database"
+          
+          # Example: Upload to S3 (requires AWS credentials)
+          # aws s3 cp results/ s3://lgx-abi-test-results/$(date +%Y-%m-%d)/ --recursive
+      
+      - name: Generate trend report
+        run: |
+          echo "Generating ABI compatibility trend report"
+          # This would compare current results with historical data
+          # and generate a trend analysis

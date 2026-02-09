@@ -1,0 +1,71 @@
+[2026-02-09 19:06:28.270] [INFO] [CORE] Trace system initialized (buffer size: 65536 events)
+=================================================================
+==85793==ERROR: AddressSanitizer: heap-use-after-free on address 0x5080000020d0 at pc 0x728942edffed bp 0x7ffff4a0b980 sp 0x7ffff4a0b970
+READ of size 4 at 0x5080000020d0 thread T0
+    #0 0x728942edffec in lgx_log_tagged /home/karl/Projects/LGX/src/runtime/lgx_platform_services.c:351
+    #1 0x728942f015d5 in lgx_namespace_cleanup /home/karl/Projects/LGX/src/runtime/lgx_namespace_isolation.c:222
+    #2 0x728942eb84c6 in shutdown_subsystems /home/karl/Projects/LGX/src/runtime/lgx_runtime_core.c:623
+    #3 0x728942eb5c2d in lgx_runtime_shutdown /home/karl/Projects/LGX/src/runtime/lgx_runtime_core.c:91
+    #4 0x5c8dad760b34 in test_v1_0_initialization /home/karl/Projects/LGX/tests/abi/test_game_v1_0.c:37
+    #5 0x5c8dad762642 in main /home/karl/Projects/LGX/tests/abi/test_game_v1_0.c:236
+    #6 0x728941e2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #7 0x728941e2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #8 0x5c8dad760424 in _start (/home/karl/Projects/LGX/build/tests/abi/test_game_v1_0+0x5424) (BuildId: 6bb86d75308773bcffc7103f9b0a1c18549784ca)
+
+0x5080000020d0 is located 48 bytes inside of 88-byte region [0x5080000020a0,0x5080000020f8)
+freed by thread T0 here:
+    #0 0x7289432fc4d8 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
+    #1 0x728942ede2a9 in lgx_platform_services_shutdown /home/karl/Projects/LGX/src/runtime/lgx_platform_services.c:97
+    #2 0x728942eb8419 in shutdown_subsystems /home/karl/Projects/LGX/src/runtime/lgx_runtime_core.c:595
+    #3 0x728942eb5c2d in lgx_runtime_shutdown /home/karl/Projects/LGX/src/runtime/lgx_runtime_core.c:91
+    #4 0x5c8dad760b34 in test_v1_0_initialization /home/karl/Projects/LGX/tests/abi/test_game_v1_0.c:37
+    #5 0x5c8dad762642 in main /home/karl/Projects/LGX/tests/abi/test_game_v1_0.c:236
+    #6 0x728941e2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #7 0x728941e2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #8 0x5c8dad760424 in _start (/home/karl/Projects/LGX/build/tests/abi/test_game_v1_0+0x5424) (BuildId: 6bb86d75308773bcffc7103f9b0a1c18549784ca)
+
+previously allocated by thread T0 here:
+    #0 0x7289432fd340 in calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:77
+    #1 0x728942edd8a7 in lgx_platform_services_init /home/karl/Projects/LGX/src/runtime/lgx_platform_services.c:47
+    #2 0x728942eb8230 in initialize_subsystems /home/karl/Projects/LGX/src/runtime/lgx_runtime_core.c:534
+    #3 0x728942eb5b4f in lgx_runtime_init /home/karl/Projects/LGX/src/runtime/lgx_runtime_core.c:66
+    #4 0x5c8dad760a8c in test_v1_0_initialization /home/karl/Projects/LGX/tests/abi/test_game_v1_0.c:34
+    #5 0x5c8dad762642 in main /home/karl/Projects/LGX/tests/abi/test_game_v1_0.c:236
+    #6 0x728941e2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #7 0x728941e2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #8 0x5c8dad760424 in _start (/home/karl/Projects/LGX/build/tests/abi/test_game_v1_0+0x5424) (BuildId: 6bb86d75308773bcffc7103f9b0a1c18549784ca)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/karl/Projects/LGX/src/runtime/lgx_platform_services.c:351 in lgx_log_tagged
+Shadow bytes around the buggy address:
+  0x508000001e00: fa fa fa fa fd fd fd fd fd fd fd fd fd fd fd fd
+  0x508000001e80: fa fa fa fa fd fd fd fd fd fd fd fd fd fd fd fd
+  0x508000001f00: fa fa fa fa fd fd fd fd fd fd fd fd fd fd fd fd
+  0x508000001f80: fa fa fa fa fd fd fd fd fd fd fd fd fd fd fd fd
+  0x508000002000: fa fa fa fa fd fd fd fd fd fd fd fd fd fd fd fd
+=>0x508000002080: fa fa fa fa fd fd fd fd fd fd[fd]fd fd fd fd fa
+  0x508000002100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x508000002180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x508000002200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x508000002280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x508000002300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==85793==ABORTING
+FAIL

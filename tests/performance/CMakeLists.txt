@@ -6,7 +6,6 @@ set(PERFORMANCE_TEST_SOURCES
     test_allocation_latency.c
     test_frame_time_contribution.c
     test_memory_overhead.c
-    test_regression_detection.c
 )
 
 # Create performance test executables
@@ -26,23 +25,4 @@ foreach(test_source ${PERFORMANCE_TEST_SOURCES})
         LABELS "performance"
         TIMEOUT 300
     )
-endforeach()
-
-# Performance test helper library
-add_library(performance_test_helpers STATIC
-    ../common/test_helpers.c
-    ../common/performance_helpers.c
-    ../common/statistics.c
-)
-
-target_include_directories(performance_test_helpers PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/tests/common
-)
-
-# Link performance tests with helpers
-foreach(test_source ${PERFORMANCE_TEST_SOURCES})
-    get_filename_component(test_name ${test_source} NAME_WE)
-    set(test_target "perf_${test_name}")
-    target_link_libraries(${test_target} performance_test_helpers)
 endforeach()

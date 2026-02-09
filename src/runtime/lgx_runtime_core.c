@@ -530,6 +530,12 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
         return result;
     }
     
+    // 5.5. Intent Allocator (specialized allocators - frame arena, persistent heap)
+    result = lgx_intent_allocator_init();
+    if (result != LGX_SUCCESS) {
+        return result;
+    }
+    
     // 6. Platform Services (filesystem, timing, logging)
     result = lgx_platform_services_init(&g_runtime.platform_services, config);
     if (result != LGX_SUCCESS) {
@@ -591,10 +597,16 @@ static lgx_result_t shutdown_subsystems(void) {
         g_runtime.lifecycle_manager = NULL;
     }
     
+    // Cleanup namespace isolation (before platform services, as it may log)
+    lgx_namespace_cleanup();
+    
     if (g_runtime.platform_services) {
         lgx_platform_services_shutdown(g_runtime.platform_services);
         g_runtime.platform_services = NULL;
     }
+    
+    // Shutdown intent allocator (specialized allocators)
+    lgx_intent_allocator_shutdown();
     
     if (g_runtime.memory_manager) {
         lgx_memory_manager_shutdown(g_runtime.memory_manager);
@@ -618,9 +630,6 @@ static lgx_result_t shutdown_subsystems(void) {
     
     // Shutdown performance counters last
     lgx_counters_shutdown();
-    
-    // Cleanup namespace isolation (must be last)
-    lgx_namespace_cleanup();
     
     return LGX_SUCCESS;
 }

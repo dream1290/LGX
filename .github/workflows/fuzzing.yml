@@ -1,0 +1,178 @@
+name: Fuzzing Tests
+
+on:
+  schedule:
+    # Run nightly at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Fuzzing duration in seconds'
+        required: false
+        default: '300'
+
+jobs:
+  libfuzzer:
+    name: libFuzzer - ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - fuzz_api_inputs
+          - fuzz_allocation_patterns
+          - fuzz_lifecycle
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang libvulkan-dev libjemalloc-dev
+    
+    - name: Build fuzzer
+      run: |
+        cd tests/fuzzing
+        ./build_libfuzzer.sh
+    
+    - name: Run fuzzer
+      run: |
+        cd tests/fuzzing
+        mkdir -p corpus_${{ matrix.target }}
+        
+        # Run for specified duration (default 5 minutes)
+        timeout ${{ github.event.inputs.duration || '300' }} \
+          ./${{ matrix.target }} \
+          -max_total_time=${{ github.event.inputs.duration || '300' }} \
+          -print_final_stats=1 \
+          corpus_${{ matrix.target }} \
+          || true
+    
+    - name: Check for crashes
+      id: check_crashes
+      run: |
+        cd tests/fuzzing
+        if ls crash-* 1> /dev/null 2>&1; then
+          echo "CRASHES_FOUND=true" >> $GITHUB_OUTPUT
+          echo "Found crashes:"
+          ls -lh crash-*
+        else
+          echo "CRASHES_FOUND=false" >> $GITHUB_OUTPUT
+          echo "No crashes found"
+        fi
+    
+    - name: Upload crashes
+      if: steps.check_crashes.outputs.CRASHES_FOUND == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: crashes-${{ matrix.target }}
+        path: tests/fuzzing/crash-*
+    
+    - name: Upload corpus
+      uses: actions/upload-artifact@v3
+      with:
+        name: corpus-${{ matrix.target }}
+        path: tests/fuzzing/corpus_${{ matrix.target }}
+    
+    - name: Fail if crashes found
+      if: steps.check_crashes.outputs.CRASHES_FOUND == 'true'
+      run: |
+        echo "❌ Fuzzing found crashes!"
+        exit 1
+  
+  afl:
+    name: AFL - ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - fuzz_api_inputs
+          - fuzz_lifecycle
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Install AFL
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y afl libvulkan-dev libjemalloc-dev
+    
+    - name: Build AFL fuzzer
+      run: |
+        cd tests/fuzzing
+        ./build_afl.sh
+    
+    - name: Run AFL fuzzer
+      run: |
+        cd tests/fuzzing
+        mkdir -p findings_${{ matrix.target }}
+        
+        # AFL needs special setup
+        echo core | sudo tee /proc/sys/kernel/core_pattern
+        
+        # Run for specified duration
+        timeout ${{ github.event.inputs.duration || '300' }} \
+          afl-fuzz \
+          -i testcases \
+          -o findings_${{ matrix.target }} \
+          -V ${{ github.event.inputs.duration || '300' }} \
+          ./${{ matrix.target }} @@ \
+          || true
+    
+    - name: Check for crashes
+      id: check_crashes
+      run: |
+        cd tests/fuzzing/findings_${{ matrix.target }}
+        if [ -d crashes ] && [ "$(ls -A crashes)" ]; then
+          echo "CRASHES_FOUND=true" >> $GITHUB_OUTPUT
+          echo "Found crashes:"
+          ls -lh crashes/
+        else
+          echo "CRASHES_FOUND=false" >> $GITHUB_OUTPUT
+          echo "No crashes found"
+        fi
+    
+    - name: Upload findings
+      uses: actions/upload-artifact@v3
+      with:
+        name: afl-findings-${{ matrix.target }}
+        path: tests/fuzzing/findings_${{ matrix.target }}
+    
+    - name: Fail if crashes found
+      if: steps.check_crashes.outputs.CRASHES_FOUND == 'true'
+      run: |
+        echo "❌ AFL found crashes!"
+        exit 1
+  
+  summary:
+    name: Fuzzing Summary
+    runs-on: ubuntu-latest
+    needs: [libfuzzer, afl]
+    if: always()
+    
+    steps:
+    - name: Generate summary
+      run: |
+        echo "# Fuzzing Test Summary" > summary.md
+        echo "" >> summary.md
+        echo "Duration: ${{ github.event.inputs.duration || '300' }} seconds" >> summary.md
+        echo "" >> summary.md
+        echo "## Results" >> summary.md
+        echo "" >> summary.md
+        echo "- libFuzzer: ${{ needs.libfuzzer.result }}" >> summary.md
+        echo "- AFL: ${{ needs.afl.result }}" >> summary.md
+        echo "" >> summary.md
+        
+        if [ "${{ needs.libfuzzer.result }}" = "failure" ] || [ "${{ needs.afl.result }}" = "failure" ]; then
+          echo "❌ Fuzzing found issues! Check artifacts for crash details." >> summary.md
+        else
+          echo "✅ No crashes found during fuzzing." >> summary.md
+        fi
+        
+        cat summary.md

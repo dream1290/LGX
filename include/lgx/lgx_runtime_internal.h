@@ -285,6 +285,7 @@ lgx_result_t lgx_persistent_heap_init(void);
 lgx_result_t lgx_persistent_heap_shutdown(void);
 void* lgx_heap_alloc(size_t size);
 void lgx_heap_free(void* ptr);
+bool lgx_heap_is_heap_pointer(void* ptr);
 bool lgx_persistent_heap_is_initialized(void);
 lgx_result_t lgx_heap_get_stats(lgx_heap_stats_t* stats);
 float lgx_heap_get_fragmentation(void);

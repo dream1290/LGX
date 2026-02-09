@@ -518,66 +518,64 @@ Games don't need a faster general-purpose allocator. They need specialized alloc
 
 ## 10. Testing Implementation
 
-## 10. Testing Implementation
+- [x] 10.1 Implement unit tests
+  - [x] 10.1.1 Write tests for initialization and shutdown
+  - [x] 10.1.2 Write tests for version and compatibility
+  - [x] 10.1.3 Write tests for memory allocation (all paths)
+  - [x] 10.1.4 Write tests for platform services
+  - [x] 10.1.5 Write tests for error handling
+  - [x] 10.1.6 Write tests for health check API
 
-- [ ] 10.1 Implement unit tests
-  - [ ] 10.1.1 Write tests for initialization and shutdown
-  - [ ] 10.1.2 Write tests for version and compatibility
-  - [ ] 10.1.3 Write tests for memory allocation (all paths)
-  - [ ] 10.1.4 Write tests for platform services
-  - [ ] 10.1.5 Write tests for error handling
-  - [ ] 10.1.6 Write tests for health check API
+- [x] 10.2 Implement integration tests
+  - [x] 10.2.1 Write end-to-end initialization test
+  - [x] 10.2.2 Write suspend/resume cycle test
+  - [x] 10.2.3 Write memory stress test (allocation patterns)
+  - [x] 10.2.4 Write telemetry collection test
+  - [x] 10.2.5 Write component integration tests (Translation Layer, Security Module)
 
-- [ ] 10.2 Implement integration tests
-  - [ ] 10.2.1 Write end-to-end initialization test
-  - [ ] 10.2.2 Write suspend/resume cycle test
-  - [ ] 10.2.3 Write memory stress test (allocation patterns)
-  - [ ] 10.2.4 Write telemetry collection test
-  - [ ] 10.2.5 Write component integration tests (Translation Layer, Security Module)
-
-- [ ] 10.3 Implement ABI compatibility tests
-  - [ ] 10.3.1 Create test game compiled against v1.0 headers
-  - [ ] 10.3.2 Test v1.0 game against v1.1, v1.2 runtimes
-  - [ ] 10.3.3 Test struct evolution (size-based versioning)
-  - [ ] 10.3.4 Test symbol versioning
-  - [ ] 10.3.5 Create `lgx-abi-test-matrix` automation script
-  - [ ] 10.3.6 Automate ABI compatibility matrix in CI:
+- [x] 10.3 Implement ABI compatibility tests
+  - [x] 10.3.1 Create test game compiled against v1.0 headers
+  - [x] 10.3.2 Test v1.0 game against v1.1, v1.2 runtimes
+  - [x] 10.3.3 Test struct evolution (size-based versioning)
+  - [x] 10.3.4 Test symbol versioning
+  - [x] 10.3.5 Create `lgx-abi-test-matrix` automation script
+  - [x] 10.3.6 Automate ABI compatibility matrix in CI:
     - Nightly: full matrix (all version combinations)
     - PR: critical path only (v1.0 + v1.latest, v1.latest + v1.0)
     - Store results in test report
 
-- [ ] 10.4 Implement performance tests
-  - [ ] 10.4.1 Write initialization time benchmark
-  - [ ] 10.4.2 Write memory allocation latency benchmark
-  - [ ] 10.4.3 Write frame-time contribution benchmark
-  - [ ] 10.4.4 Write memory overhead measurement
-  - [ ] 10.4.5 Set up performance regression detection:
+- [x] 10.4 Implement performance tests
+  - [x] 10.4.1 Write initialization time benchmark
+  - [x] 10.4.2 Write memory allocation latency benchmark
+  - [x] 10.4.3 Write frame-time contribution benchmark
+  - [x] 10.4.4 Write memory overhead measurement
+  - [x] 10.4.5 Set up performance regression detection:
     - Baseline capture: store results in database (S3 or artifact registry)
     - PR validation: compare to baseline, alert if >5% regression
     - Bisection: use git bisect to find culprit commit
     - False positive reduction: run 3 times, take median, allow 2% variance
     - Integration: GitHub Actions posts results as PR comment, blocks merge if regression
 
-- [ ] 10.5 Implement compatibility tests
-  - [ ] 10.5.1 Test on Ubuntu 22.04
-  - [ ] 10.5.2 Test on Fedora 38
-  - [ ] 10.5.3 Test on Arch Linux
-  - [ ] 10.5.4 Test with different GPU vendors (NVIDIA, AMD, Intel)
-  - [ ] 10.5.5 Test with different kernel versions (5.10, 5.15, 6.1, 6.5)
+- [x] 10.5 Implement compatibility tests
+  - [x] 10.5.1 Test on Ubuntu 22.04
+  - [x] 10.5.2 Test on Fedora 38
+  - [x] 10.5.3 Test on Arch Linux
+  - [x] 10.5.4 Test with different GPU vendors (NVIDIA, AMD, Intel)
+  - [x] 10.5.5 Test with different kernel versions (5.10, 5.15, 6.1, 6.5)
 
-- [ ] 10.6 Implement fuzzing tests
-  - [ ] 10.6.1 Fuzz API inputs with invalid parameters
-  - [ ] 10.6.2 Fuzz allocation patterns (random sizes, stress pools)
-  - [ ] 10.6.3 Fuzz lifecycle (suspend/resume in invalid states)
-  - [ ] 10.6.4 Integrate fuzzing into CI
+- [x] 10.6 Implement fuzzing tests
+  - [x] 10.6.1 Fuzz API inputs with invalid parameters
+  - [x] 10.6.2 Fuzz allocation patterns (random sizes, stress pools)
+  - [x] 10.6.3 Fuzz lifecycle (suspend/resume in invalid states)
+  - [x] 10.6.4 Integrate fuzzing into CI
 
-- [ ] 10.7 Implement failure injection tests
-  - [ ] 10.7.1 Simulate OOM mid-frame (allocate 90% of pool, verify graceful degradation)
-  - [ ] 10.7.2 Simulate GPU timeout (mock driver hang, verify recovery)
-  - [ ] 10.7.3 Simulate library version mismatch (verify init fails with clear error)
-  - [ ] 10.7.4 Simulate telemetry process crash (verify game continues unaffected)
-  - [ ] 10.7.5 Simulate filesystem full (verify logging disables, no crash)
-  - [ ] 10.7.6 Simulate TOCTOU race conditions (concurrent free from multiple threads)
+- [x] 10.7 Implement failure injection tests
+  - [x] 10.7.1 Simulate OOM mid-frame (allocate 90% of pool, verify graceful degradation)
+  - [x] 10.7.2 Simulate GPU timeout (mock driver hang, verify recovery)
+  - [x] 10.7.3 Simulate library version mismatch (verify init fails with clear error)
+  - [x] 10.7.4 Simulate telemetry process crash (verify game continues unaffected)
+  - [x] 10.7.5 Simulate filesystem full (verify logging disables, no crash)
+  - [x] 10.7.6 Simulate TOCTOU race conditions (concurrent free from multiple threads)
 
 ## 11. Documentation
 
