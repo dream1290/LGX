@@ -12,9 +12,9 @@ endif()
 
 # Compiler flags for Phase 1 production build
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -fPIC")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG -march=native")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g -DNDEBUG")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g -DNDEBUG -march=native")
 
 # Find required packages
 find_package(Threads REQUIRED)
@@ -62,11 +62,16 @@ set(LGX_RUNTIME_SOURCES
     src/runtime/lgx_lifecycle_manager.c
     src/runtime/lgx_platform_services.c
     src/runtime/lgx_telemetry.c
+    src/runtime/lgx_telemetry_process.c
     src/runtime/lgx_error_handler.c
     src/runtime/lgx_health_monitor.c
     src/runtime/lgx_performance_counters.c
     src/runtime/lgx_chaos_testing.c
     src/runtime/lgx_trace_events.c
+    src/runtime/lgx_namespace_isolation.c
+    src/runtime/lgx_library_manifest.c
+    src/runtime/lgx_input_validation.c
+    src/runtime/lgx_memory_safety.c
     
     # Legacy Phase 0 sources (temporarily disabled)
     # src/lgx_runtime.c

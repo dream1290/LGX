@@ -156,6 +156,56 @@ uint64_t lgx_time_now_ns(void) {
 }
 
 /**
+ * Sleep function implementation
+ */
+void lgx_time_sleep_ms(uint32_t milliseconds) {
+    struct timespec ts;
+    ts.tv_sec = milliseconds / 1000;
+    ts.tv_nsec = (milliseconds % 1000) * 1000000;
+    nanosleep(&ts, NULL);
+}
+
+/**
+ * Validate timing precision
+ * Returns the minimum measurable time difference in nanoseconds
+ */
+uint64_t lgx_time_get_precision_ns(void) {
+    struct timespec res;
+    if (clock_getres(CLOCK_MONOTONIC, &res) != 0) {
+        return 1000; // Default to 1μs if query fails
+    }
+    return (uint64_t)res.tv_sec * 1000000000ULL + (uint64_t)res.tv_nsec;
+}
+
+/**
+ * Measure timing overhead
+ * Returns the average overhead of calling lgx_time_now_ns() in nanoseconds
+ */
+uint64_t lgx_time_measure_overhead_ns(void) {
+    const int iterations = 1000;
+    uint64_t start, end;
+    uint64_t total = 0;
+    
+    // Warm up
+    for (int i = 0; i < 10; i++) {
+        lgx_time_now_ns();
+    }
+    
+    // Measure overhead
+    for (int i = 0; i < iterations; i++) {
+        start = lgx_time_now_ns();
+        end = lgx_time_now_ns();
+        
+        // Only count if we got a valid measurement
+        if (end > start) {
+            total += (end - start);
+        }
+    }
+    
+    return total / iterations;
+}
+
+/**
  * Configuration API implementation
  */
 lgx_runtime_config_t* lgx_config_create(void) {
@@ -191,16 +241,6 @@ void lgx_config_destroy(lgx_runtime_config_t* config) {
     if (config) {
         free(config);
     }
-}
-
-/**
- * Sleep function implementation
- */
-void lgx_time_sleep_ms(uint32_t milliseconds) {
-    struct timespec ts;
-    ts.tv_sec = milliseconds / 1000;
-    ts.tv_nsec = (milliseconds % 1000) * 1000000;
-    nanosleep(&ts, NULL);
 }
 
 /**
@@ -441,6 +481,25 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
     
     // Initialize subsystems in dependency order
     
+    // 0. Namespace Isolation (must be first, before any library loading)
+    result = lgx_namespace_create_isolated();
+    if (result != LGX_SUCCESS) {
+        // Namespace isolation failure is not fatal (may not have privileges)
+        lgx_log(LGX_LOG_WARN, "Namespace isolation not available");
+    }
+    
+    // Mount pinned libraries if namespace was created
+    result = lgx_namespace_mount_libraries("/opt/lgx/lib");
+    if (result != LGX_SUCCESS) {
+        lgx_log(LGX_LOG_WARN, "Failed to mount pinned libraries");
+    }
+    
+    // Validate library versions
+    result = lgx_namespace_validate_versions();
+    if (result != LGX_SUCCESS) {
+        lgx_log(LGX_LOG_WARN, "Library version validation failed");
+    }
+    
     // 1. Performance Counters (needed by all other subsystems)
     result = lgx_counters_init();
     if (result != LGX_SUCCESS) {
@@ -559,6 +618,9 @@ static lgx_result_t shutdown_subsystems(void) {
     
     // Shutdown performance counters last
     lgx_counters_shutdown();
+    
+    // Cleanup namespace isolation (must be last)
+    lgx_namespace_cleanup();
     
     return LGX_SUCCESS;
 }

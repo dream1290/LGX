@@ -102,6 +102,8 @@ const char* lgx_performance_tier_to_string(lgx_performance_tier_t tier);
 // Timing services
 uint64_t lgx_time_now_ns(void);  // Nanoseconds since epoch
 void lgx_time_sleep_ms(uint32_t milliseconds);
+uint64_t lgx_time_get_precision_ns(void);  // Get timing precision
+uint64_t lgx_time_measure_overhead_ns(void);  // Measure timing overhead
 
 // Hardware adaptation and capability detection
 bool lgx_runtime_has_capability(lgx_capability_t cap);
@@ -150,6 +152,11 @@ lgx_result_t lgx_fs_close(lgx_file_t* file);
 // Platform services - Logging
 void lgx_log(lgx_log_level_t level, const char* format, ...);
 void lgx_set_log_filter(lgx_log_level_t min_level);
+
+// Log file configuration
+void lgx_set_log_max_size(size_t max_size_bytes);
+void lgx_set_log_rotation_enabled(bool enabled);
+size_t lgx_get_log_current_size(void);
 
 // Structured logging with subsystem filtering
 void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level, 

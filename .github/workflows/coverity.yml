@@ -1,0 +1,60 @@
+name: Coverity Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  schedule:
+    # Run weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          build-essential \
+          libvulkan-dev \
+          libjemalloc-dev
+    
+    - name: Download Coverity Build Tool
+      run: |
+        wget -q https://scan.coverity.com/download/linux64 \
+          --post-data "token=${{ secrets.COVERITY_SCAN_TOKEN }}&project=lgx-runtime" \
+          -O coverity_tool.tgz
+        mkdir coverity-tool
+        tar xzf coverity_tool.tgz --strip 1 -C coverity-tool
+    
+    - name: Configure project
+      run: |
+        cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug
+    
+    - name: Build with Coverity
+      run: |
+        export PATH=$PATH:$PWD/coverity-tool/bin
+        cov-build --dir cov-int cmake --build build -j$(nproc)
+    
+    - name: Submit to Coverity Scan
+      run: |
+        tar czf lgx-runtime.tgz cov-int
+        curl --form token=${{ secrets.COVERITY_SCAN_TOKEN }} \
+          --form email=${{ secrets.COVERITY_SCAN_EMAIL }} \
+          --form file=@lgx-runtime.tgz \
+          --form version="${GITHUB_SHA}" \
+          --form description="LGX Runtime - Automated Scan" \
+          https://scan.coverity.com/builds?project=lgx-runtime
+    
+    - name: Upload build artifacts
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverity-logs
+        path: cov-int/build-log.txt

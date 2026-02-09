@@ -436,85 +436,85 @@ Games don't need a faster general-purpose allocator. They need specialized alloc
   - [x] 6.1.4 Implement `lgx_fs_close()` function
   - [x] 6.1.5 Add path validation and sanitization
 
-- [ ] 6.2 Implement timing services
+- [x] 6.2 Implement timing services
   - [x] 6.2.1 Implement `lgx_time_now_ns()` using CLOCK_MONOTONIC
-  - [ ] 6.2.2 Implement `lgx_time_sleep_ms()` using nanosleep
-  - [ ] 6.2.3 Add timing precision validation
-  - [ ] 6.2.4 Add timing overhead measurement
+  - [x] 6.2.2 Implement `lgx_time_sleep_ms()` using nanosleep
+  - [x] 6.2.3 Add timing precision validation
+  - [x] 6.2.4 Add timing overhead measurement
 
-- [ ] 6.3 Implement logging
-  - [ ] 6.3.1 Implement `lgx_log()` function with formatting
-  - [ ] 6.3.2 Implement log level filtering
-  - [ ] 6.3.3 Implement file output support
-  - [ ] 6.3.4 Add thread-safe logging with minimal contention
-  - [ ] 6.3.5 Add log file size limits and rotation
+- [x] 6.3 Implement logging
+  - [x] 6.3.1 Implement `lgx_log()` function with formatting
+  - [x] 6.3.2 Implement log level filtering
+  - [x] 6.3.3 Implement file output support
+  - [x] 6.3.4 Add thread-safe logging with minimal contention
+  - [x] 6.3.5 Add log file size limits and rotation
 
 ## 7. Telemetry Implementation
 
-- [ ] 7.1 Implement separate telemetry process
-  - [ ] 7.1.1 Create telemetry process architecture
-  - [ ] 7.1.2 Implement shared memory ring buffer for IPC
-  - [ ] 7.1.3 Implement lock-free event writing from game
-  - [ ] 7.1.4 Implement event reading and aggregation in telemetry process
+- [x] 7.1 Implement separate telemetry process
+  - [x] 7.1.1 Create telemetry process architecture
+  - [x] 7.1.2 Implement shared memory ring buffer for IPC
+  - [x] 7.1.3 Implement lock-free event writing from game
+  - [x] 7.1.4 Implement event reading and aggregation in telemetry process
 
-- [ ] 7.2 Implement telemetry collection
-  - [ ] 7.2.1 Implement `lgx_telemetry_enable()` function
-  - [ ] 7.2.2 Implement frame-time collection with spike detection
-  - [ ] 7.2.3 Implement memory usage tracking per pool
-  - [ ] 7.2.4 Implement allocation pattern analysis
-  - [ ] 7.2.5 Implement crash event recording with context
+- [x] 7.2 Implement telemetry collection
+  - [x] 7.2.1 Implement `lgx_telemetry_enable()` function
+  - [x] 7.2.2 Implement frame-time collection with spike detection
+  - [x] 7.2.3 Implement memory usage tracking per pool
+  - [x] 7.2.4 Implement allocation pattern analysis
+  - [x] 7.2.5 Implement crash event recording with context
 
-- [ ] 7.3 Implement correlation and anomaly detection
-  - [ ] 7.3.1 Implement frame-time spike correlation with events
-  - [ ] 7.3.2 Implement memory leak detection (trend analysis)
-  - [ ] 7.3.3 Implement statistical outlier detection
-  - [ ] 7.3.4 Add actionable insights generation
+- [x] 7.3 Implement correlation and anomaly detection
+  - [x] 7.3.1 Implement frame-time spike correlation with events
+  - [x] 7.3.2 Implement memory leak detection (trend analysis)
+  - [x] 7.3.3 Implement statistical outlier detection
+  - [x] 7.3.4 Add actionable insights generation
 
-- [ ] 7.4 Implement telemetry export
-  - [ ] 7.4.1 Implement `lgx_telemetry_export()` function
-  - [ ] 7.4.2 Implement JSON serialization with rich context
-  - [ ] 7.4.3 Add data anonymization (SHA-256 hashing)
-  - [ ] 7.4.4 Add export validation
+- [x] 7.4 Implement telemetry export
+  - [x] 7.4.1 Implement `lgx_telemetry_export()` function
+  - [x] 7.4.2 Implement JSON serialization with rich context
+  - [x] 7.4.3 Add data anonymization (SHA-256 hashing)
+  - [x] 7.4.4 Add export validation
 
 ## 8. Library Isolation and Pinning
 
-- [ ] 8.1 Implement namespace isolation
-  - [ ] 8.1.1 Create isolated mount namespace for libraries
-  - [ ] 8.1.2 Bind mount pinned libraries into namespace
-  - [ ] 8.1.3 Validate library versions at startup
-  - [ ] 8.1.4 Add namespace cleanup on shutdown
+- [x] 8.1 Implement namespace isolation
+  - [x] 8.1.1 Create isolated mount namespace for libraries
+  - [x] 8.1.2 Bind mount pinned libraries into namespace
+  - [x] 8.1.3 Validate library versions at startup
+  - [x] 8.1.4 Add namespace cleanup on shutdown
 
-- [ ] 8.2 Implement library version validation
-  - [ ] 8.2.1 Create library manifest with expected versions
-  - [ ] 8.2.2 Implement version checking for glibc
-  - [ ] 8.2.3 Implement version checking for libstdc++
-  - [ ] 8.2.4 Implement version checking for Vulkan loader
+- [x] 8.2 Implement library version validation
+  - [x] 8.2.1 Create library manifest with expected versions
+  - [x] 8.2.2 Implement version checking for glibc
+  - [x] 8.2.3 Implement version checking for libstdc++
+  - [x] 8.2.4 Implement version checking for Vulkan loader
 
 ## 9. Security Hardening
 
-- [ ] 9.1 Implement input validation
-  - [ ] 9.1.1 Add null pointer checks to all API functions
-  - [ ] 9.1.2 Add size bounds checks
-  - [ ] 9.1.3 Add string length validation and truncation
-  - [ ] 9.1.4 Add enum range validation
+- [x] 9.1 Implement input validation
+  - [x] 9.1.1 Add null pointer checks to all API functions
+  - [x] 9.1.2 Add size bounds checks
+  - [x] 9.1.3 Add string length validation and truncation
+  - [x] 9.1.4 Add enum range validation
 
-- [ ] 9.2 Implement memory safety features
-  - [ ] 9.2.1 Add guard pages after allocations (debug builds)
-  - [ ] 9.2.2 Add memory canaries to detect corruption
-  - [ ] 9.2.3 Implement delayed reclamation (3-frame) to prevent use-after-free
-  - [ ] 9.2.4 Add allocation tracking to prevent double-free
+- [x] 9.2 Implement memory safety features
+  - [x] 9.2.1 Add guard pages after allocations (debug builds)
+  - [x] 9.2.2 Add memory canaries to detect corruption
+  - [x] 9.2.3 Implement delayed reclamation (3-frame) to prevent use-after-free
+  - [x] 9.2.4 Add allocation tracking to prevent double-free
 
-- [ ] 9.3 Implement security testing
-  - [ ] 9.3.1 Set up AFL fuzzing for API inputs
-  - [ ] 9.3.2 Set up libFuzzer for allocation patterns
-  - [ ] 9.3.3 Run Clang Static Analyzer
-  - [ ] 9.3.4 Run Coverity Scan for vulnerabilities
+- [x] 9.3 Implement security testing
+  - [x] 9.3.1 Set up AFL fuzzing for API inputs
+  - [x] 9.3.2 Set up libFuzzer for allocation patterns
+  - [x] 9.3.3 Run Clang Static Analyzer
+  - [x] 9.3.4 Run Coverity Scan for vulnerabilities
 
-- [ ] 9.4 Document security threat model
-  - [ ] 9.4.1 Create trust boundaries diagram
-  - [ ] 9.4.2 Enumerate attack surface
-  - [ ] 9.4.3 Document threat scenarios and mitigations
-  - [ ] 9.4.4 Prepare for third-party security audit
+- [x] 9.4 Document security threat model
+  - [x] 9.4.1 Create trust boundaries diagram
+  - [x] 9.4.2 Enumerate attack surface
+  - [x] 9.4.3 Document threat scenarios and mitigations
+  - [x] 9.4.4 Prepare for third-party security audit
 
 ## 10. Testing Implementation
 

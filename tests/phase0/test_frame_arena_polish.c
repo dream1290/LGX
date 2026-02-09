@@ -263,7 +263,7 @@ void test_statistics_accuracy(void) {
     frame_arena_stats_t stats2;
     lgx_frame_get_stats(&stats2);
     
-    TEST_ASSERT(stats2.total_allocations == num_allocs, "Allocation count is accurate");
+    TEST_ASSERT(stats2.total_allocations == (uint64_t)num_allocs, "Allocation count is accurate");
     
     // Note: total_bytes_allocated includes alignment padding
     size_t expected_bytes = num_allocs * ((alloc_size + 15) & ~15);  // 16-byte aligned

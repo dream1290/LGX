@@ -3,6 +3,7 @@ LGX_1.0 {
         # Core API functions
         lgx_runtime_init;
         lgx_runtime_shutdown;
+        lgx_runtime_is_initialized;
         lgx_runtime_get_version;
         lgx_runtime_check_compatibility;
         
@@ -111,6 +112,9 @@ LGX_1.0 {
         lgx_log;
         lgx_time_now_ns;
         lgx_set_log_filter;
+        lgx_set_log_max_size;
+        lgx_set_log_rotation_enabled;
+        lgx_get_log_current_size;
         
         # Structured logging with subsystem filtering
         lgx_log_tagged;
@@ -179,6 +183,63 @@ LGX_1.0 {
         lgx_telemetry_export_collected_data;
         lgx_telemetry_record_allocation;
         lgx_telemetry_record_allocation_failure;
+        
+        # Telemetry internal (for tests)
+        lgx_runtime_get_state;
+        lgx_telemetry_enable;
+        lgx_telemetry_record_frame_time;
+        lgx_telemetry_export;
+        
+        # Telemetry process (Section 7.1)
+        lgx_telemetry_process_init;
+        lgx_telemetry_process_shutdown;
+        lgx_telemetry_process_record_frame_time;
+        lgx_telemetry_process_record_memory;
+        lgx_telemetry_process_record_allocation;
+        lgx_telemetry_process_get_dropped_events;
+        
+        # Namespace isolation (Section 8.1)
+        lgx_namespace_create_isolated;
+        lgx_namespace_mount_libraries;
+        lgx_namespace_validate_versions;
+        lgx_namespace_cleanup;
+        lgx_namespace_is_isolated;
+        lgx_namespace_get_versions;
+        
+        # Library manifest (Section 8.2)
+        lgx_manifest_check_glibc;
+        lgx_manifest_check_libstdcpp;
+        lgx_manifest_check_vulkan;
+        lgx_manifest_validate_all;
+        lgx_manifest_get_requirements;
+        
+        # Input validation (Section 9.1)
+        lgx_validate_pointer;
+        lgx_validate_size;
+        lgx_validate_allocation_size;
+        lgx_validate_alignment;
+        lgx_validate_string;
+        lgx_validate_and_truncate_string;
+        lgx_validate_path;
+        lgx_validate_enum;
+        lgx_validate_buffer;
+        lgx_validate_struct_size;
+        lgx_validate_capability;
+        lgx_validate_log_level;
+        lgx_validate_access_pattern;
+        lgx_validate_lifetime;
+        lgx_validate_performance_hint;
+        lgx_validate_allocation_intent;
+        lgx_validate_runtime_config;
+        lgx_validation_get_limits;
+        
+        # Memory safety (Section 9.2)
+        lgx_memory_safety_init;
+        lgx_memory_safety_shutdown;
+        lgx_memory_safety_alloc;
+        lgx_memory_safety_free;
+        lgx_memory_safety_advance_frame;
+        lgx_memory_safety_get_stats;
         
         # Trace event system
         lgx_trace_init;

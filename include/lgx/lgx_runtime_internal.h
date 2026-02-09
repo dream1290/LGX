@@ -36,6 +36,7 @@ typedef struct lgx_capability_detector lgx_capability_detector_t;
 typedef struct lgx_lifecycle_manager lgx_lifecycle_manager_t;
 typedef struct lgx_platform_services lgx_platform_services_t;
 typedef struct lgx_telemetry lgx_telemetry_t;
+typedef struct lgx_telemetry_process lgx_telemetry_process_t;
 typedef struct lgx_error_handler lgx_error_handler_t;
 typedef struct lgx_health_monitor lgx_health_monitor_t;
 
@@ -157,6 +158,14 @@ lgx_result_t lgx_telemetry_record_frame_time(lgx_telemetry_t* telemetry, float f
 lgx_result_t lgx_telemetry_record_memory_usage(lgx_telemetry_t* telemetry, 
                                               size_t memory_usage_mb, size_t pool_usage_mb);
 lgx_result_t lgx_telemetry_export(lgx_telemetry_t* telemetry, const char* output_path);
+
+// Telemetry process API functions (Section 7.1)
+lgx_result_t lgx_telemetry_process_init(lgx_telemetry_process_t** process);
+lgx_result_t lgx_telemetry_process_shutdown(lgx_telemetry_process_t* process);
+lgx_result_t lgx_telemetry_process_record_frame_time(lgx_telemetry_process_t* process, float frame_time_ms);
+lgx_result_t lgx_telemetry_process_record_memory(lgx_telemetry_process_t* process, size_t memory_mb);
+lgx_result_t lgx_telemetry_process_record_allocation(lgx_telemetry_process_t* process, size_t size);
+uint64_t lgx_telemetry_process_get_dropped_events(lgx_telemetry_process_t* process);
 
 // Lock-free pool API functions (Day 1-2 Breakthrough Optimization)
 #define NUM_SIZE_CLASSES 16
@@ -335,6 +344,65 @@ void lgx_chaos_get_stats(uint64_t* total_ops, uint64_t* failures, uint64_t* late
 // Trace event system internal API functions (Section 4.5)
 lgx_result_t lgx_trace_init(void);
 lgx_result_t lgx_trace_shutdown(void);
+
+// Namespace isolation API functions (Section 8.1)
+lgx_result_t lgx_namespace_create_isolated(void);
+lgx_result_t lgx_namespace_mount_libraries(const char* pinned_lib_dir);
+lgx_result_t lgx_namespace_validate_versions(void);
+lgx_result_t lgx_namespace_cleanup(void);
+bool lgx_namespace_is_isolated(void);
+void lgx_namespace_get_versions(char* glibc_ver, char* libstdcpp_ver, char* vulkan_ver,
+                                size_t buf_size);
+
+// Library manifest API functions (Section 8.2)
+lgx_result_t lgx_manifest_check_glibc(char* version_out, size_t version_size,
+                                     bool* meets_requirement);
+lgx_result_t lgx_manifest_check_libstdcpp(char* version_out, size_t version_size,
+                                         bool* meets_requirement);
+lgx_result_t lgx_manifest_check_vulkan(char* version_out, size_t version_size,
+                                       bool* meets_requirement);
+lgx_result_t lgx_manifest_validate_all(void);
+void lgx_manifest_get_requirements(char* buffer, size_t buffer_size);
+
+// Input validation API functions (Section 9.1)
+bool lgx_validate_pointer(const void* ptr, const char* param_name);
+bool lgx_validate_size(size_t size, size_t min_size, size_t max_size, const char* param_name);
+bool lgx_validate_allocation_size(size_t size);
+bool lgx_validate_alignment(size_t alignment);
+bool lgx_validate_string(const char* str, size_t max_length, const char* param_name);
+bool lgx_validate_and_truncate_string(const char* src, char* dst, size_t dst_size,
+                                     const char* param_name);
+bool lgx_validate_path(const char* path, const char* param_name);
+bool lgx_validate_enum(int value, int min_value, int max_value, const char* param_name);
+bool lgx_validate_buffer(const void* buffer, size_t size, const char* param_name);
+bool lgx_validate_struct_size(size_t provided_size, size_t expected_size, const char* struct_name);
+bool lgx_validate_capability(lgx_capability_t cap);
+bool lgx_validate_log_level(lgx_log_level_t level);
+bool lgx_validate_access_pattern(lgx_access_pattern_t pattern);
+bool lgx_validate_lifetime(lgx_lifetime_t lifetime);
+bool lgx_validate_performance_hint(lgx_performance_hint_t hint);
+bool lgx_validate_allocation_intent(const lgx_allocation_intent_base_t* intent);
+bool lgx_validate_runtime_config(const lgx_runtime_config_t* config);
+void lgx_validation_get_limits(char* buffer, size_t buffer_size);
+
+// Memory safety API functions (Section 9.2)
+typedef struct lgx_memory_safety_stats {
+    uint64_t total_allocations;
+    uint64_t total_frees;
+    size_t active_allocations;
+    size_t delayed_frees;
+    uint64_t canary_violations;
+    uint64_t double_free_attempts;
+    uint64_t use_after_free_attempts;
+    uint32_t current_frame;
+} lgx_memory_safety_stats_t;
+
+lgx_result_t lgx_memory_safety_init(void);
+lgx_result_t lgx_memory_safety_shutdown(void);
+void* lgx_memory_safety_alloc(size_t size);
+void lgx_memory_safety_free(void* ptr);
+void lgx_memory_safety_advance_frame(void);
+void lgx_memory_safety_get_stats(lgx_memory_safety_stats_t* stats);
 
 #ifdef __cplusplus
 }

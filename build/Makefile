@@ -432,6 +432,19 @@ test_hierarchical_intents/fast:
 .PHONY : test_hierarchical_intents/fast
 
 #=============================================================================
+# Target rules for targets named test_input_validation
+
+# Build rule for target.
+test_input_validation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_input_validation
+.PHONY : test_input_validation
+
+# fast build rule for target.
+test_input_validation/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_validation.dir/build.make CMakeFiles/test_input_validation.dir/build
+.PHONY : test_input_validation/fast
+
+#=============================================================================
 # Target rules for targets named test_intent_accuracy
 
 # Build rule for target.
@@ -482,6 +495,71 @@ test_intent_validation: cmake_check_build_system
 test_intent_validation/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_validation.dir/build.make CMakeFiles/test_intent_validation.dir/build
 .PHONY : test_intent_validation/fast
+
+#=============================================================================
+# Target rules for targets named test_library_manifest
+
+# Build rule for target.
+test_library_manifest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_library_manifest
+.PHONY : test_library_manifest
+
+# fast build rule for target.
+test_library_manifest/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_library_manifest.dir/build.make CMakeFiles/test_library_manifest.dir/build
+.PHONY : test_library_manifest/fast
+
+#=============================================================================
+# Target rules for targets named test_logging
+
+# Build rule for target.
+test_logging: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_logging
+.PHONY : test_logging
+
+# fast build rule for target.
+test_logging/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging.dir/build.make CMakeFiles/test_logging.dir/build
+.PHONY : test_logging/fast
+
+#=============================================================================
+# Target rules for targets named test_logging_simple
+
+# Build rule for target.
+test_logging_simple: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_logging_simple
+.PHONY : test_logging_simple
+
+# fast build rule for target.
+test_logging_simple/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging_simple.dir/build.make CMakeFiles/test_logging_simple.dir/build
+.PHONY : test_logging_simple/fast
+
+#=============================================================================
+# Target rules for targets named test_memory_safety
+
+# Build rule for target.
+test_memory_safety: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_memory_safety
+.PHONY : test_memory_safety
+
+# fast build rule for target.
+test_memory_safety/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_memory_safety.dir/build.make CMakeFiles/test_memory_safety.dir/build
+.PHONY : test_memory_safety/fast
+
+#=============================================================================
+# Target rules for targets named test_namespace_isolation
+
+# Build rule for target.
+test_namespace_isolation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_namespace_isolation
+.PHONY : test_namespace_isolation
+
+# fast build rule for target.
+test_namespace_isolation/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_namespace_isolation.dir/build.make CMakeFiles/test_namespace_isolation.dir/build
+.PHONY : test_namespace_isolation/fast
 
 #=============================================================================
 # Target rules for targets named test_observability_overhead
@@ -601,6 +679,45 @@ test_suspend_resume/fast:
 .PHONY : test_suspend_resume/fast
 
 #=============================================================================
+# Target rules for targets named test_telemetry_anonymization
+
+# Build rule for target.
+test_telemetry_anonymization: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_telemetry_anonymization
+.PHONY : test_telemetry_anonymization
+
+# fast build rule for target.
+test_telemetry_anonymization/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_anonymization.dir/build.make CMakeFiles/test_telemetry_anonymization.dir/build
+.PHONY : test_telemetry_anonymization/fast
+
+#=============================================================================
+# Target rules for targets named test_telemetry_process
+
+# Build rule for target.
+test_telemetry_process: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_telemetry_process
+.PHONY : test_telemetry_process
+
+# fast build rule for target.
+test_telemetry_process/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_process.dir/build.make CMakeFiles/test_telemetry_process.dir/build
+.PHONY : test_telemetry_process/fast
+
+#=============================================================================
+# Target rules for targets named test_telemetry_simple
+
+# Build rule for target.
+test_telemetry_simple: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_telemetry_simple
+.PHONY : test_telemetry_simple
+
+# fast build rule for target.
+test_telemetry_simple/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_simple.dir/build.make CMakeFiles/test_telemetry_simple.dir/build
+.PHONY : test_telemetry_simple/fast
+
+#=============================================================================
 # Target rules for targets named test_tiered_performance
 
 # Build rule for target.
@@ -612,6 +729,19 @@ test_tiered_performance: cmake_check_build_system
 test_tiered_performance/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tiered_performance.dir/build.make CMakeFiles/test_tiered_performance.dir/build
 .PHONY : test_tiered_performance/fast
+
+#=============================================================================
+# Target rules for targets named test_timing_services
+
+# Build rule for target.
+test_timing_services: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_timing_services
+.PHONY : test_timing_services
+
+# fast build rule for target.
+test_timing_services/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timing_services.dir/build.make CMakeFiles/test_timing_services.dir/build
+.PHONY : test_timing_services/fast
 
 #=============================================================================
 # Target rules for targets named test_trace_events
@@ -931,6 +1061,30 @@ src/runtime/lgx_hugepages.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.s
 .PHONY : src/runtime/lgx_hugepages.c.s
 
+src/runtime/lgx_input_validation.o: src/runtime/lgx_input_validation.c.o
+.PHONY : src/runtime/lgx_input_validation.o
+
+# target to build an object file
+src/runtime/lgx_input_validation.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_input_validation.c.o
+.PHONY : src/runtime/lgx_input_validation.c.o
+
+src/runtime/lgx_input_validation.i: src/runtime/lgx_input_validation.c.i
+.PHONY : src/runtime/lgx_input_validation.i
+
+# target to preprocess a source file
+src/runtime/lgx_input_validation.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_input_validation.c.i
+.PHONY : src/runtime/lgx_input_validation.c.i
+
+src/runtime/lgx_input_validation.s: src/runtime/lgx_input_validation.c.s
+.PHONY : src/runtime/lgx_input_validation.s
+
+# target to generate assembly for a file
+src/runtime/lgx_input_validation.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_input_validation.c.s
+.PHONY : src/runtime/lgx_input_validation.c.s
+
 src/runtime/lgx_intent_allocator.o: src/runtime/lgx_intent_allocator.c.o
 .PHONY : src/runtime/lgx_intent_allocator.o
 
@@ -954,6 +1108,30 @@ src/runtime/lgx_intent_allocator.s: src/runtime/lgx_intent_allocator.c.s
 src/runtime/lgx_intent_allocator.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.s
 .PHONY : src/runtime/lgx_intent_allocator.c.s
+
+src/runtime/lgx_library_manifest.o: src/runtime/lgx_library_manifest.c.o
+.PHONY : src/runtime/lgx_library_manifest.o
+
+# target to build an object file
+src/runtime/lgx_library_manifest.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_library_manifest.c.o
+.PHONY : src/runtime/lgx_library_manifest.c.o
+
+src/runtime/lgx_library_manifest.i: src/runtime/lgx_library_manifest.c.i
+.PHONY : src/runtime/lgx_library_manifest.i
+
+# target to preprocess a source file
+src/runtime/lgx_library_manifest.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_library_manifest.c.i
+.PHONY : src/runtime/lgx_library_manifest.c.i
+
+src/runtime/lgx_library_manifest.s: src/runtime/lgx_library_manifest.c.s
+.PHONY : src/runtime/lgx_library_manifest.s
+
+# target to generate assembly for a file
+src/runtime/lgx_library_manifest.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_library_manifest.c.s
+.PHONY : src/runtime/lgx_library_manifest.c.s
 
 src/runtime/lgx_lifecycle_manager.o: src/runtime/lgx_lifecycle_manager.c.o
 .PHONY : src/runtime/lgx_lifecycle_manager.o
@@ -1026,6 +1204,54 @@ src/runtime/lgx_memory_manager.s: src/runtime/lgx_memory_manager.c.s
 src/runtime/lgx_memory_manager.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s
 .PHONY : src/runtime/lgx_memory_manager.c.s
+
+src/runtime/lgx_memory_safety.o: src/runtime/lgx_memory_safety.c.o
+.PHONY : src/runtime/lgx_memory_safety.o
+
+# target to build an object file
+src/runtime/lgx_memory_safety.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o
+.PHONY : src/runtime/lgx_memory_safety.c.o
+
+src/runtime/lgx_memory_safety.i: src/runtime/lgx_memory_safety.c.i
+.PHONY : src/runtime/lgx_memory_safety.i
+
+# target to preprocess a source file
+src/runtime/lgx_memory_safety.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.i
+.PHONY : src/runtime/lgx_memory_safety.c.i
+
+src/runtime/lgx_memory_safety.s: src/runtime/lgx_memory_safety.c.s
+.PHONY : src/runtime/lgx_memory_safety.s
+
+# target to generate assembly for a file
+src/runtime/lgx_memory_safety.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.s
+.PHONY : src/runtime/lgx_memory_safety.c.s
+
+src/runtime/lgx_namespace_isolation.o: src/runtime/lgx_namespace_isolation.c.o
+.PHONY : src/runtime/lgx_namespace_isolation.o
+
+# target to build an object file
+src/runtime/lgx_namespace_isolation.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o
+.PHONY : src/runtime/lgx_namespace_isolation.c.o
+
+src/runtime/lgx_namespace_isolation.i: src/runtime/lgx_namespace_isolation.c.i
+.PHONY : src/runtime/lgx_namespace_isolation.i
+
+# target to preprocess a source file
+src/runtime/lgx_namespace_isolation.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.i
+.PHONY : src/runtime/lgx_namespace_isolation.c.i
+
+src/runtime/lgx_namespace_isolation.s: src/runtime/lgx_namespace_isolation.c.s
+.PHONY : src/runtime/lgx_namespace_isolation.s
+
+# target to generate assembly for a file
+src/runtime/lgx_namespace_isolation.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.s
+.PHONY : src/runtime/lgx_namespace_isolation.c.s
 
 src/runtime/lgx_performance_counters.o: src/runtime/lgx_performance_counters.c.o
 .PHONY : src/runtime/lgx_performance_counters.o
@@ -1170,6 +1396,30 @@ src/runtime/lgx_telemetry.s: src/runtime/lgx_telemetry.c.s
 src/runtime/lgx_telemetry.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.s
 .PHONY : src/runtime/lgx_telemetry.c.s
+
+src/runtime/lgx_telemetry_process.o: src/runtime/lgx_telemetry_process.c.o
+.PHONY : src/runtime/lgx_telemetry_process.o
+
+# target to build an object file
+src/runtime/lgx_telemetry_process.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry_process.c.o
+.PHONY : src/runtime/lgx_telemetry_process.c.o
+
+src/runtime/lgx_telemetry_process.i: src/runtime/lgx_telemetry_process.c.i
+.PHONY : src/runtime/lgx_telemetry_process.i
+
+# target to preprocess a source file
+src/runtime/lgx_telemetry_process.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry_process.c.i
+.PHONY : src/runtime/lgx_telemetry_process.c.i
+
+src/runtime/lgx_telemetry_process.s: src/runtime/lgx_telemetry_process.c.s
+.PHONY : src/runtime/lgx_telemetry_process.s
+
+# target to generate assembly for a file
+src/runtime/lgx_telemetry_process.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry_process.c.s
+.PHONY : src/runtime/lgx_telemetry_process.c.s
 
 src/runtime/lgx_trace_events.o: src/runtime/lgx_trace_events.c.o
 .PHONY : src/runtime/lgx_trace_events.o
@@ -1651,6 +1901,30 @@ tests/phase0/test_hierarchical_intents.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hierarchical_intents.dir/build.make CMakeFiles/test_hierarchical_intents.dir/tests/phase0/test_hierarchical_intents.c.s
 .PHONY : tests/phase0/test_hierarchical_intents.c.s
 
+tests/phase0/test_input_validation.o: tests/phase0/test_input_validation.c.o
+.PHONY : tests/phase0/test_input_validation.o
+
+# target to build an object file
+tests/phase0/test_input_validation.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_validation.dir/build.make CMakeFiles/test_input_validation.dir/tests/phase0/test_input_validation.c.o
+.PHONY : tests/phase0/test_input_validation.c.o
+
+tests/phase0/test_input_validation.i: tests/phase0/test_input_validation.c.i
+.PHONY : tests/phase0/test_input_validation.i
+
+# target to preprocess a source file
+tests/phase0/test_input_validation.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_validation.dir/build.make CMakeFiles/test_input_validation.dir/tests/phase0/test_input_validation.c.i
+.PHONY : tests/phase0/test_input_validation.c.i
+
+tests/phase0/test_input_validation.s: tests/phase0/test_input_validation.c.s
+.PHONY : tests/phase0/test_input_validation.s
+
+# target to generate assembly for a file
+tests/phase0/test_input_validation.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_validation.dir/build.make CMakeFiles/test_input_validation.dir/tests/phase0/test_input_validation.c.s
+.PHONY : tests/phase0/test_input_validation.c.s
+
 tests/phase0/test_intent_accuracy.o: tests/phase0/test_intent_accuracy.c.o
 .PHONY : tests/phase0/test_intent_accuracy.o
 
@@ -1746,6 +2020,126 @@ tests/phase0/test_intent_validation.s: tests/phase0/test_intent_validation.c.s
 tests/phase0/test_intent_validation.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_validation.dir/build.make CMakeFiles/test_intent_validation.dir/tests/phase0/test_intent_validation.c.s
 .PHONY : tests/phase0/test_intent_validation.c.s
+
+tests/phase0/test_library_manifest.o: tests/phase0/test_library_manifest.c.o
+.PHONY : tests/phase0/test_library_manifest.o
+
+# target to build an object file
+tests/phase0/test_library_manifest.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_library_manifest.dir/build.make CMakeFiles/test_library_manifest.dir/tests/phase0/test_library_manifest.c.o
+.PHONY : tests/phase0/test_library_manifest.c.o
+
+tests/phase0/test_library_manifest.i: tests/phase0/test_library_manifest.c.i
+.PHONY : tests/phase0/test_library_manifest.i
+
+# target to preprocess a source file
+tests/phase0/test_library_manifest.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_library_manifest.dir/build.make CMakeFiles/test_library_manifest.dir/tests/phase0/test_library_manifest.c.i
+.PHONY : tests/phase0/test_library_manifest.c.i
+
+tests/phase0/test_library_manifest.s: tests/phase0/test_library_manifest.c.s
+.PHONY : tests/phase0/test_library_manifest.s
+
+# target to generate assembly for a file
+tests/phase0/test_library_manifest.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_library_manifest.dir/build.make CMakeFiles/test_library_manifest.dir/tests/phase0/test_library_manifest.c.s
+.PHONY : tests/phase0/test_library_manifest.c.s
+
+tests/phase0/test_logging.o: tests/phase0/test_logging.c.o
+.PHONY : tests/phase0/test_logging.o
+
+# target to build an object file
+tests/phase0/test_logging.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging.dir/build.make CMakeFiles/test_logging.dir/tests/phase0/test_logging.c.o
+.PHONY : tests/phase0/test_logging.c.o
+
+tests/phase0/test_logging.i: tests/phase0/test_logging.c.i
+.PHONY : tests/phase0/test_logging.i
+
+# target to preprocess a source file
+tests/phase0/test_logging.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging.dir/build.make CMakeFiles/test_logging.dir/tests/phase0/test_logging.c.i
+.PHONY : tests/phase0/test_logging.c.i
+
+tests/phase0/test_logging.s: tests/phase0/test_logging.c.s
+.PHONY : tests/phase0/test_logging.s
+
+# target to generate assembly for a file
+tests/phase0/test_logging.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging.dir/build.make CMakeFiles/test_logging.dir/tests/phase0/test_logging.c.s
+.PHONY : tests/phase0/test_logging.c.s
+
+tests/phase0/test_logging_simple.o: tests/phase0/test_logging_simple.c.o
+.PHONY : tests/phase0/test_logging_simple.o
+
+# target to build an object file
+tests/phase0/test_logging_simple.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging_simple.dir/build.make CMakeFiles/test_logging_simple.dir/tests/phase0/test_logging_simple.c.o
+.PHONY : tests/phase0/test_logging_simple.c.o
+
+tests/phase0/test_logging_simple.i: tests/phase0/test_logging_simple.c.i
+.PHONY : tests/phase0/test_logging_simple.i
+
+# target to preprocess a source file
+tests/phase0/test_logging_simple.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging_simple.dir/build.make CMakeFiles/test_logging_simple.dir/tests/phase0/test_logging_simple.c.i
+.PHONY : tests/phase0/test_logging_simple.c.i
+
+tests/phase0/test_logging_simple.s: tests/phase0/test_logging_simple.c.s
+.PHONY : tests/phase0/test_logging_simple.s
+
+# target to generate assembly for a file
+tests/phase0/test_logging_simple.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging_simple.dir/build.make CMakeFiles/test_logging_simple.dir/tests/phase0/test_logging_simple.c.s
+.PHONY : tests/phase0/test_logging_simple.c.s
+
+tests/phase0/test_memory_safety.o: tests/phase0/test_memory_safety.c.o
+.PHONY : tests/phase0/test_memory_safety.o
+
+# target to build an object file
+tests/phase0/test_memory_safety.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_memory_safety.dir/build.make CMakeFiles/test_memory_safety.dir/tests/phase0/test_memory_safety.c.o
+.PHONY : tests/phase0/test_memory_safety.c.o
+
+tests/phase0/test_memory_safety.i: tests/phase0/test_memory_safety.c.i
+.PHONY : tests/phase0/test_memory_safety.i
+
+# target to preprocess a source file
+tests/phase0/test_memory_safety.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_memory_safety.dir/build.make CMakeFiles/test_memory_safety.dir/tests/phase0/test_memory_safety.c.i
+.PHONY : tests/phase0/test_memory_safety.c.i
+
+tests/phase0/test_memory_safety.s: tests/phase0/test_memory_safety.c.s
+.PHONY : tests/phase0/test_memory_safety.s
+
+# target to generate assembly for a file
+tests/phase0/test_memory_safety.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_memory_safety.dir/build.make CMakeFiles/test_memory_safety.dir/tests/phase0/test_memory_safety.c.s
+.PHONY : tests/phase0/test_memory_safety.c.s
+
+tests/phase0/test_namespace_isolation.o: tests/phase0/test_namespace_isolation.c.o
+.PHONY : tests/phase0/test_namespace_isolation.o
+
+# target to build an object file
+tests/phase0/test_namespace_isolation.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_namespace_isolation.dir/build.make CMakeFiles/test_namespace_isolation.dir/tests/phase0/test_namespace_isolation.c.o
+.PHONY : tests/phase0/test_namespace_isolation.c.o
+
+tests/phase0/test_namespace_isolation.i: tests/phase0/test_namespace_isolation.c.i
+.PHONY : tests/phase0/test_namespace_isolation.i
+
+# target to preprocess a source file
+tests/phase0/test_namespace_isolation.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_namespace_isolation.dir/build.make CMakeFiles/test_namespace_isolation.dir/tests/phase0/test_namespace_isolation.c.i
+.PHONY : tests/phase0/test_namespace_isolation.c.i
+
+tests/phase0/test_namespace_isolation.s: tests/phase0/test_namespace_isolation.c.s
+.PHONY : tests/phase0/test_namespace_isolation.s
+
+# target to generate assembly for a file
+tests/phase0/test_namespace_isolation.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_namespace_isolation.dir/build.make CMakeFiles/test_namespace_isolation.dir/tests/phase0/test_namespace_isolation.c.s
+.PHONY : tests/phase0/test_namespace_isolation.c.s
 
 tests/phase0/test_observability_overhead.o: tests/phase0/test_observability_overhead.c.o
 .PHONY : tests/phase0/test_observability_overhead.o
@@ -1963,6 +2357,78 @@ tests/phase0/test_suspend_resume.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_suspend_resume.dir/build.make CMakeFiles/test_suspend_resume.dir/tests/phase0/test_suspend_resume.c.s
 .PHONY : tests/phase0/test_suspend_resume.c.s
 
+tests/phase0/test_telemetry_anonymization.o: tests/phase0/test_telemetry_anonymization.c.o
+.PHONY : tests/phase0/test_telemetry_anonymization.o
+
+# target to build an object file
+tests/phase0/test_telemetry_anonymization.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_anonymization.dir/build.make CMakeFiles/test_telemetry_anonymization.dir/tests/phase0/test_telemetry_anonymization.c.o
+.PHONY : tests/phase0/test_telemetry_anonymization.c.o
+
+tests/phase0/test_telemetry_anonymization.i: tests/phase0/test_telemetry_anonymization.c.i
+.PHONY : tests/phase0/test_telemetry_anonymization.i
+
+# target to preprocess a source file
+tests/phase0/test_telemetry_anonymization.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_anonymization.dir/build.make CMakeFiles/test_telemetry_anonymization.dir/tests/phase0/test_telemetry_anonymization.c.i
+.PHONY : tests/phase0/test_telemetry_anonymization.c.i
+
+tests/phase0/test_telemetry_anonymization.s: tests/phase0/test_telemetry_anonymization.c.s
+.PHONY : tests/phase0/test_telemetry_anonymization.s
+
+# target to generate assembly for a file
+tests/phase0/test_telemetry_anonymization.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_anonymization.dir/build.make CMakeFiles/test_telemetry_anonymization.dir/tests/phase0/test_telemetry_anonymization.c.s
+.PHONY : tests/phase0/test_telemetry_anonymization.c.s
+
+tests/phase0/test_telemetry_process.o: tests/phase0/test_telemetry_process.c.o
+.PHONY : tests/phase0/test_telemetry_process.o
+
+# target to build an object file
+tests/phase0/test_telemetry_process.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_process.dir/build.make CMakeFiles/test_telemetry_process.dir/tests/phase0/test_telemetry_process.c.o
+.PHONY : tests/phase0/test_telemetry_process.c.o
+
+tests/phase0/test_telemetry_process.i: tests/phase0/test_telemetry_process.c.i
+.PHONY : tests/phase0/test_telemetry_process.i
+
+# target to preprocess a source file
+tests/phase0/test_telemetry_process.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_process.dir/build.make CMakeFiles/test_telemetry_process.dir/tests/phase0/test_telemetry_process.c.i
+.PHONY : tests/phase0/test_telemetry_process.c.i
+
+tests/phase0/test_telemetry_process.s: tests/phase0/test_telemetry_process.c.s
+.PHONY : tests/phase0/test_telemetry_process.s
+
+# target to generate assembly for a file
+tests/phase0/test_telemetry_process.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_process.dir/build.make CMakeFiles/test_telemetry_process.dir/tests/phase0/test_telemetry_process.c.s
+.PHONY : tests/phase0/test_telemetry_process.c.s
+
+tests/phase0/test_telemetry_simple.o: tests/phase0/test_telemetry_simple.c.o
+.PHONY : tests/phase0/test_telemetry_simple.o
+
+# target to build an object file
+tests/phase0/test_telemetry_simple.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_simple.dir/build.make CMakeFiles/test_telemetry_simple.dir/tests/phase0/test_telemetry_simple.c.o
+.PHONY : tests/phase0/test_telemetry_simple.c.o
+
+tests/phase0/test_telemetry_simple.i: tests/phase0/test_telemetry_simple.c.i
+.PHONY : tests/phase0/test_telemetry_simple.i
+
+# target to preprocess a source file
+tests/phase0/test_telemetry_simple.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_simple.dir/build.make CMakeFiles/test_telemetry_simple.dir/tests/phase0/test_telemetry_simple.c.i
+.PHONY : tests/phase0/test_telemetry_simple.c.i
+
+tests/phase0/test_telemetry_simple.s: tests/phase0/test_telemetry_simple.c.s
+.PHONY : tests/phase0/test_telemetry_simple.s
+
+# target to generate assembly for a file
+tests/phase0/test_telemetry_simple.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_simple.dir/build.make CMakeFiles/test_telemetry_simple.dir/tests/phase0/test_telemetry_simple.c.s
+.PHONY : tests/phase0/test_telemetry_simple.c.s
+
 tests/phase0/test_tiered_performance.o: tests/phase0/test_tiered_performance.c.o
 .PHONY : tests/phase0/test_tiered_performance.o
 
@@ -1986,6 +2452,30 @@ tests/phase0/test_tiered_performance.s: tests/phase0/test_tiered_performance.c.s
 tests/phase0/test_tiered_performance.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tiered_performance.dir/build.make CMakeFiles/test_tiered_performance.dir/tests/phase0/test_tiered_performance.c.s
 .PHONY : tests/phase0/test_tiered_performance.c.s
+
+tests/phase0/test_timing_services.o: tests/phase0/test_timing_services.c.o
+.PHONY : tests/phase0/test_timing_services.o
+
+# target to build an object file
+tests/phase0/test_timing_services.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timing_services.dir/build.make CMakeFiles/test_timing_services.dir/tests/phase0/test_timing_services.c.o
+.PHONY : tests/phase0/test_timing_services.c.o
+
+tests/phase0/test_timing_services.i: tests/phase0/test_timing_services.c.i
+.PHONY : tests/phase0/test_timing_services.i
+
+# target to preprocess a source file
+tests/phase0/test_timing_services.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timing_services.dir/build.make CMakeFiles/test_timing_services.dir/tests/phase0/test_timing_services.c.i
+.PHONY : tests/phase0/test_timing_services.c.i
+
+tests/phase0/test_timing_services.s: tests/phase0/test_timing_services.c.s
+.PHONY : tests/phase0/test_timing_services.s
+
+# target to generate assembly for a file
+tests/phase0/test_timing_services.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timing_services.dir/build.make CMakeFiles/test_timing_services.dir/tests/phase0/test_timing_services.c.s
+.PHONY : tests/phase0/test_timing_services.c.s
 
 tests/phase0/test_trace_events.o: tests/phase0/test_trace_events.c.o
 .PHONY : tests/phase0/test_trace_events.o
@@ -2049,10 +2539,16 @@ help:
 	@echo "... test_hardware_adaptation"
 	@echo "... test_hardware_tier"
 	@echo "... test_hierarchical_intents"
+	@echo "... test_input_validation"
 	@echo "... test_intent_accuracy"
 	@echo "... test_intent_allocator"
 	@echo "... test_intent_mismatch_rates"
 	@echo "... test_intent_validation"
+	@echo "... test_library_manifest"
+	@echo "... test_logging"
+	@echo "... test_logging_simple"
+	@echo "... test_memory_safety"
+	@echo "... test_namespace_isolation"
 	@echo "... test_observability_overhead"
 	@echo "... test_performance"
 	@echo "... test_persistent_heap"
@@ -2062,7 +2558,11 @@ help:
 	@echo "... test_simd_fallback"
 	@echo "... test_structured_logging"
 	@echo "... test_suspend_resume"
+	@echo "... test_telemetry_anonymization"
+	@echo "... test_telemetry_process"
+	@echo "... test_telemetry_simple"
 	@echo "... test_tiered_performance"
+	@echo "... test_timing_services"
 	@echo "... test_trace_events"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
@@ -2094,9 +2594,15 @@ help:
 	@echo "... src/runtime/lgx_hugepages.o"
 	@echo "... src/runtime/lgx_hugepages.i"
 	@echo "... src/runtime/lgx_hugepages.s"
+	@echo "... src/runtime/lgx_input_validation.o"
+	@echo "... src/runtime/lgx_input_validation.i"
+	@echo "... src/runtime/lgx_input_validation.s"
 	@echo "... src/runtime/lgx_intent_allocator.o"
 	@echo "... src/runtime/lgx_intent_allocator.i"
 	@echo "... src/runtime/lgx_intent_allocator.s"
+	@echo "... src/runtime/lgx_library_manifest.o"
+	@echo "... src/runtime/lgx_library_manifest.i"
+	@echo "... src/runtime/lgx_library_manifest.s"
 	@echo "... src/runtime/lgx_lifecycle_manager.o"
 	@echo "... src/runtime/lgx_lifecycle_manager.i"
 	@echo "... src/runtime/lgx_lifecycle_manager.s"
@@ -2106,6 +2612,12 @@ help:
 	@echo "... src/runtime/lgx_memory_manager.o"
 	@echo "... src/runtime/lgx_memory_manager.i"
 	@echo "... src/runtime/lgx_memory_manager.s"
+	@echo "... src/runtime/lgx_memory_safety.o"
+	@echo "... src/runtime/lgx_memory_safety.i"
+	@echo "... src/runtime/lgx_memory_safety.s"
+	@echo "... src/runtime/lgx_namespace_isolation.o"
+	@echo "... src/runtime/lgx_namespace_isolation.i"
+	@echo "... src/runtime/lgx_namespace_isolation.s"
 	@echo "... src/runtime/lgx_performance_counters.o"
 	@echo "... src/runtime/lgx_performance_counters.i"
 	@echo "... src/runtime/lgx_performance_counters.s"
@@ -2124,6 +2636,9 @@ help:
 	@echo "... src/runtime/lgx_telemetry.o"
 	@echo "... src/runtime/lgx_telemetry.i"
 	@echo "... src/runtime/lgx_telemetry.s"
+	@echo "... src/runtime/lgx_telemetry_process.o"
+	@echo "... src/runtime/lgx_telemetry_process.i"
+	@echo "... src/runtime/lgx_telemetry_process.s"
 	@echo "... src/runtime/lgx_trace_events.o"
 	@echo "... src/runtime/lgx_trace_events.i"
 	@echo "... src/runtime/lgx_trace_events.s"
@@ -2184,6 +2699,9 @@ help:
 	@echo "... tests/phase0/test_hierarchical_intents.o"
 	@echo "... tests/phase0/test_hierarchical_intents.i"
 	@echo "... tests/phase0/test_hierarchical_intents.s"
+	@echo "... tests/phase0/test_input_validation.o"
+	@echo "... tests/phase0/test_input_validation.i"
+	@echo "... tests/phase0/test_input_validation.s"
 	@echo "... tests/phase0/test_intent_accuracy.o"
 	@echo "... tests/phase0/test_intent_accuracy.i"
 	@echo "... tests/phase0/test_intent_accuracy.s"
@@ -2196,6 +2714,21 @@ help:
 	@echo "... tests/phase0/test_intent_validation.o"
 	@echo "... tests/phase0/test_intent_validation.i"
 	@echo "... tests/phase0/test_intent_validation.s"
+	@echo "... tests/phase0/test_library_manifest.o"
+	@echo "... tests/phase0/test_library_manifest.i"
+	@echo "... tests/phase0/test_library_manifest.s"
+	@echo "... tests/phase0/test_logging.o"
+	@echo "... tests/phase0/test_logging.i"
+	@echo "... tests/phase0/test_logging.s"
+	@echo "... tests/phase0/test_logging_simple.o"
+	@echo "... tests/phase0/test_logging_simple.i"
+	@echo "... tests/phase0/test_logging_simple.s"
+	@echo "... tests/phase0/test_memory_safety.o"
+	@echo "... tests/phase0/test_memory_safety.i"
+	@echo "... tests/phase0/test_memory_safety.s"
+	@echo "... tests/phase0/test_namespace_isolation.o"
+	@echo "... tests/phase0/test_namespace_isolation.i"
+	@echo "... tests/phase0/test_namespace_isolation.s"
 	@echo "... tests/phase0/test_observability_overhead.o"
 	@echo "... tests/phase0/test_observability_overhead.i"
 	@echo "... tests/phase0/test_observability_overhead.s"
@@ -2223,9 +2756,21 @@ help:
 	@echo "... tests/phase0/test_suspend_resume.o"
 	@echo "... tests/phase0/test_suspend_resume.i"
 	@echo "... tests/phase0/test_suspend_resume.s"
+	@echo "... tests/phase0/test_telemetry_anonymization.o"
+	@echo "... tests/phase0/test_telemetry_anonymization.i"
+	@echo "... tests/phase0/test_telemetry_anonymization.s"
+	@echo "... tests/phase0/test_telemetry_process.o"
+	@echo "... tests/phase0/test_telemetry_process.i"
+	@echo "... tests/phase0/test_telemetry_process.s"
+	@echo "... tests/phase0/test_telemetry_simple.o"
+	@echo "... tests/phase0/test_telemetry_simple.i"
+	@echo "... tests/phase0/test_telemetry_simple.s"
 	@echo "... tests/phase0/test_tiered_performance.o"
 	@echo "... tests/phase0/test_tiered_performance.i"
 	@echo "... tests/phase0/test_tiered_performance.s"
+	@echo "... tests/phase0/test_timing_services.o"
+	@echo "... tests/phase0/test_timing_services.i"
+	@echo "... tests/phase0/test_timing_services.s"
 	@echo "... tests/phase0/test_trace_events.o"
 	@echo "... tests/phase0/test_trace_events.i"
 	@echo "... tests/phase0/test_trace_events.s"

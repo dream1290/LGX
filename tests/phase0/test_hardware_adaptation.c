@@ -90,7 +90,7 @@ static void test_health_check_api(void) {
     lgx_hardware_status_t hw_status = lgx_runtime_get_hardware_status();
     (void)hw_status;  // Suppress unused warning
     assert(health_status.hardware_tier == hw_status.achieved_tier);
-    assert(health_status.missing_capabilities == hw_status.missing_capabilities);
+    // Note: missing_capabilities field removed from health_status
     
     printf("  ✓ Health check API working correctly\n\n");
 }

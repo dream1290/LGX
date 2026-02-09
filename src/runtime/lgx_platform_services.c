@@ -15,6 +15,11 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdarg.h>
+#include <errno.h>
+
+// Default log file size limit: 100MB
+#define LGX_LOG_MAX_SIZE (100 * 1024 * 1024)
+#define LGX_LOG_MAX_ROTATIONS 5
 
 // Platform services state
 struct lgx_platform_services {
@@ -25,6 +30,9 @@ struct lgx_platform_services {
     
     // Configuration
     const char* log_path;
+    size_t log_max_size;        // Maximum log file size before rotation
+    size_t log_current_size;    // Current log file size
+    bool log_rotation_enabled;  // Whether log rotation is enabled
 };
 
 /**
@@ -50,11 +58,19 @@ lgx_result_t lgx_platform_services_init(lgx_platform_services_t** services,
     ps->min_log_level = LGX_LOG_INFO;
     ps->subsystem_filter = 0;  // 0 = all subsystems enabled
     ps->log_file = NULL;
+    ps->log_max_size = LGX_LOG_MAX_SIZE;
+    ps->log_current_size = 0;
+    ps->log_rotation_enabled = true;
     
     // Open log file if specified
     if (ps->log_path) {
         ps->log_file = fopen(ps->log_path, "a");
         // If file open fails, continue with stderr logging
+        if (ps->log_file) {
+            // Get current file size
+            fseek(ps->log_file, 0, SEEK_END);
+            ps->log_current_size = ftell(ps->log_file);
+        }
     }
     
     *services = ps;
@@ -190,6 +206,49 @@ static const char* log_level_to_string(lgx_log_level_t level) {
     }
 }
 
+/**
+ * Rotate log file when size limit is reached
+ */
+static void rotate_log_file(lgx_platform_services_t* services) {
+    if (!services || !services->log_path || !services->log_rotation_enabled) {
+        return;
+    }
+    
+    // Close current log file
+    if (services->log_file) {
+        fclose(services->log_file);
+        services->log_file = NULL;
+    }
+    
+    // Rotate existing log files
+    // log.4 -> deleted
+    // log.3 -> log.4
+    // log.2 -> log.3
+    // log.1 -> log.2
+    // log -> log.1
+    char old_path[512];
+    char new_path[512];
+    
+    // Delete oldest log file
+    snprintf(old_path, sizeof(old_path), "%s.%d", services->log_path, LGX_LOG_MAX_ROTATIONS - 1);
+    unlink(old_path);  // Ignore errors
+    
+    // Rotate log files
+    for (int i = LGX_LOG_MAX_ROTATIONS - 2; i >= 1; i--) {
+        snprintf(old_path, sizeof(old_path), "%s.%d", services->log_path, i);
+        snprintf(new_path, sizeof(new_path), "%s.%d", services->log_path, i + 1);
+        rename(old_path, new_path);  // Ignore errors
+    }
+    
+    // Rename current log to .1
+    snprintf(new_path, sizeof(new_path), "%s.1", services->log_path);
+    rename(services->log_path, new_path);  // Ignore errors
+    
+    // Open new log file
+    services->log_file = fopen(services->log_path, "w");
+    services->log_current_size = 0;
+}
+
 void lgx_log_impl(lgx_platform_services_t* services, lgx_log_level_t level, 
                   const char* format, va_list args) {
     if (!services || level < services->min_log_level) {
@@ -197,6 +256,12 @@ void lgx_log_impl(lgx_platform_services_t* services, lgx_log_level_t level,
     }
     
     pthread_mutex_lock(&services->log_mutex);
+    
+    // Check if log rotation is needed
+    if (services->log_file && services->log_rotation_enabled && 
+        services->log_current_size >= services->log_max_size) {
+        rotate_log_file(services);
+    }
     
     // Get current time
     struct timespec ts;
@@ -211,11 +276,20 @@ void lgx_log_impl(lgx_platform_services_t* services, lgx_log_level_t level,
     FILE* output = services->log_file ? services->log_file : stderr;
     
     // Write log entry
-    fprintf(output, "[%s.%03ld] [%s] ", 
+    int written = fprintf(output, "[%s.%03ld] [%s] ", 
             timestamp, ts.tv_nsec / 1000000, log_level_to_string(level));
-    vfprintf(output, format, args);
-    fprintf(output, "\n");
+    
+    // Format message
+    char message[4096];
+    vsnprintf(message, sizeof(message), format, args);
+    written += fprintf(output, "%s\n", message);
+    
     fflush(output);
+    
+    // Update log file size
+    if (services->log_file && written > 0) {
+        services->log_current_size += written;
+    }
     
     pthread_mutex_unlock(&services->log_mutex);
 }
@@ -288,6 +362,12 @@ void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level,
     
     pthread_mutex_lock(&g_platform_services->log_mutex);
     
+    // Check if log rotation is needed
+    if (g_platform_services->log_file && g_platform_services->log_rotation_enabled && 
+        g_platform_services->log_current_size >= g_platform_services->log_max_size) {
+        rotate_log_file(g_platform_services);
+    }
+    
     // Get current time
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
@@ -301,18 +381,25 @@ void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level,
     FILE* output = g_platform_services->log_file ? g_platform_services->log_file : stderr;
     
     // Write log entry with subsystem tag
-    fprintf(output, "[%s.%03ld] [%s] [%s] ", 
+    int written = fprintf(output, "[%s.%03ld] [%s] [%s] ", 
             timestamp, ts.tv_nsec / 1000000, 
             log_level_to_string(level),
             lgx_subsystem_to_string(subsystem));
     
+    // Format message
+    char message[4096];
     va_list args;
     va_start(args, format);
-    vfprintf(output, format, args);
+    vsnprintf(message, sizeof(message), format, args);
     va_end(args);
     
-    fprintf(output, "\n");
+    written += fprintf(output, "%s\n", message);
     fflush(output);
+    
+    // Update log file size
+    if (g_platform_services->log_file && written > 0) {
+        g_platform_services->log_current_size += written;
+    }
     
     pthread_mutex_unlock(&g_platform_services->log_mutex);
 }
@@ -332,6 +419,41 @@ void lgx_set_subsystem_filter(uint32_t subsystem_mask) {
 uint32_t lgx_get_subsystem_filter(void) {
     if (g_platform_services) {
         return g_platform_services->subsystem_filter;
+    }
+    return 0;
+}
+
+/**
+ * Set log file maximum size
+ */
+void lgx_set_log_max_size(size_t max_size_bytes) {
+    if (g_platform_services) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        g_platform_services->log_max_size = max_size_bytes;
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+    }
+}
+
+/**
+ * Enable or disable log rotation
+ */
+void lgx_set_log_rotation_enabled(bool enabled) {
+    if (g_platform_services) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        g_platform_services->log_rotation_enabled = enabled;
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+    }
+}
+
+/**
+ * Get current log file size
+ */
+size_t lgx_get_log_current_size(void) {
+    if (g_platform_services) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        size_t size = g_platform_services->log_current_size;
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+        return size;
     }
     return 0;
 }
