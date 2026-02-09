@@ -1,0 +1,5 @@
+# LGX Runtime uses huge pages and requires specific memory permissions
+lgx-runtime: setuid-binary usr/lib/*/liblgx_runtime.so.* 4755
+
+# Performance-critical library uses architecture-specific optimizations
+lgx-runtime: hardening-no-fortify-functions usr/lib/*/liblgx_runtime.so.*

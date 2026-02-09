@@ -297,6 +297,30 @@ typedef struct lgx_chaos_config {
     uint32_t random_seed;            // 0 = use time-based seed
 } lgx_chaos_config_t;
 
+// Memory usage monitoring (Task 12.2.4)
+typedef struct lgx_memory_usage {
+    size_t struct_size;
+    
+    // RSS (Resident Set Size)
+    size_t rss_bytes;                // Current RSS
+    size_t baseline_rss_bytes;       // RSS before runtime init
+    size_t overhead_bytes;           // Current overhead (rss - baseline)
+    size_t peak_rss_bytes;           // Peak RSS
+    size_t peak_overhead_bytes;      // Peak overhead
+    
+    // Per-allocator usage
+    size_t frame_arena_bytes;        // Current frame arena usage
+    size_t frame_arena_peak_bytes;   // Peak frame arena usage
+    size_t gpu_pool_bytes;           // Current GPU pool usage
+    size_t gpu_pool_peak_bytes;      // Peak GPU pool usage
+    size_t persistent_heap_bytes;    // Current persistent heap usage
+    size_t persistent_heap_peak_bytes; // Peak persistent heap usage
+    
+    // Overhead breakdown
+    size_t metadata_bytes;           // Metadata overhead
+    size_t telemetry_bytes;          // Telemetry overhead
+} lgx_memory_usage_t;
+
 // Memory pool statistics
 typedef struct lgx_pool_stats {
     size_t size_class;

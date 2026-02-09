@@ -32,6 +32,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o.d"
   "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o"
   "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o.d"
+  "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o"
+  "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o.d"
   "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o"
   "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o.d"
   "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o"

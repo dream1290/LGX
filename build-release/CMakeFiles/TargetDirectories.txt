@@ -95,6 +95,7 @@
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/perf_test_allocation_latency.dir
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/perf_test_memory_overhead.dir
+/home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/perf_test_memory_footprint.dir
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/test.dir
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/edit_cache.dir
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/rebuild_cache.dir
@@ -102,3 +103,17 @@
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/install.dir
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/install/local.dir
 /home/karl/Projects/LGX/build-release/tests/performance/CMakeFiles/install/strip.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/test_oom_injection.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/test_gpu_timeout.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/test_telemetry_crash.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/test_filesystem_full.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/test_toctou_races.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/test.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/edit_cache.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/rebuild_cache.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/list_install_components.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/install.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/install/local.dir
+/home/karl/Projects/LGX/build-release/tests/failure_injection/CMakeFiles/install/strip.dir

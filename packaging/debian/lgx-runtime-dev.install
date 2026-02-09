@@ -1,0 +1,3 @@
+usr/include/*
+usr/lib/*/liblgx_runtime.so
+usr/lib/*/pkgconfig/lgx_runtime.pc

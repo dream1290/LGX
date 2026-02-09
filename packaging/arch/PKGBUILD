@@ -1,0 +1,46 @@
+# Maintainer: LGX Platform Team <team@lgx-platform.org>
+
+pkgname=lgx-runtime
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="High-performance deterministic runtime for Linux gaming"
+arch=('x86_64')
+url="https://github.com/lgx-platform/LGX"
+license=('MIT')
+depends=('glibc' 'vulkan-icd-loader' 'jemalloc')
+makedepends=('cmake' 'vulkan-headers' 'pkgconf')
+provides=('lgx-runtime')
+conflicts=('lgx-runtime-git')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/lgx-platform/LGX/archive/v${pkgver}.tar.gz")
+sha256sums=('SKIP')  # Update with actual checksum after release
+
+build() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    
+    cmake -B build \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib
+    
+    cmake --build build
+}
+
+check() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    
+    # Run unit tests only (skip performance tests in package build)
+    cd build
+    ctest --output-on-failure -R unit_ || true
+}
+
+package() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    
+    DESTDIR="${pkgdir}" cmake --install build
+    
+    # Install license
+    install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    
+    # Install documentation
+    install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

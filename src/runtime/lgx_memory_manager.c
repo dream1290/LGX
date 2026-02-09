@@ -530,13 +530,17 @@ void* lgx_alloc_aligned(size_t size, size_t alignment) {
  * Free memory
  * 
  * This is the unified free function that handles allocations from different allocators:
+ * - Frame arena allocations (no-op - reset at frame boundaries)
  * - Persistent heap allocations (freed via lgx_heap_free)
  * - Memory manager allocations (freed via lgx_memory_manager_free)
- * - Frame arena allocations (should not be freed individually - they're reset at frame boundaries)
  * 
  * Detection strategy:
- * - Check if pointer is from persistent heap (validates magic number)
- * - If not, use memory manager
+ * - Check if pointer is from frame arena FIRST (no-op if true)
+ * - Then check if pointer is from persistent heap (validates magic number)
+ * - Otherwise, use memory manager
+ * 
+ * IMPORTANT: Frame arena check must come first because lgx_heap_is_heap_pointer()
+ * reads memory at ptr-sizeof(header), which could segfault for frame arena pointers.
  */
 void lgx_free(void* ptr) {
     if (!ptr) {
@@ -548,7 +552,18 @@ void lgx_free(void* ptr) {
         return;
     }
     
+    // CRITICAL: Check frame arena FIRST before any memory reads
+    // Frame arena allocations should NOT be freed individually - they are
+    // automatically reset when lgx_frame_reset() is called at frame boundaries
+    if (lgx_frame_arena_is_initialized() && lgx_frame_is_frame_pointer(ptr)) {
+        // This is a frame arena allocation - do nothing
+        // It will be automatically reclaimed on the next frame reset
+        return;
+    }
+    
     // Check if this is a persistent heap allocation
+    // This check reads memory at ptr-sizeof(header), so it must come AFTER
+    // the frame arena check to avoid segfaults
     if (lgx_persistent_heap_is_initialized() && lgx_heap_is_heap_pointer(ptr)) {
         lgx_heap_free(ptr);
         return;

@@ -481,7 +481,13 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
     
     // Initialize subsystems in dependency order
     
-    // 0. Namespace Isolation (must be first, before any library loading)
+    // 0. Memory Monitor (MUST be first to capture accurate baseline RSS)
+    result = lgx_memory_monitor_init();
+    if (result != LGX_SUCCESS) {
+        return result;
+    }
+    
+    // 1. Namespace Isolation (must be early, before any library loading)
     result = lgx_namespace_create_isolated();
     if (result != LGX_SUCCESS) {
         // Namespace isolation failure is not fatal (may not have privileges)
@@ -627,6 +633,9 @@ static lgx_result_t shutdown_subsystems(void) {
         lgx_error_handler_shutdown(g_runtime.error_handler);
         g_runtime.error_handler = NULL;
     }
+    
+    // Shutdown memory monitor (before performance counters)
+    lgx_memory_monitor_shutdown();
     
     // Shutdown performance counters last
     lgx_counters_shutdown();

@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -O3 -DNDEBUG -O2 -DNDEBUG -march=native CMakeFiles/test_oom_injection.dir/test_oom_injection.c.o -o test_oom_injection  -Wl,-rpath,/home/karl/Projects/LGX/build-release ../../liblgx_runtime.so.1.0.0 -lm -lpthread -ldl /usr/lib/x86_64-linux-gnu/libvulkan.so /usr/lib/x86_64-linux-gnu/libjemalloc.so 

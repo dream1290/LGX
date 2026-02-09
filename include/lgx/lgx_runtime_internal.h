@@ -204,6 +204,7 @@ bool lgx_frame_arena_is_initialized(void);
 uint32_t lgx_frame_get_current_frame(void);
 size_t lgx_frame_get_current_usage(void);
 size_t lgx_frame_get_peak_usage(void);
+bool lgx_frame_is_frame_pointer(void* ptr);
 
 // GPU memory pool API functions (Month 2 - Specialized Allocators)
 // Forward declare Vulkan types to avoid requiring vulkan.h in this header
@@ -322,6 +323,15 @@ lgx_result_t lgx_error_handler_shutdown(lgx_error_handler_t* handler);
 lgx_result_t lgx_health_monitor_init(lgx_health_monitor_t** monitor,
                                     lgx_runtime_state_t* runtime_state);
 lgx_result_t lgx_health_monitor_shutdown(lgx_health_monitor_t* monitor);
+
+// Memory monitoring API functions (Task 12.2.4)
+lgx_result_t lgx_memory_monitor_init(void);
+lgx_result_t lgx_memory_monitor_shutdown(void);
+void lgx_memory_monitor_update(void);
+void lgx_memory_monitor_report_frame_arena(size_t bytes);
+void lgx_memory_monitor_report_gpu_pool(size_t bytes);
+void lgx_memory_monitor_report_persistent_heap(size_t bytes);
+void lgx_memory_monitor_print_report(void);
 
 // Platform services global setter
 void lgx_set_platform_services(lgx_platform_services_t* services);

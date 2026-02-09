@@ -1,0 +1,44 @@
+Source: lgx-runtime
+Section: libs
+Priority: optional
+Maintainer: LGX Platform Team <team@lgx-platform.org>
+Build-Depends: debhelper-compat (= 13),
+               cmake (>= 3.16),
+               pkg-config,
+               libvulkan-dev,
+               libjemalloc-dev
+Standards-Version: 4.6.0
+Homepage: https://github.com/lgx-platform/LGX
+Vcs-Git: https://github.com/lgx-platform/LGX.git
+Vcs-Browser: https://github.com/lgx-platform/LGX
+Rules-Requires-Root: no
+
+Package: lgx-runtime
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libvulkan1, libjemalloc2
+Description: High-performance deterministic runtime for Linux gaming
+ LGX Runtime Core provides a high-performance, deterministic runtime
+ environment for Linux gaming applications. It features:
+ .
+  * Ultra-fast frame arena allocator (P99 < 100ns)
+  * GPU memory pool with Vulkan integration
+  * Persistent heap allocator with low fragmentation
+  * Intent-based allocation API
+  * Hardware adaptation and graceful degradation
+  * Privacy-first telemetry framework
+  * Comprehensive error handling and observability
+ .
+ This package contains the shared library.
+
+Package: lgx-runtime-dev
+Section: libdevel
+Architecture: any
+Depends: lgx-runtime (= ${binary:Version}), ${misc:Depends}
+Recommends: libvulkan-dev
+Description: Development files for LGX Runtime Core
+ LGX Runtime Core provides a high-performance, deterministic runtime
+ environment for Linux gaming applications.
+ .
+ This package contains the development headers and pkg-config files
+ needed to build applications using LGX Runtime Core.

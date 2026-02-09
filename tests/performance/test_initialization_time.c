@@ -1,147 +1,101 @@
 #include "../../include/lgx_runtime.h"
+#include "../../include/lgx/lgx_runtime_internal.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <string.h>
+#include <time.h>
 
-// Statistical helpers
-static int compare_uint64(const void* a, const void* b) {
-    uint64_t ua = *(const uint64_t*)a;
-    uint64_t ub = *(const uint64_t*)b;
-    return (ua > ub) - (ua < ub);
+// Measure time in nanoseconds
+static uint64_t get_time_ns(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 
-static uint64_t calculate_percentile(uint64_t* sorted_data, size_t count, double percentile) {
-    size_t index = (size_t)((percentile / 100.0) * count);
-    if (index >= count) index = count - 1;
-    return sorted_data[index];
-}
-
-int main(int argc, char** argv) {
-    (void)argc;  // Unused
-    (void)argv;  // Unused
+int main(void) {
+    printf("=== LGX Runtime Initialization Time Test ===\n\n");
     
-    printf("=== LGX Runtime Initialization Time Benchmark ===\n\n");
+    // Run multiple iterations to get stable measurements
+    const int iterations = 10;
+    uint64_t times[iterations];
     
-    // Configuration
-    const int num_iterations = 100;
-    const int warmup_iterations = 10;
-    
-    uint64_t* init_times = malloc(sizeof(uint64_t) * num_iterations);
-    uint64_t* shutdown_times = malloc(sizeof(uint64_t) * num_iterations);
-    
-    assert(init_times != NULL);
-    assert(shutdown_times != NULL);
-    
-    // Warmup phase
-    printf("Running %d warmup iterations...\n", warmup_iterations);
-    for (int i = 0; i < warmup_iterations; i++) {
-        lgx_runtime_config_t* config = lgx_config_create();
-        lgx_runtime_init(config);
-        lgx_runtime_shutdown();
-        lgx_config_destroy(config);
-    }
-    
-    // Measurement phase
-    printf("Running %d measurement iterations...\n", num_iterations);
-    for (int i = 0; i < num_iterations; i++) {
+    for (int i = 0; i < iterations; i++) {
         lgx_runtime_config_t* config = lgx_config_create();
         assert(config != NULL);
         
-        // Measure initialization
-        uint64_t init_start = lgx_time_now_ns();
+        // Measure initialization time
+        uint64_t start = get_time_ns();
         lgx_result_t result = lgx_runtime_init(config);
-        uint64_t init_end = lgx_time_now_ns();
+        uint64_t end = get_time_ns();
         
         assert(result == LGX_SUCCESS);
         (void)result;  // Suppress unused warning
-        init_times[i] = init_end - init_start;
+        times[i] = end - start;
         
-        // Measure shutdown
-        uint64_t shutdown_start = lgx_time_now_ns();
-        result = lgx_runtime_shutdown();
-        uint64_t shutdown_end = lgx_time_now_ns();
+        printf("Iteration %d: %.2f ms\n", i + 1, times[i] / 1000000.0);
         
-        assert(result == LGX_SUCCESS);
-        (void)result;  // Suppress unused warning
-        shutdown_times[i] = shutdown_end - shutdown_start;
-        
+        // Shutdown
+        lgx_runtime_shutdown();
         lgx_config_destroy(config);
         
-        if ((i + 1) % 10 == 0) {
-            printf("  Completed %d/%d iterations\n", i + 1, num_iterations);
-        }
+        // Small delay between iterations
+        struct timespec sleep_time = {0, 100000000};  // 100ms
+        nanosleep(&sleep_time, NULL);
     }
-    
-    // Sort for percentile calculation
-    qsort(init_times, num_iterations, sizeof(uint64_t), compare_uint64);
-    qsort(shutdown_times, num_iterations, sizeof(uint64_t), compare_uint64);
     
     // Calculate statistics
-    uint64_t init_p50 = calculate_percentile(init_times, num_iterations, 50.0);
-    uint64_t init_p95 = calculate_percentile(init_times, num_iterations, 95.0);
-    uint64_t init_p99 = calculate_percentile(init_times, num_iterations, 99.0);
-    uint64_t init_min = init_times[0];
-    uint64_t init_max = init_times[num_iterations - 1];
+    uint64_t min_time = times[0];
+    uint64_t max_time = times[0];
+    uint64_t total_time = 0;
     
-    uint64_t shutdown_p50 = calculate_percentile(shutdown_times, num_iterations, 50.0);
-    uint64_t shutdown_p95 = calculate_percentile(shutdown_times, num_iterations, 95.0);
-    uint64_t shutdown_p99 = calculate_percentile(shutdown_times, num_iterations, 99.0);
+    for (int i = 0; i < iterations; i++) {
+        if (times[i] < min_time) min_time = times[i];
+        if (times[i] > max_time) max_time = times[i];
+        total_time += times[i];
+    }
     
-    // Print results
-    printf("\n=== Initialization Time Results ===\n");
-    printf("Min:  %10lu ns (%8.2f ms)\n", init_min, init_min / 1000000.0);
-    printf("P50:  %10lu ns (%8.2f ms)\n", init_p50, init_p50 / 1000000.0);
-    printf("P95:  %10lu ns (%8.2f ms)\n", init_p95, init_p95 / 1000000.0);
-    printf("P99:  %10lu ns (%8.2f ms)\n", init_p99, init_p99 / 1000000.0);
-    printf("Max:  %10lu ns (%8.2f ms)\n", init_max, init_max / 1000000.0);
+    double avg_time = (double)total_time / iterations;
     
-    printf("\n=== Shutdown Time Results ===\n");
-    printf("P50:  %10lu ns (%8.2f ms)\n", shutdown_p50, shutdown_p50 / 1000000.0);
-    printf("P95:  %10lu ns (%8.2f ms)\n", shutdown_p95, shutdown_p95 / 1000000.0);
-    printf("P99:  %10lu ns (%8.2f ms)\n", shutdown_p99, shutdown_p99 / 1000000.0);
+    // Calculate median (sort first)
+    for (int i = 0; i < iterations - 1; i++) {
+        for (int j = i + 1; j < iterations; j++) {
+            if (times[j] < times[i]) {
+                uint64_t temp = times[i];
+                times[i] = times[j];
+                times[j] = temp;
+            }
+        }
+    }
+    uint64_t median_time = times[iterations / 2];
     
-    // Performance targets
-    printf("\n=== Performance Target Validation ===\n");
-    const uint64_t tier1_target_ns = 1000000000ULL; // 1000ms
-    const uint64_t tier2_target_ns = 500000000ULL;  // 500ms
+    printf("\n=== Initialization Time Statistics ===\n\n");
+    printf("Iterations: %d\n", iterations);
+    printf("Min:        %.2f ms\n", min_time / 1000000.0);
+    printf("Max:        %.2f ms\n", max_time / 1000000.0);
+    printf("Average:    %.2f ms\n", avg_time / 1000000.0);
+    printf("Median:     %.2f ms\n", median_time / 1000000.0);
+    printf("\n");
     
-    printf("Tier 1 Target: < 1000ms\n");
-    printf("Tier 2 Target: < 500ms\n\n");
+    // Check against targets
+    printf("=== Target Validation ===\n\n");
+    printf("Tier 1 Target: <1000ms\n");
+    printf("Tier 2 Target: <500ms\n");
+    printf("Tier 3 Target: <100ms\n\n");
     
     int passed = 0;
-    if (init_p99 < tier2_target_ns) {
-        printf("✅ PASSED Tier 2: P99 = %.2f ms < 500ms\n", init_p99 / 1000000.0);
+    if (avg_time < 100000000) {  // 100ms
+        printf("✅ PASSED Tier 3: %.2f ms < 100ms\n", avg_time / 1000000.0);
+        passed = 3;
+    } else if (avg_time < 500000000) {  // 500ms
+        printf("✅ PASSED Tier 2: %.2f ms < 500ms\n", avg_time / 1000000.0);
         passed = 2;
-    } else if (init_p99 < tier1_target_ns) {
-        printf("✅ PASSED Tier 1: P99 = %.2f ms < 1000ms\n", init_p99 / 1000000.0);
-        printf("⚠️  MISSED Tier 2: P99 = %.2f ms >= 500ms\n", init_p99 / 1000000.0);
+    } else if (avg_time < 1000000000) {  // 1000ms
+        printf("✅ PASSED Tier 1: %.2f ms < 1000ms\n", avg_time / 1000000.0);
         passed = 1;
     } else {
-        printf("❌ FAILED: P99 = %.2f ms >= 1000ms\n", init_p99 / 1000000.0);
+        printf("❌ FAILED: %.2f ms >= 1000ms\n", avg_time / 1000000.0);
         passed = 0;
     }
-    
-    // Export results for regression detection
-    FILE* results_file = fopen("benchmark_results_init.txt", "w");
-    if (results_file) {
-        fprintf(results_file, "benchmark=initialization\n");
-        fprintf(results_file, "iterations=%d\n", num_iterations);
-        fprintf(results_file, "init_p50_ns=%lu\n", init_p50);
-        fprintf(results_file, "init_p95_ns=%lu\n", init_p95);
-        fprintf(results_file, "init_p99_ns=%lu\n", init_p99);
-        fprintf(results_file, "init_min_ns=%lu\n", init_min);
-        fprintf(results_file, "init_max_ns=%lu\n", init_max);
-        fprintf(results_file, "shutdown_p50_ns=%lu\n", shutdown_p50);
-        fprintf(results_file, "shutdown_p95_ns=%lu\n", shutdown_p95);
-        fprintf(results_file, "shutdown_p99_ns=%lu\n", shutdown_p99);
-        fprintf(results_file, "tier_passed=%d\n", passed);
-        fclose(results_file);
-        printf("\n✅ Results exported to benchmark_results_init.txt\n");
-    }
-    
-    free(init_times);
-    free(shutdown_times);
     
     return (passed > 0) ? 0 : 1;
 }

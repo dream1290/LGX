@@ -227,6 +227,20 @@ perf_test_memory_overhead/fast:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_overhead.dir/build.make tests/performance/CMakeFiles/perf_test_memory_overhead.dir/build
 .PHONY : perf_test_memory_overhead/fast
 
+# Convenience name for target.
+tests/performance/CMakeFiles/perf_test_memory_footprint.dir/rule:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/performance/CMakeFiles/perf_test_memory_footprint.dir/rule
+.PHONY : tests/performance/CMakeFiles/perf_test_memory_footprint.dir/rule
+
+# Convenience name for target.
+perf_test_memory_footprint: tests/performance/CMakeFiles/perf_test_memory_footprint.dir/rule
+.PHONY : perf_test_memory_footprint
+
+# fast build rule for target.
+perf_test_memory_footprint/fast:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build
+.PHONY : perf_test_memory_footprint/fast
+
 test_allocation_latency.o: test_allocation_latency.c.o
 .PHONY : test_allocation_latency.o
 
@@ -299,6 +313,30 @@ test_initialization_time.c.s:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_initialization_time.dir/build.make tests/performance/CMakeFiles/perf_test_initialization_time.dir/test_initialization_time.c.s
 .PHONY : test_initialization_time.c.s
 
+test_memory_footprint.o: test_memory_footprint.c.o
+.PHONY : test_memory_footprint.o
+
+# target to build an object file
+test_memory_footprint.c.o:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/test_memory_footprint.c.o
+.PHONY : test_memory_footprint.c.o
+
+test_memory_footprint.i: test_memory_footprint.c.i
+.PHONY : test_memory_footprint.i
+
+# target to preprocess a source file
+test_memory_footprint.c.i:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/test_memory_footprint.c.i
+.PHONY : test_memory_footprint.c.i
+
+test_memory_footprint.s: test_memory_footprint.c.s
+.PHONY : test_memory_footprint.s
+
+# target to generate assembly for a file
+test_memory_footprint.c.s:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/test_memory_footprint.c.s
+.PHONY : test_memory_footprint.c.s
+
 test_memory_overhead.o: test_memory_overhead.c.o
 .PHONY : test_memory_overhead.o
 
@@ -339,6 +377,7 @@ help:
 	@echo "... perf_test_allocation_latency"
 	@echo "... perf_test_frame_time_contribution"
 	@echo "... perf_test_initialization_time"
+	@echo "... perf_test_memory_footprint"
 	@echo "... perf_test_memory_overhead"
 	@echo "... test_allocation_latency.o"
 	@echo "... test_allocation_latency.i"
@@ -349,6 +388,9 @@ help:
 	@echo "... test_initialization_time.o"
 	@echo "... test_initialization_time.i"
 	@echo "... test_initialization_time.s"
+	@echo "... test_memory_footprint.o"
+	@echo "... test_memory_footprint.i"
+	@echo "... test_memory_footprint.s"
 	@echo "... test_memory_overhead.o"
 	@echo "... test_memory_overhead.i"
 	@echo "... test_memory_overhead.s"

@@ -113,6 +113,9 @@ lgx_hardware_status_t lgx_runtime_get_hardware_status(void);
 // Health check API
 lgx_result_t lgx_runtime_health_check(lgx_health_status_t* status);
 
+// Memory usage monitoring API (Task 12.2.4)
+lgx_result_t lgx_get_memory_usage(lgx_memory_usage_t* usage);
+
 // Error handling
 const char* lgx_result_to_string(lgx_result_t result);
 

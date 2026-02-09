@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Enable all hardening options
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# Use all available CPU cores for building
+export DEB_BUILD_OPTIONS = parallel=$(shell nproc)
+
+%:
+	dh $@ --buildsystem=cmake
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib/$(DEB_HOST_MULTIARCH)
+
+override_dh_auto_test:
+	# Run unit tests only (skip performance tests in package build)
+	dh_auto_test -- ARGS="--output-on-failure -R unit_"
+
+override_dh_strip:
+	dh_strip --dbgsym-migration='lgx-runtime-dbg (<< 1.0.0~)'

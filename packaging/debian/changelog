@@ -1,0 +1,22 @@
+lgx-runtime (1.0.0-1) unstable; urgency=medium
+
+  * Initial release of LGX Runtime Core
+  * Features:
+    - Ultra-fast frame arena allocator (P99 < 100ns)
+    - GPU memory pool with Vulkan integration
+    - Persistent heap allocator with low fragmentation
+    - Intent-based allocation API for automatic routing
+    - Hardware adaptation and graceful degradation
+    - Privacy-first telemetry framework
+    - Comprehensive error handling and observability
+  * Performance achievements:
+    - Allocation latency: P99 = 84ns (frame arena)
+    - Memory overhead: 1.03 MB (199x under target)
+    - Initialization time: 2.70 ms (185x faster than target)
+  * Supported distributions:
+    - Ubuntu 22.04 LTS (Jammy Jellyfish)
+    - Ubuntu 24.04 LTS (Noble Numbat)
+    - Debian 11 (Bullseye)
+    - Debian 12 (Bookworm)
+
+ -- LGX Platform Team <team@lgx-platform.org>  Mon, 09 Feb 2026 00:00:00 +0000

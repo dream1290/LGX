@@ -1298,12 +1298,42 @@ bool lgx_heap_is_heap_pointer(void* ptr) {
         return false;
     }
     
-    // Get header (stored before user pointer)
-    allocation_header_t* header = (allocation_header_t*)((char*)ptr - sizeof(allocation_header_t));
+    // First, check if the pointer is within the buddy allocator's memory range
+    // This is a safe check that doesn't read any memory
+    if (g_heap.buddy.memory) {
+        uint8_t* heap_start = (uint8_t*)g_heap.buddy.memory;
+        uint8_t* heap_end = heap_start + g_heap.buddy.total_size;
+        uint8_t* ptr_addr = (uint8_t*)ptr;
+        
+        // If pointer is within buddy allocator range, it's likely from the heap
+        if (ptr_addr >= heap_start && ptr_addr < heap_end) {
+            // Now it's safe to read the header
+            allocation_header_t* header = (allocation_header_t*)((char*)ptr - sizeof(allocation_header_t));
+            return (header->magic == ALLOC_MAGIC);
+        }
+    }
     
-    // Check magic number (this is safe because we're just reading, not writing)
-    // If the magic matches, it's very likely a persistent heap allocation
-    return (header->magic == ALLOC_MAGIC);
+    // Check if pointer is from any of the slabs in size class allocators
+    for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+        slab_t* slab = g_heap.size_classes[i].slabs;
+        while (slab) {
+            if (slab->memory) {
+                uint8_t* slab_start = (uint8_t*)slab->memory;
+                uint8_t* slab_end = slab_start + SLAB_SIZE;
+                uint8_t* ptr_addr = (uint8_t*)ptr;
+                
+                if (ptr_addr >= slab_start && ptr_addr < slab_end) {
+                    // Now it's safe to read the header
+                    allocation_header_t* header = (allocation_header_t*)((char*)ptr - sizeof(allocation_header_t));
+                    return (header->magic == ALLOC_MAGIC);
+                }
+            }
+            slab = slab->next;
+        }
+    }
+    
+    // Pointer is not within any known heap memory range
+    return false;
 }
 
 /**

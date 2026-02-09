@@ -410,3 +410,35 @@ size_t lgx_frame_get_current_usage(void) {
 size_t lgx_frame_get_peak_usage(void) {
     return g_frame_arena_state.stats.peak_usage_bytes;
 }
+
+/**
+ * Check if a pointer is from the frame arena
+ * 
+ * Frame arena allocations should NOT be freed individually - they are
+ * automatically reset at frame boundaries. This function allows lgx_free()
+ * to detect and skip frame arena pointers.
+ * 
+ * @param ptr Pointer to check
+ * @return true if pointer is from frame arena, false otherwise
+ */
+bool lgx_frame_is_frame_pointer(void* ptr) {
+    if (!ptr || !g_frame_arena_state.initialized) {
+        return false;
+    }
+    
+    // Check if pointer falls within any of the three arenas
+    for (int i = 0; i < FRAME_ARENA_COUNT; i++) {
+        lgx_frame_arena_t* arena = &g_frame_arena_state.arenas[i];
+        if (!arena->base) {
+            continue;
+        }
+        
+        // Check if pointer is within this arena's memory range
+        uint8_t* ptr_addr = (uint8_t*)ptr;
+        if (ptr_addr >= arena->base && ptr_addr < (arena->base + arena->capacity)) {
+            return true;
+        }
+    }
+    
+    return false;
+}

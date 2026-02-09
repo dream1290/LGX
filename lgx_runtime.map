@@ -241,6 +241,16 @@ LGX_1.0 {
         lgx_memory_safety_advance_frame;
         lgx_memory_safety_get_stats;
         
+        # Memory usage monitoring (Task 12.2.4)
+        lgx_get_memory_usage;
+        lgx_memory_monitor_init;
+        lgx_memory_monitor_shutdown;
+        lgx_memory_monitor_update;
+        lgx_memory_monitor_report_frame_arena;
+        lgx_memory_monitor_report_gpu_pool;
+        lgx_memory_monitor_report_persistent_heap;
+        lgx_memory_monitor_print_report;
+        
         # Trace event system
         lgx_trace_init;
         lgx_trace_shutdown;

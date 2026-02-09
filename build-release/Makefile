@@ -1068,6 +1068,110 @@ perf_test_memory_overhead/fast:
 	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_overhead.dir/build.make tests/performance/CMakeFiles/perf_test_memory_overhead.dir/build
 .PHONY : perf_test_memory_overhead/fast
 
+#=============================================================================
+# Target rules for targets named perf_test_memory_footprint
+
+# Build rule for target.
+perf_test_memory_footprint: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 perf_test_memory_footprint
+.PHONY : perf_test_memory_footprint
+
+# fast build rule for target.
+perf_test_memory_footprint/fast:
+	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build
+.PHONY : perf_test_memory_footprint/fast
+
+#=============================================================================
+# Target rules for targets named test_oom_injection
+
+# Build rule for target.
+test_oom_injection: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_oom_injection
+.PHONY : test_oom_injection
+
+# fast build rule for target.
+test_oom_injection/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_oom_injection.dir/build.make tests/failure_injection/CMakeFiles/test_oom_injection.dir/build
+.PHONY : test_oom_injection/fast
+
+#=============================================================================
+# Target rules for targets named test_gpu_timeout
+
+# Build rule for target.
+test_gpu_timeout: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gpu_timeout
+.PHONY : test_gpu_timeout
+
+# fast build rule for target.
+test_gpu_timeout/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/build.make tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/build
+.PHONY : test_gpu_timeout/fast
+
+#=============================================================================
+# Target rules for targets named test_library_version_mismatch
+
+# Build rule for target.
+test_library_version_mismatch: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_library_version_mismatch
+.PHONY : test_library_version_mismatch
+
+# fast build rule for target.
+test_library_version_mismatch/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build.make tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build
+.PHONY : test_library_version_mismatch/fast
+
+#=============================================================================
+# Target rules for targets named test_telemetry_crash
+
+# Build rule for target.
+test_telemetry_crash: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_telemetry_crash
+.PHONY : test_telemetry_crash
+
+# fast build rule for target.
+test_telemetry_crash/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/build.make tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/build
+.PHONY : test_telemetry_crash/fast
+
+#=============================================================================
+# Target rules for targets named test_filesystem_full
+
+# Build rule for target.
+test_filesystem_full: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_filesystem_full
+.PHONY : test_filesystem_full
+
+# fast build rule for target.
+test_filesystem_full/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_filesystem_full.dir/build.make tests/failure_injection/CMakeFiles/test_filesystem_full.dir/build
+.PHONY : test_filesystem_full/fast
+
+#=============================================================================
+# Target rules for targets named test_toctou_races
+
+# Build rule for target.
+test_toctou_races: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_toctou_races
+.PHONY : test_toctou_races
+
+# fast build rule for target.
+test_toctou_races/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_toctou_races.dir/build.make tests/failure_injection/CMakeFiles/test_toctou_races.dir/build
+.PHONY : test_toctou_races/fast
+
+#=============================================================================
+# Target rules for targets named run_failure_injection_tests
+
+# Build rule for target.
+run_failure_injection_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_failure_injection_tests
+.PHONY : run_failure_injection_tests
+
+# fast build rule for target.
+run_failure_injection_tests/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build.make tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build
+.PHONY : run_failure_injection_tests/fast
+
 src/lgx_allocator_prototype.o: src/lgx_allocator_prototype.c.o
 .PHONY : src/lgx_allocator_prototype.o
 
@@ -1451,6 +1555,30 @@ src/runtime/lgx_memory_manager.s: src/runtime/lgx_memory_manager.c.s
 src/runtime/lgx_memory_manager.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s
 .PHONY : src/runtime/lgx_memory_manager.c.s
+
+src/runtime/lgx_memory_monitor.o: src/runtime/lgx_memory_monitor.c.o
+.PHONY : src/runtime/lgx_memory_monitor.o
+
+# target to build an object file
+src/runtime/lgx_memory_monitor.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o
+.PHONY : src/runtime/lgx_memory_monitor.c.o
+
+src/runtime/lgx_memory_monitor.i: src/runtime/lgx_memory_monitor.c.i
+.PHONY : src/runtime/lgx_memory_monitor.i
+
+# target to preprocess a source file
+src/runtime/lgx_memory_monitor.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.i
+.PHONY : src/runtime/lgx_memory_monitor.c.i
+
+src/runtime/lgx_memory_monitor.s: src/runtime/lgx_memory_monitor.c.s
+.PHONY : src/runtime/lgx_memory_monitor.s
+
+# target to generate assembly for a file
+src/runtime/lgx_memory_monitor.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.s
+.PHONY : src/runtime/lgx_memory_monitor.c.s
 
 src/runtime/lgx_memory_safety.o: src/runtime/lgx_memory_safety.c.o
 .PHONY : src/runtime/lgx_memory_safety.o
@@ -2763,6 +2891,7 @@ help:
 	@echo "... test"
 	@echo "... run_abi_tests"
 	@echo "... run_benchmarks"
+	@echo "... run_failure_injection_tests"
 	@echo "... run_integration_tests"
 	@echo "... run_performance_tests"
 	@echo "... run_phase0_tests"
@@ -2776,6 +2905,7 @@ help:
 	@echo "... perf_test_allocation_latency"
 	@echo "... perf_test_frame_time_contribution"
 	@echo "... perf_test_initialization_time"
+	@echo "... perf_test_memory_footprint"
 	@echo "... perf_test_memory_overhead"
 	@echo "... test_csf1_comparison"
 	@echo "... test_csf1_hybrid_allocator"
@@ -2785,6 +2915,7 @@ help:
 	@echo "... test_csf5_telemetry_overhead"
 	@echo "... test_day10_hugepages"
 	@echo "... test_filesystem"
+	@echo "... test_filesystem_full"
 	@echo "... test_frame_arena"
 	@echo "... test_frame_arena_polish"
 	@echo "... test_game_v1_0"
@@ -2794,6 +2925,7 @@ help:
 	@echo "... test_gpu_perf_simple"
 	@echo "... test_gpu_performance"
 	@echo "... test_gpu_pool"
+	@echo "... test_gpu_timeout"
 	@echo "... test_hardware_adaptation"
 	@echo "... test_hardware_tier"
 	@echo "... test_hierarchical_intents"
@@ -2803,11 +2935,13 @@ help:
 	@echo "... test_intent_mismatch_rates"
 	@echo "... test_intent_validation"
 	@echo "... test_library_manifest"
+	@echo "... test_library_version_mismatch"
 	@echo "... test_logging"
 	@echo "... test_logging_simple"
 	@echo "... test_memory_safety"
 	@echo "... test_namespace_isolation"
 	@echo "... test_observability_overhead"
+	@echo "... test_oom_injection"
 	@echo "... test_performance"
 	@echo "... test_persistent_heap"
 	@echo "... test_persistent_heap_buddy"
@@ -2819,10 +2953,12 @@ help:
 	@echo "... test_suspend_resume"
 	@echo "... test_symbol_versioning"
 	@echo "... test_telemetry_anonymization"
+	@echo "... test_telemetry_crash"
 	@echo "... test_telemetry_process"
 	@echo "... test_telemetry_simple"
 	@echo "... test_tiered_performance"
 	@echo "... test_timing_services"
+	@echo "... test_toctou_races"
 	@echo "... test_trace_events"
 	@echo "... unit_test_error_handler"
 	@echo "... unit_test_health_monitor"
@@ -2878,6 +3014,9 @@ help:
 	@echo "... src/runtime/lgx_memory_manager.o"
 	@echo "... src/runtime/lgx_memory_manager.i"
 	@echo "... src/runtime/lgx_memory_manager.s"
+	@echo "... src/runtime/lgx_memory_monitor.o"
+	@echo "... src/runtime/lgx_memory_monitor.i"
+	@echo "... src/runtime/lgx_memory_monitor.s"
 	@echo "... src/runtime/lgx_memory_safety.o"
 	@echo "... src/runtime/lgx_memory_safety.i"
 	@echo "... src/runtime/lgx_memory_safety.s"

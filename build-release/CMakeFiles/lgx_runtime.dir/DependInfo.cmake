@@ -24,6 +24,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/karl/Projects/LGX/src/runtime/lgx_lifecycle_manager.c" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o" "gcc" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o.d"
   "/home/karl/Projects/LGX/src/runtime/lgx_lockfree_pool.c" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o" "gcc" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o.d"
   "/home/karl/Projects/LGX/src/runtime/lgx_memory_manager.c" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o" "gcc" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o.d"
+  "/home/karl/Projects/LGX/src/runtime/lgx_memory_monitor.c" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o" "gcc" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o.d"
   "/home/karl/Projects/LGX/src/runtime/lgx_memory_safety.c" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o" "gcc" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o.d"
   "/home/karl/Projects/LGX/src/runtime/lgx_namespace_isolation.c" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o" "gcc" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o.d"
   "/home/karl/Projects/LGX/src/runtime/lgx_performance_counters.c" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.o" "gcc" "CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.o.d"
