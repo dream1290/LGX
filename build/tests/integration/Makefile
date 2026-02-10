@@ -172,34 +172,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/rule:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/rule
-.PHONY : tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/rule
-
-# Convenience name for target.
-integration_test_end_to_end_initialization: tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/rule
-.PHONY : integration_test_end_to_end_initialization
-
-# fast build rule for target.
-integration_test_end_to_end_initialization/fast:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build.make tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build
-.PHONY : integration_test_end_to_end_initialization/fast
-
-# Convenience name for target.
-tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/rule:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/rule
-.PHONY : tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/rule
-
-# Convenience name for target.
-integration_test_suspend_resume_cycle: tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/rule
-.PHONY : integration_test_suspend_resume_cycle
-
-# fast build rule for target.
-integration_test_suspend_resume_cycle/fast:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build.make tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build
-.PHONY : integration_test_suspend_resume_cycle/fast
-
-# Convenience name for target.
 tests/integration/CMakeFiles/integration_test_memory_stress.dir/rule:
 	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/integration/CMakeFiles/integration_test_memory_stress.dir/rule
 .PHONY : tests/integration/CMakeFiles/integration_test_memory_stress.dir/rule
@@ -212,82 +184,6 @@ integration_test_memory_stress: tests/integration/CMakeFiles/integration_test_me
 integration_test_memory_stress/fast:
 	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_memory_stress.dir/build.make tests/integration/CMakeFiles/integration_test_memory_stress.dir/build
 .PHONY : integration_test_memory_stress/fast
-
-# Convenience name for target.
-tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/rule:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/rule
-.PHONY : tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/rule
-
-# Convenience name for target.
-integration_test_telemetry_collection: tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/rule
-.PHONY : integration_test_telemetry_collection
-
-# fast build rule for target.
-integration_test_telemetry_collection/fast:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build.make tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build
-.PHONY : integration_test_telemetry_collection/fast
-
-# Convenience name for target.
-tests/integration/CMakeFiles/integration_test_component_integration.dir/rule:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/integration/CMakeFiles/integration_test_component_integration.dir/rule
-.PHONY : tests/integration/CMakeFiles/integration_test_component_integration.dir/rule
-
-# Convenience name for target.
-integration_test_component_integration: tests/integration/CMakeFiles/integration_test_component_integration.dir/rule
-.PHONY : integration_test_component_integration
-
-# fast build rule for target.
-integration_test_component_integration/fast:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_component_integration.dir/build.make tests/integration/CMakeFiles/integration_test_component_integration.dir/build
-.PHONY : integration_test_component_integration/fast
-
-test_component_integration.o: test_component_integration.c.o
-.PHONY : test_component_integration.o
-
-# target to build an object file
-test_component_integration.c.o:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_component_integration.dir/build.make tests/integration/CMakeFiles/integration_test_component_integration.dir/test_component_integration.c.o
-.PHONY : test_component_integration.c.o
-
-test_component_integration.i: test_component_integration.c.i
-.PHONY : test_component_integration.i
-
-# target to preprocess a source file
-test_component_integration.c.i:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_component_integration.dir/build.make tests/integration/CMakeFiles/integration_test_component_integration.dir/test_component_integration.c.i
-.PHONY : test_component_integration.c.i
-
-test_component_integration.s: test_component_integration.c.s
-.PHONY : test_component_integration.s
-
-# target to generate assembly for a file
-test_component_integration.c.s:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_component_integration.dir/build.make tests/integration/CMakeFiles/integration_test_component_integration.dir/test_component_integration.c.s
-.PHONY : test_component_integration.c.s
-
-test_end_to_end_initialization.o: test_end_to_end_initialization.c.o
-.PHONY : test_end_to_end_initialization.o
-
-# target to build an object file
-test_end_to_end_initialization.c.o:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build.make tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/test_end_to_end_initialization.c.o
-.PHONY : test_end_to_end_initialization.c.o
-
-test_end_to_end_initialization.i: test_end_to_end_initialization.c.i
-.PHONY : test_end_to_end_initialization.i
-
-# target to preprocess a source file
-test_end_to_end_initialization.c.i:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build.make tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/test_end_to_end_initialization.c.i
-.PHONY : test_end_to_end_initialization.c.i
-
-test_end_to_end_initialization.s: test_end_to_end_initialization.c.s
-.PHONY : test_end_to_end_initialization.s
-
-# target to generate assembly for a file
-test_end_to_end_initialization.c.s:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build.make tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/test_end_to_end_initialization.c.s
-.PHONY : test_end_to_end_initialization.c.s
 
 test_memory_stress.o: test_memory_stress.c.o
 .PHONY : test_memory_stress.o
@@ -313,54 +209,6 @@ test_memory_stress.c.s:
 	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_memory_stress.dir/build.make tests/integration/CMakeFiles/integration_test_memory_stress.dir/test_memory_stress.c.s
 .PHONY : test_memory_stress.c.s
 
-test_suspend_resume_cycle.o: test_suspend_resume_cycle.c.o
-.PHONY : test_suspend_resume_cycle.o
-
-# target to build an object file
-test_suspend_resume_cycle.c.o:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build.make tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/test_suspend_resume_cycle.c.o
-.PHONY : test_suspend_resume_cycle.c.o
-
-test_suspend_resume_cycle.i: test_suspend_resume_cycle.c.i
-.PHONY : test_suspend_resume_cycle.i
-
-# target to preprocess a source file
-test_suspend_resume_cycle.c.i:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build.make tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/test_suspend_resume_cycle.c.i
-.PHONY : test_suspend_resume_cycle.c.i
-
-test_suspend_resume_cycle.s: test_suspend_resume_cycle.c.s
-.PHONY : test_suspend_resume_cycle.s
-
-# target to generate assembly for a file
-test_suspend_resume_cycle.c.s:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build.make tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/test_suspend_resume_cycle.c.s
-.PHONY : test_suspend_resume_cycle.c.s
-
-test_telemetry_collection.o: test_telemetry_collection.c.o
-.PHONY : test_telemetry_collection.o
-
-# target to build an object file
-test_telemetry_collection.c.o:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build.make tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/test_telemetry_collection.c.o
-.PHONY : test_telemetry_collection.c.o
-
-test_telemetry_collection.i: test_telemetry_collection.c.i
-.PHONY : test_telemetry_collection.i
-
-# target to preprocess a source file
-test_telemetry_collection.c.i:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build.make tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/test_telemetry_collection.c.i
-.PHONY : test_telemetry_collection.c.i
-
-test_telemetry_collection.s: test_telemetry_collection.c.s
-.PHONY : test_telemetry_collection.s
-
-# target to generate assembly for a file
-test_telemetry_collection.c.s:
-	cd /home/karl/Projects/LGX/build && $(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build.make tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/test_telemetry_collection.c.s
-.PHONY : test_telemetry_collection.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -374,26 +222,10 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... test"
-	@echo "... integration_test_component_integration"
-	@echo "... integration_test_end_to_end_initialization"
 	@echo "... integration_test_memory_stress"
-	@echo "... integration_test_suspend_resume_cycle"
-	@echo "... integration_test_telemetry_collection"
-	@echo "... test_component_integration.o"
-	@echo "... test_component_integration.i"
-	@echo "... test_component_integration.s"
-	@echo "... test_end_to_end_initialization.o"
-	@echo "... test_end_to_end_initialization.i"
-	@echo "... test_end_to_end_initialization.s"
 	@echo "... test_memory_stress.o"
 	@echo "... test_memory_stress.i"
 	@echo "... test_memory_stress.s"
-	@echo "... test_suspend_resume_cycle.o"
-	@echo "... test_suspend_resume_cycle.i"
-	@echo "... test_suspend_resume_cycle.s"
-	@echo "... test_telemetry_collection.o"
-	@echo "... test_telemetry_collection.i"
-	@echo "... test_telemetry_collection.s"
 .PHONY : help
 
 

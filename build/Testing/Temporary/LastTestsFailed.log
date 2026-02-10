@@ -1,0 +1,15 @@
+1:test_csf1_comparison
+2:test_csf1_hybrid_allocator
+7:test_day10_hugepages
+11:test_gpu_buddy_allocator
+15:test_gpu_performance
+16:test_gpu_pool
+31:test_performance
+49:unit_test_resource_limits
+50:integration_test_memory_stress
+52:abi_test_struct_evolution
+53:abi_test_symbol_versioning
+55:perf_test_allocation_latency
+56:perf_test_frame_time_contribution
+57:perf_test_memory_overhead
+59:test_library_version_mismatch

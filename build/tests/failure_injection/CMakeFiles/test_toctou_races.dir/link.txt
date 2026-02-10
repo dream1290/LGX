@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 CMakeFiles/test_toctou_races.dir/test_toctou_races.c.o -o test_toctou_races  -Wl,-rpath,/home/karl/Projects/LGX/build ../../liblgx_runtime.so.1.0.0 -lm -lpthread -ldl /usr/lib/x86_64-linux-gnu/libvulkan.so /usr/lib/x86_64-linux-gnu/libjemalloc.so 

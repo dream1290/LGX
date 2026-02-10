@@ -835,32 +835,6 @@ unit_test_init_shutdown/fast:
 .PHONY : unit_test_init_shutdown/fast
 
 #=============================================================================
-# Target rules for targets named unit_test_version_compatibility
-
-# Build rule for target.
-unit_test_version_compatibility: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_version_compatibility
-.PHONY : unit_test_version_compatibility
-
-# fast build rule for target.
-unit_test_version_compatibility/fast:
-	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build.make tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build
-.PHONY : unit_test_version_compatibility/fast
-
-#=============================================================================
-# Target rules for targets named unit_test_memory_allocation
-
-# Build rule for target.
-unit_test_memory_allocation: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_memory_allocation
-.PHONY : unit_test_memory_allocation
-
-# fast build rule for target.
-unit_test_memory_allocation/fast:
-	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build.make tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build
-.PHONY : unit_test_memory_allocation/fast
-
-#=============================================================================
 # Target rules for targets named unit_test_platform_services
 
 # Build rule for target.
@@ -900,30 +874,17 @@ unit_test_health_monitor/fast:
 .PHONY : unit_test_health_monitor/fast
 
 #=============================================================================
-# Target rules for targets named integration_test_end_to_end_initialization
+# Target rules for targets named unit_test_resource_limits
 
 # Build rule for target.
-integration_test_end_to_end_initialization: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_end_to_end_initialization
-.PHONY : integration_test_end_to_end_initialization
+unit_test_resource_limits: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test_resource_limits
+.PHONY : unit_test_resource_limits
 
 # fast build rule for target.
-integration_test_end_to_end_initialization/fast:
-	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build.make tests/integration/CMakeFiles/integration_test_end_to_end_initialization.dir/build
-.PHONY : integration_test_end_to_end_initialization/fast
-
-#=============================================================================
-# Target rules for targets named integration_test_suspend_resume_cycle
-
-# Build rule for target.
-integration_test_suspend_resume_cycle: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_suspend_resume_cycle
-.PHONY : integration_test_suspend_resume_cycle
-
-# fast build rule for target.
-integration_test_suspend_resume_cycle/fast:
-	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build.make tests/integration/CMakeFiles/integration_test_suspend_resume_cycle.dir/build
-.PHONY : integration_test_suspend_resume_cycle/fast
+unit_test_resource_limits/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_resource_limits.dir/build.make tests/unit/CMakeFiles/unit_test_resource_limits.dir/build
+.PHONY : unit_test_resource_limits/fast
 
 #=============================================================================
 # Target rules for targets named integration_test_memory_stress
@@ -937,32 +898,6 @@ integration_test_memory_stress: cmake_check_build_system
 integration_test_memory_stress/fast:
 	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_memory_stress.dir/build.make tests/integration/CMakeFiles/integration_test_memory_stress.dir/build
 .PHONY : integration_test_memory_stress/fast
-
-#=============================================================================
-# Target rules for targets named integration_test_telemetry_collection
-
-# Build rule for target.
-integration_test_telemetry_collection: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_telemetry_collection
-.PHONY : integration_test_telemetry_collection
-
-# fast build rule for target.
-integration_test_telemetry_collection/fast:
-	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build.make tests/integration/CMakeFiles/integration_test_telemetry_collection.dir/build
-.PHONY : integration_test_telemetry_collection/fast
-
-#=============================================================================
-# Target rules for targets named integration_test_component_integration
-
-# Build rule for target.
-integration_test_component_integration: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 integration_test_component_integration
-.PHONY : integration_test_component_integration
-
-# fast build rule for target.
-integration_test_component_integration/fast:
-	$(MAKE) $(MAKESILENT) -f tests/integration/CMakeFiles/integration_test_component_integration.dir/build.make tests/integration/CMakeFiles/integration_test_component_integration.dir/build
-.PHONY : integration_test_component_integration/fast
 
 #=============================================================================
 # Target rules for targets named test_game_v1_0
@@ -1015,6 +950,97 @@ run_abi_tests: cmake_check_build_system
 run_abi_tests/fast:
 	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/run_abi_tests.dir/build.make tests/abi/CMakeFiles/run_abi_tests.dir/build
 .PHONY : run_abi_tests/fast
+
+#=============================================================================
+# Target rules for targets named perf_test_initialization_time
+
+# Build rule for target.
+perf_test_initialization_time: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 perf_test_initialization_time
+.PHONY : perf_test_initialization_time
+
+# fast build rule for target.
+perf_test_initialization_time/fast:
+	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_initialization_time.dir/build.make tests/performance/CMakeFiles/perf_test_initialization_time.dir/build
+.PHONY : perf_test_initialization_time/fast
+
+#=============================================================================
+# Target rules for targets named perf_test_allocation_latency
+
+# Build rule for target.
+perf_test_allocation_latency: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 perf_test_allocation_latency
+.PHONY : perf_test_allocation_latency
+
+# fast build rule for target.
+perf_test_allocation_latency/fast:
+	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_allocation_latency.dir/build.make tests/performance/CMakeFiles/perf_test_allocation_latency.dir/build
+.PHONY : perf_test_allocation_latency/fast
+
+#=============================================================================
+# Target rules for targets named perf_test_frame_time_contribution
+
+# Build rule for target.
+perf_test_frame_time_contribution: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 perf_test_frame_time_contribution
+.PHONY : perf_test_frame_time_contribution
+
+# fast build rule for target.
+perf_test_frame_time_contribution/fast:
+	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/build.make tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/build
+.PHONY : perf_test_frame_time_contribution/fast
+
+#=============================================================================
+# Target rules for targets named perf_test_memory_overhead
+
+# Build rule for target.
+perf_test_memory_overhead: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 perf_test_memory_overhead
+.PHONY : perf_test_memory_overhead
+
+# fast build rule for target.
+perf_test_memory_overhead/fast:
+	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_overhead.dir/build.make tests/performance/CMakeFiles/perf_test_memory_overhead.dir/build
+.PHONY : perf_test_memory_overhead/fast
+
+#=============================================================================
+# Target rules for targets named perf_test_memory_footprint
+
+# Build rule for target.
+perf_test_memory_footprint: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 perf_test_memory_footprint
+.PHONY : perf_test_memory_footprint
+
+# fast build rule for target.
+perf_test_memory_footprint/fast:
+	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build
+.PHONY : perf_test_memory_footprint/fast
+
+#=============================================================================
+# Target rules for targets named test_library_version_mismatch
+
+# Build rule for target.
+test_library_version_mismatch: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_library_version_mismatch
+.PHONY : test_library_version_mismatch
+
+# fast build rule for target.
+test_library_version_mismatch/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build.make tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build
+.PHONY : test_library_version_mismatch/fast
+
+#=============================================================================
+# Target rules for targets named run_failure_injection_tests
+
+# Build rule for target.
+run_failure_injection_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_failure_injection_tests
+.PHONY : run_failure_injection_tests
+
+# fast build rule for target.
+run_failure_injection_tests/fast:
+	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build.make tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build
+.PHONY : run_failure_injection_tests/fast
 
 src/lgx_allocator_prototype.o: src/lgx_allocator_prototype.c.o
 .PHONY : src/lgx_allocator_prototype.o
@@ -1304,6 +1330,30 @@ src/runtime/lgx_intent_allocator.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.s
 .PHONY : src/runtime/lgx_intent_allocator.c.s
 
+src/runtime/lgx_leak_detector.o: src/runtime/lgx_leak_detector.c.o
+.PHONY : src/runtime/lgx_leak_detector.o
+
+# target to build an object file
+src/runtime/lgx_leak_detector.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_leak_detector.c.o
+.PHONY : src/runtime/lgx_leak_detector.c.o
+
+src/runtime/lgx_leak_detector.i: src/runtime/lgx_leak_detector.c.i
+.PHONY : src/runtime/lgx_leak_detector.i
+
+# target to preprocess a source file
+src/runtime/lgx_leak_detector.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_leak_detector.c.i
+.PHONY : src/runtime/lgx_leak_detector.c.i
+
+src/runtime/lgx_leak_detector.s: src/runtime/lgx_leak_detector.c.s
+.PHONY : src/runtime/lgx_leak_detector.s
+
+# target to generate assembly for a file
+src/runtime/lgx_leak_detector.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_leak_detector.c.s
+.PHONY : src/runtime/lgx_leak_detector.c.s
+
 src/runtime/lgx_library_manifest.o: src/runtime/lgx_library_manifest.c.o
 .PHONY : src/runtime/lgx_library_manifest.o
 
@@ -1399,6 +1449,30 @@ src/runtime/lgx_memory_manager.s: src/runtime/lgx_memory_manager.c.s
 src/runtime/lgx_memory_manager.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.s
 .PHONY : src/runtime/lgx_memory_manager.c.s
+
+src/runtime/lgx_memory_monitor.o: src/runtime/lgx_memory_monitor.c.o
+.PHONY : src/runtime/lgx_memory_monitor.o
+
+# target to build an object file
+src/runtime/lgx_memory_monitor.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o
+.PHONY : src/runtime/lgx_memory_monitor.c.o
+
+src/runtime/lgx_memory_monitor.i: src/runtime/lgx_memory_monitor.c.i
+.PHONY : src/runtime/lgx_memory_monitor.i
+
+# target to preprocess a source file
+src/runtime/lgx_memory_monitor.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.i
+.PHONY : src/runtime/lgx_memory_monitor.c.i
+
+src/runtime/lgx_memory_monitor.s: src/runtime/lgx_memory_monitor.c.s
+.PHONY : src/runtime/lgx_memory_monitor.s
+
+# target to generate assembly for a file
+src/runtime/lgx_memory_monitor.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.s
+.PHONY : src/runtime/lgx_memory_monitor.c.s
 
 src/runtime/lgx_memory_safety.o: src/runtime/lgx_memory_safety.c.o
 .PHONY : src/runtime/lgx_memory_safety.o
@@ -1519,6 +1593,30 @@ src/runtime/lgx_platform_services.s: src/runtime/lgx_platform_services.c.s
 src/runtime/lgx_platform_services.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.s
 .PHONY : src/runtime/lgx_platform_services.c.s
+
+src/runtime/lgx_resource_limits.o: src/runtime/lgx_resource_limits.c.o
+.PHONY : src/runtime/lgx_resource_limits.o
+
+# target to build an object file
+src/runtime/lgx_resource_limits.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_resource_limits.c.o
+.PHONY : src/runtime/lgx_resource_limits.c.o
+
+src/runtime/lgx_resource_limits.i: src/runtime/lgx_resource_limits.c.i
+.PHONY : src/runtime/lgx_resource_limits.i
+
+# target to preprocess a source file
+src/runtime/lgx_resource_limits.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_resource_limits.c.i
+.PHONY : src/runtime/lgx_resource_limits.c.i
+
+src/runtime/lgx_resource_limits.s: src/runtime/lgx_resource_limits.c.s
+.PHONY : src/runtime/lgx_resource_limits.s
+
+# target to generate assembly for a file
+src/runtime/lgx_resource_limits.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_resource_limits.c.s
+.PHONY : src/runtime/lgx_resource_limits.c.s
 
 src/runtime/lgx_runtime_core.o: src/runtime/lgx_runtime_core.c.o
 .PHONY : src/runtime/lgx_runtime_core.o
@@ -2711,16 +2809,18 @@ help:
 	@echo "... test"
 	@echo "... run_abi_tests"
 	@echo "... run_benchmarks"
+	@echo "... run_failure_injection_tests"
 	@echo "... run_integration_tests"
 	@echo "... run_performance_tests"
 	@echo "... run_phase0_tests"
 	@echo "... run_unit_tests"
-	@echo "... integration_test_component_integration"
-	@echo "... integration_test_end_to_end_initialization"
 	@echo "... integration_test_memory_stress"
-	@echo "... integration_test_suspend_resume_cycle"
-	@echo "... integration_test_telemetry_collection"
 	@echo "... lgx_runtime"
+	@echo "... perf_test_allocation_latency"
+	@echo "... perf_test_frame_time_contribution"
+	@echo "... perf_test_initialization_time"
+	@echo "... perf_test_memory_footprint"
+	@echo "... perf_test_memory_overhead"
 	@echo "... test_csf1_comparison"
 	@echo "... test_csf1_hybrid_allocator"
 	@echo "... test_csf2_numa_awareness"
@@ -2747,6 +2847,7 @@ help:
 	@echo "... test_intent_mismatch_rates"
 	@echo "... test_intent_validation"
 	@echo "... test_library_manifest"
+	@echo "... test_library_version_mismatch"
 	@echo "... test_logging"
 	@echo "... test_logging_simple"
 	@echo "... test_memory_safety"
@@ -2771,9 +2872,8 @@ help:
 	@echo "... unit_test_error_handler"
 	@echo "... unit_test_health_monitor"
 	@echo "... unit_test_init_shutdown"
-	@echo "... unit_test_memory_allocation"
 	@echo "... unit_test_platform_services"
-	@echo "... unit_test_version_compatibility"
+	@echo "... unit_test_resource_limits"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
 	@echo "... src/lgx_allocator_prototype.s"
@@ -2810,6 +2910,9 @@ help:
 	@echo "... src/runtime/lgx_intent_allocator.o"
 	@echo "... src/runtime/lgx_intent_allocator.i"
 	@echo "... src/runtime/lgx_intent_allocator.s"
+	@echo "... src/runtime/lgx_leak_detector.o"
+	@echo "... src/runtime/lgx_leak_detector.i"
+	@echo "... src/runtime/lgx_leak_detector.s"
 	@echo "... src/runtime/lgx_library_manifest.o"
 	@echo "... src/runtime/lgx_library_manifest.i"
 	@echo "... src/runtime/lgx_library_manifest.s"
@@ -2822,6 +2925,9 @@ help:
 	@echo "... src/runtime/lgx_memory_manager.o"
 	@echo "... src/runtime/lgx_memory_manager.i"
 	@echo "... src/runtime/lgx_memory_manager.s"
+	@echo "... src/runtime/lgx_memory_monitor.o"
+	@echo "... src/runtime/lgx_memory_monitor.i"
+	@echo "... src/runtime/lgx_memory_monitor.s"
 	@echo "... src/runtime/lgx_memory_safety.o"
 	@echo "... src/runtime/lgx_memory_safety.i"
 	@echo "... src/runtime/lgx_memory_safety.s"
@@ -2837,6 +2943,9 @@ help:
 	@echo "... src/runtime/lgx_platform_services.o"
 	@echo "... src/runtime/lgx_platform_services.i"
 	@echo "... src/runtime/lgx_platform_services.s"
+	@echo "... src/runtime/lgx_resource_limits.o"
+	@echo "... src/runtime/lgx_resource_limits.i"
+	@echo "... src/runtime/lgx_resource_limits.s"
 	@echo "... src/runtime/lgx_runtime_core.o"
 	@echo "... src/runtime/lgx_runtime_core.i"
 	@echo "... src/runtime/lgx_runtime_core.s"

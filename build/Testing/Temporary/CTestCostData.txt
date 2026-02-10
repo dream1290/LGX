@@ -1,0 +1,87 @@
+test_input_validation 29 0.000574618
+test_memory_safety 29 0.000821228
+test_csf1_comparison 0 0
+test_csf1_hybrid_allocator 0 0
+test_csf2_numa_awareness 27 0.0117239
+test_csf3_namespace_isolation 28 0.00142652
+test_csf4_abi_stability 27 0.00185547
+test_csf5_telemetry_overhead 20 0.037291
+test_day10_hugepages 0 0
+test_filesystem 23 0.00259063
+test_frame_arena 28 0.00199506
+test_frame_arena_polish 28 0.00089125
+test_gpu_buddy_allocator 0 0
+test_gpu_capability 29 0.00248871
+test_gpu_detection 29 0.000550364
+test_gpu_perf_simple 29 0.00048815
+test_gpu_performance 0 0
+test_gpu_pool 0 0
+test_hardware_adaptation 27 0.00196635
+test_hardware_tier 27 0.00169323
+test_hierarchical_intents 11 0.00350955
+test_intent_accuracy 15 0.0107711
+test_intent_allocator 7 0.00636657
+test_intent_mismatch_rates 27 0.257412
+test_intent_validation 15 0.00646525
+test_library_manifest 27 0.00166702
+test_logging 6 0.0305474
+test_logging_simple 15 0.00404323
+test_namespace_isolation 28 0.00127114
+test_observability_overhead 5 0.0333445
+test_performance 0 0
+test_persistent_heap 27 0.00473317
+test_persistent_heap_buddy 27 0.00361471
+test_persistent_heap_perf 27 0.00304833
+test_signal_handling 23 0.0595733
+test_simd_fallback 27 0.000636576
+test_structured_logging 23 0.00399818
+test_suspend_resume 23 0.00613342
+test_telemetry_anonymization 27 0.00568954
+test_telemetry_process 27 0.0239723
+test_telemetry_simple 27 0.00235673
+test_tiered_performance 28 0.00182209
+test_timing_services 27 0.0435325
+test_trace_events 23 0.00544064
+unit_test_init_shutdown 1 0.206972
+unit_test_version_compatibility 0 0
+unit_test_memory_allocation 0 0
+unit_test_platform_services 4 0.0120258
+unit_test_error_handler 1 0.0114471
+unit_test_health_monitor 1 0.0694013
+unit_test_resource_limits 0 0
+unit_test_memory_protection 0 0
+integration_test_end_to_end_initialization 0 0
+integration_test_suspend_resume_cycle 0 0
+integration_test_memory_stress 0 0
+integration_test_telemetry_collection 0 0
+integration_test_component_integration 0 0
+abi_test_game_v1_0 17 0.0112822
+abi_test_struct_evolution 16 0
+abi_test_symbol_versioning 0 0
+perf_test_initialization_time 14 0.091455
+perf_test_allocation_latency 0 0
+perf_test_frame_time_contribution 0 0
+perf_test_memory_overhead 0 0
+perf_test_memory_footprint 10 0.00452874
+test_oom_injection 0 0
+test_gpu_timeout 0 0
+test_library_version_mismatch 0 0
+test_telemetry_crash 0 0
+test_filesystem_full 0 0
+test_toctou_races 0 0
+---
+test_csf1_comparison
+test_csf1_hybrid_allocator
+test_day10_hugepages
+test_gpu_buddy_allocator
+test_gpu_performance
+test_gpu_pool
+test_performance
+unit_test_resource_limits
+integration_test_memory_stress
+abi_test_struct_evolution
+abi_test_symbol_versioning
+perf_test_allocation_latency
+perf_test_frame_time_contribution
+perf_test_memory_overhead
+test_library_version_mismatch

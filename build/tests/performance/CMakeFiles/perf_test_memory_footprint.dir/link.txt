@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror -fPIC -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 CMakeFiles/perf_test_memory_footprint.dir/test_memory_footprint.c.o -o perf_test_memory_footprint  -Wl,-rpath,/home/karl/Projects/LGX/build ../../liblgx_runtime.so.1.0.0 -lm -ldl /usr/lib/x86_64-linux-gnu/libvulkan.so /usr/lib/x86_64-linux-gnu/libjemalloc.so 
