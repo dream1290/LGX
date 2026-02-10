@@ -69,6 +69,8 @@ typedef struct {
     uint64_t total_allocations;
     uint64_t total_bytes_allocated;
     uint64_t overflow_count;
+    uint64_t fallback_count;        // Number of times we fell back to persistent heap
+    uint64_t fallback_bytes;        // Total bytes allocated via fallback
     uint64_t peak_usage_bytes;
     uint64_t current_frame;
 } lgx_frame_arena_stats_t;
@@ -262,9 +264,10 @@ void* lgx_frame_alloc(size_t size) {
     size_t new_offset = old_offset + size;
     
     if (unlikely(new_offset > arena->capacity)) {
-        // Arena exhausted - mark overflow
+        // Arena exhausted - mark overflow and fallback to persistent heap
         arena->overflow_occurred = true;
         g_frame_arena_state.stats.overflow_count++;
+        g_frame_arena_state.stats.fallback_count++;
         
 #if LGX_DEBUG_BUILD
         fprintf(stderr, "[LGX WARNING] Frame arena overflow! Requested %zu bytes, but only %zu bytes available.\n",
@@ -273,10 +276,16 @@ void* lgx_frame_alloc(size_t size) {
                 frame_index, frame_index % FRAME_ARENA_COUNT,
                 old_offset, arena->capacity,
                 (double)old_offset / arena->capacity * 100.0);
+        fprintf(stderr, "              Falling back to persistent heap for this allocation.\n");
 #endif
         
-        // TODO: Fallback to persistent heap (task 3.1.1.4)
-        return NULL;
+        // Fallback to persistent heap (task 3.1.1.4 - FIXED)
+        // This ensures the allocation succeeds even when frame arena is exhausted
+        void* ptr = lgx_heap_alloc(size);
+        if (ptr) {
+            g_frame_arena_state.stats.fallback_bytes += size;
+        }
+        return ptr;
     }
     
     // Update offset
@@ -370,6 +379,8 @@ lgx_result_t lgx_frame_get_stats(frame_arena_stats_t* stats) {
     stats->total_allocations = g_frame_arena_state.stats.total_allocations;
     stats->total_bytes_allocated = g_frame_arena_state.stats.total_bytes_allocated;
     stats->overflow_count = g_frame_arena_state.stats.overflow_count;
+    stats->fallback_count = g_frame_arena_state.stats.fallback_count;
+    stats->fallback_bytes = g_frame_arena_state.stats.fallback_bytes;
     stats->peak_usage_bytes = g_frame_arena_state.stats.peak_usage_bytes;
     stats->current_frame = g_frame_arena_state.stats.current_frame;
     

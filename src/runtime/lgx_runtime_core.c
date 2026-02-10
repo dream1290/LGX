@@ -52,9 +52,22 @@ lgx_result_t lgx_runtime_init(const lgx_runtime_config_t* config) {
         return LGX_ERROR_ALREADY_INITIALIZED;
     }
     
-    // Validate configuration
-    lgx_result_t result = validate_config(config);
+    // Initialize error handler FIRST so we can report errors during init
+    lgx_result_t result = lgx_error_handler_init(&g_runtime.error_handler);
     if (result != LGX_SUCCESS) {
+        pthread_mutex_unlock(&g_runtime.mutex);
+        return result;
+    }
+    
+    // Validate configuration
+    result = validate_config(config);
+    if (result != LGX_SUCCESS) {
+        // Set error context for invalid config
+        lgx_error_handler_set_error(g_runtime.error_handler, 
+                                   result,
+                                   __func__, __FILE__, __LINE__);
+        lgx_error_handler_shutdown(g_runtime.error_handler);
+        g_runtime.error_handler = NULL;
         pthread_mutex_unlock(&g_runtime.mutex);
         return result;
     }
@@ -62,9 +75,13 @@ lgx_result_t lgx_runtime_init(const lgx_runtime_config_t* config) {
     // Store configuration
     g_runtime.config = config;
     
-    // Initialize all subsystems
+    // Initialize all subsystems (error handler already initialized)
     result = initialize_subsystems(config);
     if (result != LGX_SUCCESS) {
+        // Set error context for subsystem init failure
+        lgx_error_handler_set_error(g_runtime.error_handler, 
+                                   result,
+                                   __func__, __FILE__, __LINE__);
         shutdown_subsystems();
         pthread_mutex_unlock(&g_runtime.mutex);
         return result;
@@ -114,16 +131,23 @@ lgx_version_t lgx_runtime_get_version(void) {
  */
 lgx_result_t lgx_runtime_check_compatibility(const lgx_version_t* required_version) {
     if (!required_version) {
+        // Set error (works even if runtime not initialized)
+        lgx_error_handler_set_error(g_runtime.error_handler, LGX_ERROR_INVALID_PARAM,
+                                   "lgx_runtime_check_compatibility", __FILE__, __LINE__);
         return LGX_ERROR_INVALID_PARAM;
     }
     
     // Check major version compatibility
     if (required_version->major != LGX_VERSION_MAJOR) {
+        lgx_error_handler_set_error(g_runtime.error_handler, LGX_ERROR_INCOMPATIBLE_VERSION,
+                                   "lgx_runtime_check_compatibility", __FILE__, __LINE__);
         return LGX_ERROR_INCOMPATIBLE_VERSION;
     }
     
     // Minor version must be <= current version
     if (required_version->minor > LGX_VERSION_MINOR) {
+        lgx_error_handler_set_error(g_runtime.error_handler, LGX_ERROR_INCOMPATIBLE_VERSION,
+                                   "lgx_runtime_check_compatibility", __FILE__, __LINE__);
         return LGX_ERROR_INCOMPATIBLE_VERSION;
     }
     
@@ -438,6 +462,36 @@ lgx_result_t lgx_runtime_health_check(lgx_health_status_t* status) {
     return lgx_health_monitor_check(g_runtime.health_monitor, status);
 }
 
+/**
+ * Health monitoring with alerts (Task 14.3.3)
+ */
+lgx_result_t lgx_health_monitoring_start(uint32_t interval_ms) {
+    return lgx_health_monitoring_start_public(interval_ms);
+}
+
+lgx_result_t lgx_health_monitoring_stop(void) {
+    return lgx_health_monitoring_stop_public();
+}
+
+bool lgx_health_monitoring_is_running(void) {
+    return lgx_health_monitoring_is_running_public();
+}
+
+void lgx_health_set_alert_callback(lgx_health_alert_callback_t callback, void* user_data) {
+    lgx_health_set_alert_callback_public(callback, user_data);
+}
+
+void lgx_health_set_thresholds(float memory_warning, float memory_critical,
+                                float cpu_warning, float cpu_critical) {
+    lgx_health_set_thresholds_public(memory_warning, memory_critical, 
+                                     cpu_warning, cpu_critical);
+}
+
+lgx_result_t lgx_health_get_monitoring_stats(uint64_t* total_checks, 
+                                              uint64_t* warnings, uint64_t* criticals) {
+    return lgx_health_get_monitoring_stats_public(total_checks, warnings, criticals);
+}
+
 // lgx_alloc_get_usage_stats is now implemented in lgx_intent_allocator.c
 
 /**
@@ -512,11 +566,8 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
         return result;
     }
     
-    // 2. Error Handler (needed by all other subsystems)
-    result = lgx_error_handler_init(&g_runtime.error_handler);
-    if (result != LGX_SUCCESS) {
-        return result;
-    }
+    // 2. Error Handler - ALREADY INITIALIZED in lgx_runtime_init()
+    // (skipped here to avoid double initialization)
     
     // 3. Hardware Adapter (needed for capability detection)
     result = lgx_hardware_adapter_init(&g_runtime.hardware_adapter);
@@ -607,6 +658,8 @@ static lgx_result_t shutdown_subsystems(void) {
     lgx_namespace_cleanup();
     
     if (g_runtime.platform_services) {
+        // CRITICAL: Clear global pointer BEFORE freeing to prevent use-after-free
+        lgx_set_platform_services(NULL);
         lgx_platform_services_shutdown(g_runtime.platform_services);
         g_runtime.platform_services = NULL;
     }

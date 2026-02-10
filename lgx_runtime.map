@@ -91,6 +91,7 @@ LGX_1.0 {
         lgx_intent_allocator_init;
         lgx_intent_allocator_shutdown;
         lgx_intent_get_stats;
+        lgx_intent_aggregate_stats;
         
         # Prototype compatibility functions
         lgx_allocator_prototype_init;
@@ -240,6 +241,22 @@ LGX_1.0 {
         lgx_memory_safety_free;
         lgx_memory_safety_advance_frame;
         lgx_memory_safety_get_stats;
+        
+        # Resource limits (Task 14.1)
+        lgx_resource_limits_init;
+        lgx_resource_limits_shutdown;
+        lgx_resource_limits_check_memory;
+        lgx_resource_limits_track_allocation;
+        lgx_resource_limits_track_deallocation;
+        lgx_resource_limits_check_allocation_rate;
+        lgx_resource_limits_check_file_handle;
+        lgx_resource_limits_track_file_open;
+        lgx_resource_limits_track_file_close;
+        lgx_resource_limits_check_log_rotation;
+        lgx_resource_limits_rotate_log;
+        lgx_resource_limits_track_log_write;
+        lgx_resource_limits_get_stats;
+        lgx_resource_limits_reset_stats;
         
         # Memory usage monitoring (Task 12.2.4)
         lgx_get_memory_usage;

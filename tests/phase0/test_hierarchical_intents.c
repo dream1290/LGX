@@ -29,6 +29,8 @@ static void test_base_intent_structure(void) {
     
     // Verify usage stats
     lgx_allocation_usage_t usage1 = {0}, usage2 = {0};
+    usage1.struct_size = sizeof(lgx_allocation_usage_t);
+    usage2.struct_size = sizeof(lgx_allocation_usage_t);
     assert(lgx_alloc_get_usage_stats(ptr1, &usage1) == LGX_SUCCESS);
     assert(lgx_alloc_get_usage_stats(ptr2, &usage2) == LGX_SUCCESS);
     (void)usage1;  // Suppress unused warning
@@ -65,6 +67,7 @@ static void test_l2_intent_structure(void) {
     
     // Verify base intent properties are preserved
     lgx_allocation_usage_t usage = {0};
+    usage.struct_size = sizeof(lgx_allocation_usage_t);
     assert(lgx_alloc_get_usage_stats(ptr, &usage) == LGX_SUCCESS);
     (void)usage;  // Suppress unused warning
     printf("  ✓ Usage stats accessible for L2 allocation\n");

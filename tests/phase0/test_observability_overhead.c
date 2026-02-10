@@ -108,12 +108,15 @@ static double measure_logging_overhead_active(void) {
 static void test_observability_overhead(void) {
     printf("Test: Observability overhead measurement...\n\n");
     
-    // Initialize runtime
+    // Initialize runtime with telemetry enabled
     lgx_runtime_config_t* config = lgx_config_create();
     assert(config != NULL);
     
     // Set log path to /dev/null to avoid I/O overhead
     lgx_config_set_log_path(config, "/dev/null");
+    
+    // Enable telemetry for observability features
+    lgx_config_set_flags(config, LGX_CONFIG_ENABLE_TELEMETRY);
     
     lgx_result_t result = lgx_runtime_init(config);
     assert(result == LGX_SUCCESS);
@@ -191,9 +194,12 @@ static void test_observability_overhead(void) {
 static void test_observability_levels(void) {
     printf("\nTest: Observability level configuration...\n");
     
-    // Initialize runtime
+    // Initialize runtime with telemetry enabled
     lgx_runtime_config_t* config = lgx_config_create();
     assert(config != NULL);
+    
+    // Enable telemetry so observability levels work
+    lgx_config_set_flags(config, LGX_CONFIG_ENABLE_TELEMETRY);
     
     lgx_result_t result = lgx_runtime_init(config);
     assert(result == LGX_SUCCESS);

@@ -98,10 +98,10 @@ static void test_log_level_filtering(void) {
     // Set filter to WARN level (should filter out DEBUG and INFO)
     lgx_set_log_filter(LGX_LOG_WARN);
     
-    lgx_log(LGX_LOG_DEBUG, "This should be filtered");
-    lgx_log(LGX_LOG_INFO, "This should also be filtered");
-    lgx_log(LGX_LOG_WARN, "This should appear");
-    lgx_log(LGX_LOG_ERROR, "This should also appear");
+    lgx_log(LGX_LOG_DEBUG, "FILTERED_DEBUG_MESSAGE");
+    lgx_log(LGX_LOG_INFO, "FILTERED_INFO_MESSAGE");
+    lgx_log(LGX_LOG_WARN, "EXPECTED_WARN_MESSAGE");
+    lgx_log(LGX_LOG_ERROR, "EXPECTED_ERROR_MESSAGE");
     
     lgx_runtime_shutdown();
     lgx_config_destroy(config);
@@ -109,7 +109,7 @@ static void test_log_level_filtering(void) {
     // Small delay to ensure file is flushed
     usleep(10000);
     
-    // Verify only WARN and ERROR messages are in log
+    // Verify only WARN and ERROR messages are in log (after filter was set)
     FILE* f = fopen(TEST_LOG_FILE, "r");
     if (!f) {
         printf("  ⚠ Log file not created\n");
@@ -117,17 +117,26 @@ static void test_log_level_filtering(void) {
     }
     
     char line[256];
-    int line_count = 0;
+    int filtered_debug_found = 0;
+    int filtered_info_found = 0;
+    int expected_warn_found = 0;
+    int expected_error_found = 0;
     
     while (fgets(line, sizeof(line), f)) {
-        line_count++;
-        if (strstr(line, "[DEBUG]")) assert(0 && "DEBUG should be filtered");
-        if (strstr(line, "[INFO]")) assert(0 && "INFO should be filtered");
-        if (strstr(line, "[WARN]")) {}  // Expected
-        if (strstr(line, "[ERROR]")) {}  // Expected
+        // Check for our specific test messages (not init messages)
+        if (strstr(line, "FILTERED_DEBUG_MESSAGE")) filtered_debug_found = 1;
+        if (strstr(line, "FILTERED_INFO_MESSAGE")) filtered_info_found = 1;
+        if (strstr(line, "EXPECTED_WARN_MESSAGE")) expected_warn_found = 1;
+        if (strstr(line, "EXPECTED_ERROR_MESSAGE")) expected_error_found = 1;
     }
     fclose(f);
-    assert(line_count == 2);
+    
+    // Our filtered messages should NOT appear
+    assert(filtered_debug_found == 0 && "DEBUG should be filtered");
+    assert(filtered_info_found == 0 && "INFO should be filtered");
+    // Our expected messages SHOULD appear
+    assert(expected_warn_found == 1 && "WARN should appear");
+    assert(expected_error_found == 1 && "ERROR should appear");
     
     printf("  ✓ Log level filtering works\n");
     printf("  ✓ Filtered out DEBUG and INFO, kept WARN and ERROR\n");
@@ -148,10 +157,10 @@ static void test_subsystem_filtering(void) {
     uint32_t filter = (1U << LGX_SUBSYSTEM_MEMORY) | (1U << LGX_SUBSYSTEM_GPU);
     lgx_set_subsystem_filter(filter);
     
-    lgx_log_tagged(LGX_SUBSYSTEM_CORE, LGX_LOG_INFO, "Core message - filtered");
-    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO, "Memory message - visible");
-    lgx_log_tagged(LGX_SUBSYSTEM_GPU, LGX_LOG_INFO, "GPU message - visible");
-    lgx_log_tagged(LGX_SUBSYSTEM_FILESYSTEM, LGX_LOG_INFO, "FS message - filtered");
+    lgx_log_tagged(LGX_SUBSYSTEM_CORE, LGX_LOG_INFO, "TEST_CORE_FILTERED");
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO, "TEST_MEMORY_VISIBLE");
+    lgx_log_tagged(LGX_SUBSYSTEM_GPU, LGX_LOG_INFO, "TEST_GPU_VISIBLE");
+    lgx_log_tagged(LGX_SUBSYSTEM_FILESYSTEM, LGX_LOG_INFO, "TEST_FS_FILTERED");
     
     lgx_runtime_shutdown();
     lgx_config_destroy(config);
@@ -159,7 +168,7 @@ static void test_subsystem_filtering(void) {
     // Small delay to ensure file is flushed
     usleep(10000);
     
-    // Verify only MEMORY and GPU messages are in log
+    // Verify only MEMORY and GPU messages are in log (check our specific test messages)
     FILE* f = fopen(TEST_LOG_FILE, "r");
     if (!f) {
         printf("  ⚠ Log file not created\n");
@@ -167,16 +176,26 @@ static void test_subsystem_filtering(void) {
     }
     
     char line[256];
-    int line_count = 0;
+    int core_found = 0;
+    int memory_found = 0;
+    int gpu_found = 0;
+    int fs_found = 0;
     
     while (fgets(line, sizeof(line), f)) {
-        line_count++;
-        if (strstr(line, "[CORE]")) assert(0 && "CORE should be filtered");
-        if (strstr(line, "[MEMORY]")) {}  // Expected
-        if (strstr(line, "[GPU]")) {}  // Expected
-        if (strstr(line, "[FS]")) assert(0 && "FS should be filtered");
+        // Check for our specific test messages (not init messages)
+        if (strstr(line, "TEST_CORE_FILTERED")) core_found = 1;
+        if (strstr(line, "TEST_MEMORY_VISIBLE")) memory_found = 1;
+        if (strstr(line, "TEST_GPU_VISIBLE")) gpu_found = 1;
+        if (strstr(line, "TEST_FS_FILTERED")) fs_found = 1;
     }
     fclose(f);
+    
+    // Filtered messages should NOT appear
+    assert(core_found == 0 && "CORE should be filtered");
+    assert(fs_found == 0 && "FS should be filtered");
+    // Expected messages SHOULD appear
+    assert(memory_found == 1 && "MEMORY should appear");
+    assert(gpu_found == 1 && "GPU should appear");
     
     printf("  ✓ Subsystem filtering works\n");
     printf("  ✓ Filtered correctly based on bitmask\n");
@@ -274,6 +293,7 @@ static void test_thread_safe_logging(void) {
     char line[256];
     int line_count = 0;
     int corrupted_lines = 0;
+    int thread_message_count = 0;
     
     while (fgets(line, sizeof(line), f)) {
         line_count++;
@@ -281,15 +301,21 @@ static void test_thread_safe_logging(void) {
         if (line[0] != '[') {
             corrupted_lines++;
         }
+        // Count thread messages specifically
+        if (strstr(line, "Thread ") && strstr(line, "message ")) {
+            thread_message_count++;
+        }
     }
     fclose(f);
     
-    // Should have 400 lines (4 threads * 100 messages)
-    assert(line_count == 400);
+    // Should have 400 thread messages (4 threads * 100 messages each)
+    // Plus some initialization messages
+    assert(thread_message_count == 400);
     assert(corrupted_lines == 0);
     
     printf("  ✓ Thread-safe logging works\n");
-    printf("  ✓ %d lines logged from %d threads\n", line_count, num_threads);
+    printf("  ✓ %d thread messages logged from %d threads (%d total lines)\n", 
+           thread_message_count, num_threads, line_count);
     printf("  ✓ No corrupted lines detected\n");
     
     unlink(TEST_LOG_FILE);

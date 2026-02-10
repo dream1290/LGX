@@ -186,6 +186,39 @@ static lgx_result_t buddy_init(buddy_allocator_t* allocator, VkDeviceSize size) 
 }
 
 /**
+ * Rebuild all free list pointers after realloc
+ * This is necessary because realloc may move the all_blocks array,
+ * invalidating all pointers stored in next/prev fields.
+ */
+static void buddy_rebuild_free_lists(buddy_allocator_t* allocator) {
+    // Clear all free lists
+    for (int i = 0; i < NUM_BUDDY_LEVELS; i++) {
+        allocator->free_lists[i] = NULL;
+    }
+    
+    // Rebuild free lists by scanning all blocks
+    for (size_t i = 0; i < allocator->num_blocks; i++) {
+        buddy_block_t* block = &allocator->all_blocks[i];
+        
+        if (block->is_free) {
+            // Add to appropriate free list
+            block->next = allocator->free_lists[block->level];
+            block->prev = NULL;
+            
+            if (allocator->free_lists[block->level]) {
+                allocator->free_lists[block->level]->prev = block;
+            }
+            
+            allocator->free_lists[block->level] = block;
+        } else {
+            // Clear pointers for allocated blocks
+            block->next = NULL;
+            block->prev = NULL;
+        }
+    }
+}
+
+/**
  * Split a buddy block into two smaller blocks
  */
 static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* block) {
@@ -193,7 +226,11 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
         return NULL;  // Can't split smallest block
     }
     
-    // Remove from current free list
+    // CRITICAL: Save block index before any operations (realloc may move memory)
+    size_t block_index = block - allocator->all_blocks;
+    
+    // Remove from current free list (using index to be safe)
+    block = &allocator->all_blocks[block_index];
     if (block->prev) {
         block->prev->next = block->next;
     } else {
@@ -204,6 +241,7 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
     }
     
     // Create buddy block
+    bool did_realloc = false;
     if (allocator->num_blocks >= allocator->max_blocks) {
         // Expand block array
         size_t new_max = allocator->max_blocks * 2;
@@ -214,8 +252,11 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
         }
         allocator->all_blocks = new_blocks;
         allocator->max_blocks = new_max;
+        did_realloc = true;
     }
     
+    // Restore block pointer after potential realloc
+    block = &allocator->all_blocks[block_index];
     buddy_block_t* buddy = &allocator->all_blocks[allocator->num_blocks++];
     
     // Split into two blocks at lower level
@@ -229,6 +270,17 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
     buddy->size = new_size;
     buddy->level = new_level;
     buddy->is_free = true;
+    buddy->next = NULL;
+    buddy->prev = NULL;
+    
+    // If we did realloc, rebuild all free lists to fix pointers
+    if (did_realloc) {
+        buddy_rebuild_free_lists(allocator);
+        
+        // Restore pointers after rebuild
+        block = &allocator->all_blocks[block_index];
+        buddy = &allocator->all_blocks[allocator->num_blocks - 1];
+    }
     
     // Add both blocks to lower level free list
     block->next = buddy;
@@ -287,10 +339,21 @@ static buddy_block_t* buddy_find_free_block(buddy_allocator_t* allocator, uint8_
  * Coalesce buddy blocks
  */
 static void buddy_coalesce(buddy_allocator_t* allocator, buddy_block_t* block) {
-    while (block->level < NUM_BUDDY_LEVELS - 1) {
+    // CRITICAL: Save block index - all operations use indices to avoid pointer invalidation
+    size_t block_index = block - allocator->all_blocks;
+    
+    while (true) {
+        // Restore block pointer
+        block = &allocator->all_blocks[block_index];
+        
+        if (block->level >= NUM_BUDDY_LEVELS - 1) {
+            break;  // Can't coalesce further
+        }
+        
         // Find buddy block
         VkDeviceSize buddy_offset = get_buddy_offset(block->offset, block->level);
         buddy_block_t* buddy = NULL;
+        size_t buddy_index = 0;
         
         // Search for buddy in all blocks
         for (size_t i = 0; i < allocator->num_blocks; i++) {
@@ -299,6 +362,7 @@ static void buddy_coalesce(buddy_allocator_t* allocator, buddy_block_t* block) {
                 candidate->level == block->level && 
                 candidate->is_free) {
                 buddy = candidate;
+                buddy_index = i;
                 break;
             }
         }
@@ -306,6 +370,10 @@ static void buddy_coalesce(buddy_allocator_t* allocator, buddy_block_t* block) {
         if (!buddy) {
             break;  // Buddy not free, can't coalesce
         }
+        
+        // Restore pointers
+        block = &allocator->all_blocks[block_index];
+        buddy = &allocator->all_blocks[buddy_index];
         
         // Remove both blocks from free list
         if (block->prev) {
@@ -326,12 +394,16 @@ static void buddy_coalesce(buddy_allocator_t* allocator, buddy_block_t* block) {
             buddy->next->prev = buddy->prev;
         }
         
-        // Merge into larger block
+        // Merge into larger block (ensure block has lower offset)
         if (block->offset > buddy->offset) {
-            buddy_block_t* temp = block;
-            block = buddy;
-            buddy = temp;
+            size_t temp_index = block_index;
+            block_index = buddy_index;
+            buddy_index = temp_index;
         }
+        
+        // Restore pointers after potential swap
+        block = &allocator->all_blocks[block_index];
+        buddy = &allocator->all_blocks[buddy_index];
         
         block->level++;
         block->size = level_to_size(block->level);
@@ -346,6 +418,8 @@ static void buddy_coalesce(buddy_allocator_t* allocator, buddy_block_t* block) {
         allocator->free_lists[block->level] = block;
         
         allocator->num_coalesces++;
+        
+        // Continue trying to coalesce at higher level
     }
 }
 
@@ -416,6 +490,10 @@ static void buddy_free(buddy_allocator_t* allocator, buddy_block_t* block) {
         return;
     }
     
+    // CRITICAL: Save block index before any operations
+    // buddy_coalesce may trigger realloc which invalidates pointers
+    size_t block_index = block - allocator->all_blocks;
+    
     block->is_free = true;
     
     // Update statistics
@@ -429,6 +507,9 @@ static void buddy_free(buddy_allocator_t* allocator, buddy_block_t* block) {
         allocator->free_lists[block->level]->prev = block;
     }
     allocator->free_lists[block->level] = block;
+    
+    // Restore block pointer before coalesce (defensive)
+    block = &allocator->all_blocks[block_index];
     
     // Try to coalesce with buddy
     buddy_coalesce(allocator, block);

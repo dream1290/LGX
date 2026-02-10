@@ -1223,7 +1223,8 @@ void* lgx_heap_alloc(size_t size) {
         }
         
         // Task 3.5.1.3: Track allocation patterns (Day 5 optimization)
-        if (size_class < NUM_SIZE_CLASSES) {
+        // Only track if size_class is valid (not -1 for large allocations)
+        if (size_class >= 0 && size_class < NUM_SIZE_CLASSES) {
             g_heap.size_class_histogram[size_class]++;
             g_heap.pattern_analysis_count++;
             

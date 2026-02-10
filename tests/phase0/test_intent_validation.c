@@ -24,6 +24,7 @@ static void test_basic_intent_allocation(void) {
     
     // Get initial usage stats
     lgx_allocation_usage_t usage = {0};
+    usage.struct_size = sizeof(lgx_allocation_usage_t);
     lgx_result_t result = lgx_alloc_get_usage_stats(ptr, &usage);
     assert(result == LGX_SUCCESS);
     (void)result;  // Suppress unused warning
@@ -62,6 +63,7 @@ static void test_sequential_access_pattern_detection(void) {
         // For prototype, we'll manually trigger pattern analysis
         if (i % 10 == 0) {
             lgx_allocation_usage_t usage = {0};
+            usage.struct_size = sizeof(lgx_allocation_usage_t);
             lgx_result_t result = lgx_alloc_get_usage_stats(ptr, &usage);
             (void)result;  // Suppress unused warning
             if (result == LGX_SUCCESS && i > 20) {
@@ -72,7 +74,8 @@ static void test_sequential_access_pattern_detection(void) {
     }
     
     // Check final usage stats
-    lgx_allocation_usage_t final_usage;
+    lgx_allocation_usage_t final_usage = {0};
+    final_usage.struct_size = sizeof(lgx_allocation_usage_t);
     lgx_result_t result = lgx_alloc_get_usage_stats(ptr, &final_usage);
     assert(result == LGX_SUCCESS);
     (void)result;  // Suppress unused warning
@@ -114,6 +117,7 @@ static void test_intent_mismatch_detection(void) {
     lgx_result_t validation_result = lgx_alloc_validate_intent(ptr);
     
     lgx_allocation_usage_t usage = {0};
+    usage.struct_size = sizeof(lgx_allocation_usage_t);
     lgx_result_t stats_result = lgx_alloc_get_usage_stats(ptr, &usage);
     assert(stats_result == LGX_SUCCESS);
     (void)stats_result;  // Suppress unused warning
@@ -149,6 +153,7 @@ static void test_lifetime_validation(void) {
     lgx_result_t validation_result = lgx_alloc_validate_intent(ptr);
     
     lgx_allocation_usage_t usage = {0};
+    usage.struct_size = sizeof(lgx_allocation_usage_t);
     lgx_result_t stats_result = lgx_alloc_get_usage_stats(ptr, &usage);
     assert(stats_result == LGX_SUCCESS);
     (void)stats_result;  // Suppress unused warning

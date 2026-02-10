@@ -321,7 +321,7 @@ static void generate_crash_dump(int sig, siginfo_t* info, void* context) {
         for (int i = 0; i < nptrs; i++) {
             fprintf(stderr, "  [%d] %s\n", i, symbols[i]);
         }
-        free(symbols);
+        // DON'T free symbols yet - we need them for the crash dump file
     }
     
     // Try to write crash dump to file
@@ -347,6 +347,11 @@ static void generate_crash_dump(int sig, siginfo_t* info, void* context) {
         fprintf(stderr, "[LGX] Crash dump written to: %s\n", crash_file);
     } else {
         fprintf(stderr, "[LGX] Failed to write crash dump file\n");
+    }
+    
+    // Now free symbols after we're done with them
+    if (symbols) {
+        free(symbols);
     }
 }
 

@@ -21,6 +21,10 @@
 #define LGX_LOG_MAX_SIZE (100 * 1024 * 1024)
 #define LGX_LOG_MAX_ROTATIONS 5
 
+// Rate limiting defaults
+#define LGX_LOG_RATE_LIMIT_DEFAULT 1000  // 1000 logs per second
+#define LGX_LOG_RATE_WINDOW_NS 1000000000ULL  // 1 second window
+
 // Platform services state
 struct lgx_platform_services {
     pthread_mutex_t log_mutex;
@@ -33,6 +37,14 @@ struct lgx_platform_services {
     size_t log_max_size;        // Maximum log file size before rotation
     size_t log_current_size;    // Current log file size
     bool log_rotation_enabled;  // Whether log rotation is enabled
+    
+    // Rate limiting (token bucket algorithm)
+    bool rate_limiting_enabled;
+    uint64_t rate_limit_tokens;      // Current number of tokens
+    uint64_t rate_limit_max_tokens;  // Maximum tokens (burst capacity)
+    uint64_t rate_limit_refill_rate; // Tokens per second
+    uint64_t rate_limit_last_refill; // Last refill timestamp (ns)
+    uint64_t rate_limit_dropped;     // Count of dropped log messages
 };
 
 /**
@@ -61,6 +73,14 @@ lgx_result_t lgx_platform_services_init(lgx_platform_services_t** services,
     ps->log_max_size = LGX_LOG_MAX_SIZE;
     ps->log_current_size = 0;
     ps->log_rotation_enabled = true;
+    
+    // Initialize rate limiting (enabled by default)
+    ps->rate_limiting_enabled = true;
+    ps->rate_limit_max_tokens = LGX_LOG_RATE_LIMIT_DEFAULT;
+    ps->rate_limit_tokens = ps->rate_limit_max_tokens;  // Start with full bucket
+    ps->rate_limit_refill_rate = LGX_LOG_RATE_LIMIT_DEFAULT;
+    ps->rate_limit_last_refill = lgx_time_now_ns();
+    ps->rate_limit_dropped = 0;
     
     // Open log file if specified
     if (ps->log_path) {
@@ -249,13 +269,67 @@ static void rotate_log_file(lgx_platform_services_t* services) {
     services->log_current_size = 0;
 }
 
+/**
+ * Check rate limit using token bucket algorithm
+ * Returns true if log should be allowed, false if rate limited
+ */
+static bool check_rate_limit(lgx_platform_services_t* services) {
+    if (!services->rate_limiting_enabled) {
+        return true;  // Rate limiting disabled
+    }
+    
+    // Get current time
+    uint64_t now = lgx_time_now_ns();
+    
+    // Calculate time elapsed since last refill
+    uint64_t elapsed_ns = now - services->rate_limit_last_refill;
+    
+    // Refill tokens based on elapsed time
+    if (elapsed_ns > 0) {
+        // Calculate tokens to add: (elapsed_ns / 1s) * refill_rate
+        uint64_t tokens_to_add = (elapsed_ns * services->rate_limit_refill_rate) / LGX_LOG_RATE_WINDOW_NS;
+        
+        if (tokens_to_add > 0) {
+            services->rate_limit_tokens += tokens_to_add;
+            
+            // Cap at maximum
+            if (services->rate_limit_tokens > services->rate_limit_max_tokens) {
+                services->rate_limit_tokens = services->rate_limit_max_tokens;
+            }
+            
+            services->rate_limit_last_refill = now;
+        }
+    }
+    
+    // Check if we have tokens available
+    if (services->rate_limit_tokens > 0) {
+        services->rate_limit_tokens--;
+        return true;  // Allow log
+    }
+    
+    // Rate limited - increment dropped counter
+    services->rate_limit_dropped++;
+    return false;  // Drop log
+}
+
 void lgx_log_impl(lgx_platform_services_t* services, lgx_log_level_t level, 
                   const char* format, va_list args) {
     if (!services || level < services->min_log_level) {
         return;
     }
     
+    // Handle NULL format gracefully
+    if (!format) {
+        format = "(null)";
+    }
+    
     pthread_mutex_lock(&services->log_mutex);
+    
+    // Check rate limit
+    if (!check_rate_limit(services)) {
+        pthread_mutex_unlock(&services->log_mutex);
+        return;  // Rate limited - drop this log message
+    }
     
     // Check if log rotation is needed
     if (services->log_file && services->log_rotation_enabled && 
@@ -343,8 +417,10 @@ const char* lgx_subsystem_to_string(lgx_log_subsystem_t subsystem) {
  */
 void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level, 
                     const char* format, ...) {
+    // CRITICAL: Check if platform services is still valid
+    // This can be called during shutdown after platform services is freed
     if (!g_platform_services) {
-        return;
+        return;  // Silently ignore logs after shutdown
     }
     
     // Check log level filter
@@ -361,6 +437,12 @@ void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level,
     }
     
     pthread_mutex_lock(&g_platform_services->log_mutex);
+    
+    // Check rate limit
+    if (!check_rate_limit(g_platform_services)) {
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+        return;  // Rate limited - drop this log message
+    }
     
     // Check if log rotation is needed
     if (g_platform_services->log_file && g_platform_services->log_rotation_enabled && 
@@ -586,4 +668,73 @@ lgx_result_t lgx_fs_close(lgx_file_t* file) {
     free(file);
     
     return LGX_SUCCESS;
+}
+
+/**
+ * Rate limiting configuration API
+ */
+
+/**
+ * Enable or disable log rate limiting
+ */
+void lgx_set_log_rate_limiting_enabled(bool enabled) {
+    if (g_platform_services) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        g_platform_services->rate_limiting_enabled = enabled;
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+    }
+}
+
+/**
+ * Set log rate limit (logs per second)
+ */
+void lgx_set_log_rate_limit(uint64_t logs_per_second) {
+    if (g_platform_services && logs_per_second > 0) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        g_platform_services->rate_limit_refill_rate = logs_per_second;
+        g_platform_services->rate_limit_max_tokens = logs_per_second;
+        
+        // Reset tokens to new maximum
+        if (g_platform_services->rate_limit_tokens > logs_per_second) {
+            g_platform_services->rate_limit_tokens = logs_per_second;
+        }
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+    }
+}
+
+/**
+ * Get number of dropped log messages due to rate limiting
+ */
+uint64_t lgx_get_log_dropped_count(void) {
+    if (g_platform_services) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        uint64_t dropped = g_platform_services->rate_limit_dropped;
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+        return dropped;
+    }
+    return 0;
+}
+
+/**
+ * Reset dropped log counter
+ */
+void lgx_reset_log_dropped_count(void) {
+    if (g_platform_services) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        g_platform_services->rate_limit_dropped = 0;
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+    }
+}
+
+/**
+ * Get current rate limit tokens available
+ */
+uint64_t lgx_get_log_rate_tokens(void) {
+    if (g_platform_services) {
+        pthread_mutex_lock(&g_platform_services->log_mutex);
+        uint64_t tokens = g_platform_services->rate_limit_tokens;
+        pthread_mutex_unlock(&g_platform_services->log_mutex);
+        return tokens;
+    }
+    return 0;
 }

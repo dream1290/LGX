@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stddef.h>
 #include <pthread.h>
 
 // Health monitor state
@@ -20,6 +21,27 @@ struct lgx_health_monitor {
     // Health status
     lgx_health_status_t last_status;
     uint64_t last_check_time;
+    
+    // Continuous monitoring (Task 14.3.3)
+    bool monitoring_enabled;
+    pthread_t monitoring_thread;
+    bool monitoring_thread_running;
+    uint32_t monitoring_interval_ms;  // How often to check health
+    
+    // Alert thresholds
+    float memory_warning_threshold;    // % of limit (default: 0.8 = 80%)
+    float memory_critical_threshold;   // % of limit (default: 0.95 = 95%)
+    float cpu_warning_threshold;       // % overhead (default: 5.0%)
+    float cpu_critical_threshold;      // % overhead (default: 10.0%)
+    
+    // Alert callback
+    lgx_health_alert_callback_t alert_callback;
+    void* alert_callback_user_data;
+    
+    // Statistics
+    uint64_t total_checks;
+    uint64_t warnings_triggered;
+    uint64_t criticals_triggered;
 };
 
 /**
@@ -51,6 +73,25 @@ lgx_result_t lgx_health_monitor_init(lgx_health_monitor_t** monitor,
     hm->last_status.degraded_features = 0;
     hm->last_check_time = 0;
     
+    // Initialize monitoring (Task 14.3.3)
+    hm->monitoring_enabled = false;
+    hm->monitoring_thread_running = false;
+    hm->monitoring_interval_ms = 1000;  // Default: check every 1 second
+    
+    // Set default alert thresholds
+    hm->memory_warning_threshold = 0.8f;   // 80%
+    hm->memory_critical_threshold = 0.95f; // 95%
+    hm->cpu_warning_threshold = 5.0f;      // 5%
+    hm->cpu_critical_threshold = 10.0f;    // 10%
+    
+    hm->alert_callback = NULL;
+    hm->alert_callback_user_data = NULL;
+    
+    // Initialize statistics
+    hm->total_checks = 0;
+    hm->warnings_triggered = 0;
+    hm->criticals_triggered = 0;
+    
     *monitor = hm;
     return LGX_SUCCESS;
 }
@@ -61,6 +102,11 @@ lgx_result_t lgx_health_monitor_init(lgx_health_monitor_t** monitor,
 lgx_result_t lgx_health_monitor_shutdown(lgx_health_monitor_t* monitor) {
     if (!monitor) {
         return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    // Stop monitoring if running
+    if (monitor->monitoring_enabled) {
+        lgx_health_monitor_stop_monitoring(monitor);
     }
     
     pthread_mutex_destroy(&monitor->mutex);
@@ -77,9 +123,30 @@ lgx_result_t lgx_health_monitor_check(lgx_health_monitor_t* monitor,
         return LGX_ERROR_INVALID_PARAM;
     }
     
+    // Validate struct size for ABI compatibility
+    // Allow smaller sizes (old versions) but not larger (future versions we don't know about)
+    if (status->struct_size > sizeof(lgx_health_status_t)) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    // Minimum size must include at least the basic fields
+    // (struct_size, overall_health, hardware_tier, huge_pages_active, gpu_responsive, memory_usage_mb, memory_limit_mb)
+    size_t min_size = offsetof(lgx_health_status_t, memory_limit_mb) + sizeof(size_t);
+    if (status->struct_size < min_size) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
     pthread_mutex_lock(&monitor->mutex);
     
-    // Initialize health status
+    // Save caller's struct size before we modify anything
+    size_t caller_struct_size = status->struct_size;
+    
+    // Initialize health status - only zero out the size provided by caller
+    memset(status, 0, caller_struct_size);
+    status->struct_size = caller_struct_size;  // Restore after zeroing
+    status->overall_health = LGX_HEALTH_GOOD;
+    
+    // Also initialize monitor->last_status for internal tracking
     memset(&monitor->last_status, 0, sizeof(lgx_health_status_t));
     monitor->last_status.struct_size = sizeof(lgx_health_status_t);
     monitor->last_status.overall_health = LGX_HEALTH_GOOD;
@@ -189,7 +256,11 @@ lgx_result_t lgx_health_monitor_check(lgx_health_monitor_t* monitor,
     }
     
     monitor->last_check_time = lgx_time_now_ns();
-    *status = monitor->last_status;
+    
+    // Copy results to caller's struct, but only copy the fields that exist in their struct
+    // This ensures ABI compatibility with older struct versions
+    memcpy(status, &monitor->last_status, caller_struct_size);
+    status->struct_size = caller_struct_size;  // Preserve caller's struct size
     
     pthread_mutex_unlock(&monitor->mutex);
     return LGX_SUCCESS;
@@ -215,4 +286,252 @@ lgx_health_status_t lgx_health_monitor_get_status(lgx_health_monitor_t* monitor)
     pthread_mutex_unlock(&monitor->mutex);
     
     return status;
+}
+
+/**
+ * Monitoring thread function (Task 14.3.3)
+ */
+static void* health_monitoring_thread(void* arg) {
+    lgx_health_monitor_t* monitor = (lgx_health_monitor_t*)arg;
+    
+    while (monitor->monitoring_thread_running) {
+        // Perform health check
+        lgx_health_status_t status;
+        lgx_result_t result = lgx_health_monitor_check(monitor, &status);
+        
+        if (result == LGX_SUCCESS) {
+            pthread_mutex_lock(&monitor->mutex);
+            monitor->total_checks++;
+            
+            // Check if we should trigger an alert
+            bool should_alert = false;
+            
+            if (status.overall_health == LGX_HEALTH_WARNING) {
+                monitor->warnings_triggered++;
+                should_alert = true;
+            } else if (status.overall_health == LGX_HEALTH_CRITICAL) {
+                monitor->criticals_triggered++;
+                should_alert = true;
+            }
+            
+            // Call alert callback if registered and alert triggered
+            if (should_alert && monitor->alert_callback) {
+                lgx_health_alert_callback_t callback = monitor->alert_callback;
+                void* user_data = monitor->alert_callback_user_data;
+                pthread_mutex_unlock(&monitor->mutex);
+                
+                // Call callback outside of lock to avoid deadlock
+                callback(&status, user_data);
+            } else {
+                pthread_mutex_unlock(&monitor->mutex);
+            }
+        }
+        
+        // Sleep for the configured interval
+        struct timespec sleep_time;
+        sleep_time.tv_sec = monitor->monitoring_interval_ms / 1000;
+        sleep_time.tv_nsec = (monitor->monitoring_interval_ms % 1000) * 1000000;
+        nanosleep(&sleep_time, NULL);
+    }
+    
+    return NULL;
+}
+
+/**
+ * Start continuous health monitoring (Task 14.3.3)
+ */
+lgx_result_t lgx_health_monitor_start_monitoring(lgx_health_monitor_t* monitor, uint32_t interval_ms) {
+    if (!monitor) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    if (interval_ms == 0) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    pthread_mutex_lock(&monitor->mutex);
+    
+    if (monitor->monitoring_enabled) {
+        pthread_mutex_unlock(&monitor->mutex);
+        return LGX_ERROR_ALREADY_INITIALIZED;
+    }
+    
+    monitor->monitoring_interval_ms = interval_ms;
+    monitor->monitoring_enabled = true;
+    monitor->monitoring_thread_running = true;
+    
+    // Create monitoring thread
+    int result = pthread_create(&monitor->monitoring_thread, NULL, 
+                               health_monitoring_thread, monitor);
+    
+    if (result != 0) {
+        monitor->monitoring_enabled = false;
+        monitor->monitoring_thread_running = false;
+        pthread_mutex_unlock(&monitor->mutex);
+        return LGX_ERROR_SYSTEM_ERROR;
+    }
+    
+    pthread_mutex_unlock(&monitor->mutex);
+    return LGX_SUCCESS;
+}
+
+/**
+ * Stop continuous health monitoring
+ */
+lgx_result_t lgx_health_monitor_stop_monitoring(lgx_health_monitor_t* monitor) {
+    if (!monitor) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    pthread_mutex_lock(&monitor->mutex);
+    
+    if (!monitor->monitoring_enabled) {
+        pthread_mutex_unlock(&monitor->mutex);
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    // Signal thread to stop
+    monitor->monitoring_thread_running = false;
+    pthread_mutex_unlock(&monitor->mutex);
+    
+    // Wait for thread to finish
+    pthread_join(monitor->monitoring_thread, NULL);
+    
+    pthread_mutex_lock(&monitor->mutex);
+    monitor->monitoring_enabled = false;
+    pthread_mutex_unlock(&monitor->mutex);
+    
+    return LGX_SUCCESS;
+}
+
+/**
+ * Check if monitoring is running
+ */
+bool lgx_health_monitor_is_monitoring_running(lgx_health_monitor_t* monitor) {
+    if (!monitor) {
+        return false;
+    }
+    
+    pthread_mutex_lock(&monitor->mutex);
+    bool running = monitor->monitoring_enabled;
+    pthread_mutex_unlock(&monitor->mutex);
+    
+    return running;
+}
+
+/**
+ * Set alert callback
+ */
+void lgx_health_monitor_set_alert_callback(lgx_health_monitor_t* monitor,
+                                           lgx_health_alert_callback_t callback,
+                                           void* user_data) {
+    if (!monitor) {
+        return;
+    }
+    
+    pthread_mutex_lock(&monitor->mutex);
+    monitor->alert_callback = callback;
+    monitor->alert_callback_user_data = user_data;
+    pthread_mutex_unlock(&monitor->mutex);
+}
+
+/**
+ * Set alert thresholds
+ */
+void lgx_health_monitor_set_thresholds(lgx_health_monitor_t* monitor,
+                                       float memory_warning, float memory_critical,
+                                       float cpu_warning, float cpu_critical) {
+    if (!monitor) {
+        return;
+    }
+    
+    pthread_mutex_lock(&monitor->mutex);
+    monitor->memory_warning_threshold = memory_warning;
+    monitor->memory_critical_threshold = memory_critical;
+    monitor->cpu_warning_threshold = cpu_warning;
+    monitor->cpu_critical_threshold = cpu_critical;
+    pthread_mutex_unlock(&monitor->mutex);
+}
+
+/**
+ * Get monitoring statistics
+ */
+lgx_result_t lgx_health_monitor_get_monitoring_stats(lgx_health_monitor_t* monitor,
+                                                     uint64_t* total_checks,
+                                                     uint64_t* warnings,
+                                                     uint64_t* criticals) {
+    if (!monitor || !total_checks || !warnings || !criticals) {
+        return LGX_ERROR_INVALID_PARAM;
+    }
+    
+    pthread_mutex_lock(&monitor->mutex);
+    *total_checks = monitor->total_checks;
+    *warnings = monitor->warnings_triggered;
+    *criticals = monitor->criticals_triggered;
+    pthread_mutex_unlock(&monitor->mutex);
+    
+    return LGX_SUCCESS;
+}
+
+/**
+ * Public API wrappers that use global runtime state
+ */
+
+lgx_result_t lgx_health_monitoring_start_public(uint32_t interval_ms) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->health_monitor) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    return lgx_health_monitor_start_monitoring(runtime->health_monitor, interval_ms);
+}
+
+lgx_result_t lgx_health_monitoring_stop_public(void) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->health_monitor) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    return lgx_health_monitor_stop_monitoring(runtime->health_monitor);
+}
+
+bool lgx_health_monitoring_is_running_public(void) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->health_monitor) {
+        return false;
+    }
+    
+    return lgx_health_monitor_is_monitoring_running(runtime->health_monitor);
+}
+
+void lgx_health_set_alert_callback_public(lgx_health_alert_callback_t callback, void* user_data) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->health_monitor) {
+        return;
+    }
+    
+    lgx_health_monitor_set_alert_callback(runtime->health_monitor, callback, user_data);
+}
+
+void lgx_health_set_thresholds_public(float memory_warning, float memory_critical,
+                                      float cpu_warning, float cpu_critical) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->health_monitor) {
+        return;
+    }
+    
+    lgx_health_monitor_set_thresholds(runtime->health_monitor, memory_warning, memory_critical,
+                                      cpu_warning, cpu_critical);
+}
+
+lgx_result_t lgx_health_get_monitoring_stats_public(uint64_t* total_checks,
+                                                    uint64_t* warnings,
+                                                    uint64_t* criticals) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->health_monitor) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+    
+    return lgx_health_monitor_get_monitoring_stats(runtime->health_monitor, total_checks, 
+                                                   warnings, criticals);
 }

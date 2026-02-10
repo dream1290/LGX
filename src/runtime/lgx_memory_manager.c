@@ -153,6 +153,12 @@ struct lgx_memory_manager {
     // Thread-local cache key
     pthread_key_t cache_key;
     
+    // Thread cache tracking for cleanup
+    pthread_mutex_t cache_list_mutex;
+    thread_cache_t** cache_list;
+    size_t cache_count;
+    size_t cache_capacity;
+    
     // Global statistics
     atomic_uint_fast64_t total_allocations;
     atomic_uint_fast64_t total_deallocations;
@@ -186,6 +192,9 @@ static atomic_int next_thread_id = 0;
 // Per-thread pool allocation - ZERO atomics after initialization
 static __thread thread_pool_t* my_pool = NULL;
 static __thread int my_thread_id = -1;
+
+// Global memory manager pointer for cache cleanup
+static lgx_memory_manager_t* g_memory_manager = NULL;
 
 // Forward declarations
 static void cache_destructor(void* cache);
@@ -319,9 +328,15 @@ lgx_result_t lgx_memory_manager_init(lgx_memory_manager_t** manager,
     lgx_simd_detect_features();
     
     // Pre-warm lock-free pool with initial blocks to reduce startup latency
-    for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
-        lgx_lockfree_pool_prewarm(i, 64);  // 64 blocks per size class
-    }
+    // TEMPORARILY DISABLED: Prewarming causes memory leaks that need investigation
+    // The lockfree pool will be populated on-demand during runtime
+    // for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+    //     lgx_result_t prewarm_result = lgx_lockfree_pool_prewarm(i, 64);  // 64 blocks per size class
+    //     if (prewarm_result != LGX_SUCCESS) {
+    //         // Prewarm failed - log but continue (not critical)
+    //         break;
+    //     }
+    // }
     
     // Day 10: Initialize huge pages support
     lgx_result_t hp_result = lgx_hugepages_init(hardware_adapter);
@@ -404,8 +419,24 @@ lgx_result_t lgx_memory_manager_init(lgx_memory_manager_t** manager,
         return LGX_ERROR_OUT_OF_MEMORY;
     }
     
+    // Initialize thread cache tracking
+    if (pthread_mutex_init(&mgr->cache_list_mutex, NULL) != 0) {
+        pthread_key_delete(mgr->cache_key);
+        for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
+            pthread_mutex_destroy(&mgr->pools[i].mutex);
+        }
+        free(global_pool);
+        free(mgr);
+        return LGX_ERROR_OUT_OF_MEMORY;
+    }
+    mgr->cache_list = NULL;
+    mgr->cache_count = 0;
+    mgr->cache_capacity = 0;
+    
     // Initialize intent tracking
     if (pthread_mutex_init(&mgr->intent_mutex, NULL) != 0) {
+        pthread_mutex_destroy(&mgr->cache_list_mutex);
+        pthread_key_delete(mgr->cache_key);
         for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
             pthread_mutex_destroy(&mgr->pools[i].mutex);
         }
@@ -433,6 +464,9 @@ lgx_result_t lgx_memory_manager_init(lgx_memory_manager_t** manager,
     atomic_store(&mgr->cache_misses, 0);
     atomic_store(&mgr->generation_counter, 1);
     
+    // Set global manager pointer for cache cleanup
+    g_memory_manager = mgr;
+    
     *manager = mgr;
     return LGX_SUCCESS;
 }
@@ -445,7 +479,80 @@ lgx_result_t lgx_memory_manager_shutdown(lgx_memory_manager_t* manager) {
         return LGX_ERROR_INVALID_PARAM;
     }
     
-    // Shutdown lock-free pool (Day 1-2 Breakthrough Optimization)
+    // CRITICAL: Manually clean up ALL thread caches before shutting down the lockfree pool
+    // pthread_key_delete() doesn't call destructors for existing threads
+    pthread_mutex_lock(&manager->cache_list_mutex);
+    for (size_t i = 0; i < manager->cache_count; i++) {
+        thread_cache_t* cache = manager->cache_list[i];
+        if (cache) {
+            // Return all cached blocks to the lockfree pool (so they can be freed by pool shutdown)
+            for (int size_class = 0; size_class < NUM_SIZE_CLASSES; size_class++) {
+                for (uint32_t j = 0; j < cache->count[size_class]; j++) {
+                    if (cache->slots[size_class][j]) {
+                        void* ptr = cache->slots[size_class][j];
+                        
+                        // Check if it's from thread pools
+                        bool from_pool = false;
+                        for (int k = 0; k < MAX_THREADS; k++) {
+                            if (thread_pools[k].base && 
+                                ptr >= thread_pools[k].base && 
+                                ptr < (void*)((char*)thread_pools[k].base + thread_pools[k].capacity)) {
+                                from_pool = true;
+                                break;
+                            }
+                        }
+                        
+                        // Free directly - simpler and avoids lockfree pool complexity during shutdown
+                        if (!from_pool) {
+                            free(ptr);
+                        }
+                    }
+                }
+            }
+            
+            // Free hot path cache blocks that are NOT from thread pools
+            for (int hot_class = 0; hot_class < HOT_PATH_SIZE_CLASSES; hot_class++) {
+                uint32_t allocated_count = atomic_load(&cache->hot_path.watermark[hot_class]);
+                for (uint32_t j = 0; j < allocated_count; j++) {
+                    if (cache->hot_path.preallocated_blocks[hot_class][j]) {
+                        void* ptr = cache->hot_path.preallocated_blocks[hot_class][j];
+                        
+                        // Check if from thread pools
+                        bool from_pool = false;
+                        for (int k = 0; k < MAX_THREADS; k++) {
+                            if (thread_pools[k].base && 
+                                ptr >= thread_pools[k].base && 
+                                ptr < (void*)((char*)thread_pools[k].base + thread_pools[k].capacity)) {
+                                from_pool = true;
+                                break;
+                            }
+                        }
+                        
+                        // Hot path blocks are NOT in the lockfree pool, so free them directly
+                        if (!from_pool) {
+                            free(ptr);
+                        }
+                    }
+                }
+            }
+            
+            // Free the cache structure itself
+            free(cache);
+        }
+    }
+    free(manager->cache_list);
+    manager->cache_list = NULL;
+    manager->cache_count = 0;
+    pthread_mutex_unlock(&manager->cache_list_mutex);
+    
+    // Clear global manager pointer BEFORE deleting pthread key
+    // This prevents cache_destructor from trying to process blocks again
+    g_memory_manager = NULL;
+    
+    // Delete pthread key (will call destructors for remaining threads, but they'll just free the cache)
+    pthread_key_delete(manager->cache_key);
+    
+    // Now shutdown lock-free pool (this will free all blocks that were returned to it)
     lgx_lockfree_pool_shutdown();
     
     // Free the pre-allocated thread pools
@@ -489,8 +596,8 @@ lgx_result_t lgx_memory_manager_shutdown(lgx_memory_manager_t* manager) {
         pthread_mutex_destroy(&manager->pools[i].mutex);
     }
     
-    // Cleanup thread-local cache key
-    pthread_key_delete(manager->cache_key);
+    // Cleanup cache list mutex
+    pthread_mutex_destroy(&manager->cache_list_mutex);
     
     // Cleanup intent tracking
     pthread_mutex_destroy(&manager->intent_mutex);
@@ -723,11 +830,19 @@ static void cache_destructor(void* cache) {
     if (cache) {
         thread_cache_t* tc = (thread_cache_t*)cache;
         
+        // Check if this cache was already cleaned up during shutdown
+        // If g_memory_manager is NULL, we're in shutdown and already cleaned up
+        if (g_memory_manager == NULL) {
+            // Just free the cache structure, blocks were already returned
+            free(cache);
+            return;
+        }
+        
         // Track freed pointers to avoid double-free
         void* freed_ptrs[NUM_SIZE_CLASSES * THREAD_CACHE_SIZE + HOT_PATH_SIZE_CLASSES * HOT_PATH_CACHE_SIZE];
         int freed_count = 0;
         
-        // Free all cached objects before destroying the cache
+        // Return all cached objects to the lockfree pool before destroying the cache
         for (int size_class = 0; size_class < NUM_SIZE_CLASSES; size_class++) {
             for (uint32_t i = 0; i < tc->count[size_class]; i++) {
                 if (tc->slots[size_class][i]) {
@@ -744,10 +859,17 @@ static void cache_destructor(void* cache) {
                         }
                     }
                     
-                    // Only free if it's not from our pools
+                    // Return to lockfree pool or free directly
                     if (!from_pool) {
+                        // This block should be returned to lockfree pool or freed
+                        // During normal operation, return to pool for reuse
+                        // During shutdown (g_memory_manager == NULL), just free
+                        if (g_memory_manager) {
+                            lgx_lockfree_push(size_class, ptr);
+                        } else {
+                            free(ptr);
+                        }
                         freed_ptrs[freed_count++] = ptr;
-                        free(ptr);
                     }
                     // Pool objects will be freed when the pools are freed
                 }
@@ -793,6 +915,22 @@ static void cache_destructor(void* cache) {
             }
         }
         
+        // Unregister from global cache list
+        if (g_memory_manager) {
+            pthread_mutex_lock(&g_memory_manager->cache_list_mutex);
+            for (size_t i = 0; i < g_memory_manager->cache_count; i++) {
+                if (g_memory_manager->cache_list[i] == tc) {
+                    // Remove from list by shifting remaining elements
+                    for (size_t j = i; j < g_memory_manager->cache_count - 1; j++) {
+                        g_memory_manager->cache_list[j] = g_memory_manager->cache_list[j + 1];
+                    }
+                    g_memory_manager->cache_count--;
+                    break;
+                }
+            }
+            pthread_mutex_unlock(&g_memory_manager->cache_list_mutex);
+        }
+        
         // Reset thread-local variables
         my_pool = NULL;
         my_thread_id = -1;
@@ -834,7 +972,41 @@ static thread_cache_t* get_thread_cache(lgx_memory_manager_t* manager) {
         // Skip regular cache pre-warming to reduce memory pressure
         // The hot path cache should handle the most common allocations
         
-        pthread_setspecific(manager->cache_key, cache);
+        // Register this cache in the global list for cleanup BEFORE setting in TLS
+        pthread_mutex_lock(&manager->cache_list_mutex);
+        bool registered = false;
+        if (manager->cache_count >= manager->cache_capacity) {
+            // Grow the cache list
+            size_t new_capacity = manager->cache_capacity * 2;
+            if (new_capacity == 0) new_capacity = 64;
+            thread_cache_t** new_list = realloc(manager->cache_list, new_capacity * sizeof(thread_cache_t*));
+            if (new_list) {
+                manager->cache_list = new_list;
+                manager->cache_capacity = new_capacity;
+            } else {
+                // Realloc failed - we can't track this cache!
+                // This is a critical error - we'll leak memory on shutdown
+                // For now, continue but log the issue
+                pthread_mutex_unlock(&manager->cache_list_mutex);
+                // Don't set in TLS if we can't track it
+                free(cache);
+                return NULL;
+            }
+        }
+        if (manager->cache_count < manager->cache_capacity) {
+            manager->cache_list[manager->cache_count++] = cache;
+            registered = true;
+        }
+        pthread_mutex_unlock(&manager->cache_list_mutex);
+        
+        // Only set in TLS if we successfully registered it
+        if (registered) {
+            pthread_setspecific(manager->cache_key, cache);
+        } else {
+            // Failed to register - free the cache and return NULL
+            free(cache);
+            return NULL;
+        }
     }
     return cache;
 }
@@ -1298,29 +1470,16 @@ static void prewarm_hot_path_cache(hot_path_cache_t* cache) {
         // Pre-allocate blocks for this size class
         uint32_t successfully_allocated = 0;
         for (int i = 0; i < HOT_PATH_CACHE_SIZE; i++) {
-            void* ptr = pool_alloc(block_size);
+            // Use malloc directly instead of pool_alloc to avoid thread pool allocation
+            // Thread pool allocations can't be individually freed, causing leaks
+            void* ptr = malloc(block_size);
+            
             if (ptr) {
                 cache->preallocated_blocks[hot_class][i] = ptr;
                 successfully_allocated++;
             } else {
-                // If we can't pre-allocate from pool, try huge pages for large blocks
-                if (block_size >= 2048 && lgx_hugepages_available()) {
-                    // Try selective huge page allocation for larger blocks
-                    ptr = lgx_hugepages_alloc_selective(block_size, true, true);
-                }
-                
-                // Fallback to malloc if huge pages unavailable
-                if (!ptr) {
-                    ptr = malloc(block_size);
-                }
-                
-                if (ptr) {
-                    cache->preallocated_blocks[hot_class][i] = ptr;
-                    successfully_allocated++;
-                } else {
-                    // Failed to allocate - stop here
-                    break;
-                }
+                // Failed to allocate - stop here
+                break;
             }
         }
         

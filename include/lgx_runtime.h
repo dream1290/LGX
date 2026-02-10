@@ -113,6 +113,51 @@ lgx_hardware_status_t lgx_runtime_get_hardware_status(void);
 // Health check API
 lgx_result_t lgx_runtime_health_check(lgx_health_status_t* status);
 
+// Health monitoring with alerts (Task 14.3.3)
+typedef void (*lgx_health_alert_callback_t)(const lgx_health_status_t* status, void* user_data);
+
+lgx_result_t lgx_health_monitoring_start(uint32_t interval_ms);
+lgx_result_t lgx_health_monitoring_stop(void);
+bool lgx_health_monitoring_is_running(void);
+void lgx_health_set_alert_callback(lgx_health_alert_callback_t callback, void* user_data);
+void lgx_health_set_thresholds(float memory_warning, float memory_critical,
+                                float cpu_warning, float cpu_critical);
+lgx_result_t lgx_health_get_monitoring_stats(uint64_t* total_checks, 
+                                              uint64_t* warnings, uint64_t* criticals);
+
+// Memory leak detection (Task 14.3.4)
+typedef struct lgx_leak_alert {
+    float growth_rate;
+    const char* suspected_allocator;
+    size_t current_bytes;
+    int consecutive_growth_count;
+} lgx_leak_alert_t;
+
+typedef struct lgx_leak_detector_stats {
+    size_t struct_size;
+    uint64_t total_samples;
+    uint64_t leak_alerts;
+    bool leak_detected;
+    int consecutive_growth_count;
+    float growth_rate;
+    const char* suspected_allocator;
+    size_t current_total_bytes;
+    size_t current_frame_arena_bytes;
+    size_t current_gpu_pool_bytes;
+    size_t current_persistent_heap_bytes;
+} lgx_leak_detector_stats_t;
+
+typedef void (*lgx_leak_alert_callback_t)(const lgx_leak_alert_t* alert, void* user_data);
+
+lgx_result_t lgx_leak_detector_init(void);
+lgx_result_t lgx_leak_detector_shutdown(void);
+lgx_result_t lgx_leak_detector_add_sample(size_t total_bytes, size_t frame_arena_bytes,
+                                          size_t gpu_pool_bytes, size_t persistent_heap_bytes);
+bool lgx_leak_detector_is_leak_detected(void);
+lgx_result_t lgx_leak_detector_get_stats(lgx_leak_detector_stats_t* stats);
+void lgx_leak_detector_set_alert_callback(lgx_leak_alert_callback_t callback, void* user_data);
+lgx_result_t lgx_leak_detector_reset(void);
+
 // Memory usage monitoring API (Task 12.2.4)
 lgx_result_t lgx_get_memory_usage(lgx_memory_usage_t* usage);
 
@@ -161,6 +206,13 @@ void lgx_set_log_max_size(size_t max_size_bytes);
 void lgx_set_log_rotation_enabled(bool enabled);
 size_t lgx_get_log_current_size(void);
 
+// Log rate limiting (Task 14.3.2)
+void lgx_set_log_rate_limiting_enabled(bool enabled);
+void lgx_set_log_rate_limit(uint64_t logs_per_second);
+uint64_t lgx_get_log_dropped_count(void);
+void lgx_reset_log_dropped_count(void);
+uint64_t lgx_get_log_rate_tokens(void);
+
 // Structured logging with subsystem filtering
 void lgx_log_tagged(lgx_log_subsystem_t subsystem, lgx_log_level_t level, 
                     const char* format, ...);
@@ -200,6 +252,7 @@ typedef struct {
 } lgx_intent_stats_t;
 
 lgx_result_t lgx_intent_get_stats(lgx_intent_stats_t* stats);
+void lgx_intent_aggregate_stats(void);  // Aggregate thread-local stats to global
 
 #ifdef __cplusplus
 }

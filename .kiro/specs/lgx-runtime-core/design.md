@@ -669,6 +669,169 @@ void lgx_frame_reset(void) {
 - Intermediate computation results
 - UI layout calculations
 
+**Adaptive Sizing and Overflow Handling (NEW):**
+
+The frame arena now supports adaptive sizing to handle varying workload demands:
+
+```c
+// Enhanced frame arena with adaptive sizing
+typedef struct lgx_frame_arena {
+    uint8_t* base;              // Base address (huge page aligned)
+    size_t capacity;            // Current capacity (starts at 64MB)
+    size_t max_capacity;        // Maximum capacity (256MB)
+    size_t offset;              // Current allocation offset (bump pointer)
+    uint32_t frame_index;       // Current frame number
+    uint64_t allocations;       // Allocation counter
+    
+    // Adaptive sizing
+    size_t peak_usage;          // Peak usage this frame
+    size_t rolling_avg_usage;   // Rolling average over last 60 frames
+    uint32_t overflow_count;    // Number of overflows
+    uint64_t last_warning_time; // Last overflow warning timestamp (rate limiting)
+    
+    // Debugging
+    struct allocation_histogram* histogram;  // Size distribution
+    struct call_site_tracker* tracker;       // Top allocation sites
+} lgx_frame_arena_t;
+
+// Configuration API
+void lgx_config_set_frame_arena_size(lgx_runtime_config_t* config, size_t size);
+void lgx_config_set_frame_arena_max_size(lgx_runtime_config_t* config, size_t max_size);
+
+// Enhanced allocation with overflow handling
+void* lgx_frame_alloc(size_t size) {
+    lgx_frame_arena_t* arena = &g_frame_arenas[g_current_frame % 3];
+    
+    // Align to 16 bytes
+    size = (size + 15) & ~15;
+    
+    // Bump pointer allocation
+    size_t old_offset = arena->offset;
+    size_t new_offset = old_offset + size;
+    
+    if (unlikely(new_offset > arena->capacity)) {
+        // Arena exhausted: handle overflow
+        arena->overflow_count++;
+        
+        // Rate-limited warning (max 1 per second)
+        uint64_t now = lgx_time_now_ns();
+        if (now - arena->last_warning_time > 1000000000ULL) {
+            lgx_log(LGX_LOG_WARN, 
+                "[LGX WARNING] Frame arena overflow! Requested %zu bytes, but only %zu bytes available.\n"
+                "Frame %u, Arena %u, Total usage: %zu / %zu bytes (%.1f%%)\n"
+                "Falling back to persistent heap for this allocation.",
+                size, arena->capacity - old_offset,
+                g_current_frame, g_current_frame % 3,
+                old_offset, arena->capacity, 
+                (double)old_offset / arena->capacity * 100.0);
+            arena->last_warning_time = now;
+        }
+        
+        // Emit telemetry event
+        lgx_telemetry_emit_overflow(g_current_frame, size, old_offset, arena->capacity);
+        
+        // Attempt adaptive growth (if below max capacity)
+        if (arena->capacity < arena->max_capacity) {
+            size_t new_capacity = arena->capacity * 2;
+            if (new_capacity > arena->max_capacity) {
+                new_capacity = arena->max_capacity;
+            }
+            
+            if (lgx_frame_arena_grow(arena, new_capacity)) {
+                lgx_log(LGX_LOG_INFO, 
+                    "[LGX INFO] Frame arena grown from %zu MB to %zu MB",
+                    arena->capacity / (1024*1024), new_capacity / (1024*1024));
+                arena->capacity = new_capacity;
+                
+                // Retry allocation in grown arena
+                arena->offset = new_offset;
+                arena->allocations++;
+                return arena->base + old_offset;
+            }
+        }
+        
+        // Fallback to persistent heap
+        return lgx_heap_alloc(size);
+    }
+    
+    arena->offset = new_offset;
+    arena->allocations++;
+    
+    // Track peak usage
+    if (new_offset > arena->peak_usage) {
+        arena->peak_usage = new_offset;
+    }
+    
+    // Update histogram (debug builds)
+    #ifdef LGX_DEBUG
+    lgx_histogram_add(arena->histogram, size);
+    lgx_call_site_track(arena->tracker, size, __FILE__, __LINE__);
+    #endif
+    
+    return arena->base + old_offset;
+}
+
+// Enhanced reset with usage tracking
+void lgx_frame_reset(void) {
+    g_current_frame++;
+    lgx_frame_arena_t* arena = &g_frame_arenas[g_current_frame % 3];
+    
+    // Update rolling average (exponential moving average)
+    arena->rolling_avg_usage = (arena->rolling_avg_usage * 59 + arena->peak_usage) / 60;
+    
+    // Early warning if usage exceeds 80%
+    if (arena->peak_usage > arena->capacity * 0.8) {
+        lgx_log(LGX_LOG_WARN,
+            "[LGX WARNING] Frame arena usage high: %zu / %zu bytes (%.1f%%). "
+            "Consider increasing arena size to %zu MB.",
+            arena->peak_usage, arena->capacity,
+            (double)arena->peak_usage / arena->capacity * 100.0,
+            (arena->peak_usage * 2) / (1024*1024));
+    }
+    
+    // Reset arena
+    arena->offset = 0;
+    arena->allocations = 0;
+    arena->peak_usage = 0;
+    arena->frame_index = g_current_frame;
+}
+
+// Debugging API
+typedef struct lgx_frame_arena_stats {
+    size_t struct_size;
+    size_t capacity;
+    size_t current_usage;
+    size_t peak_usage;
+    size_t rolling_avg_usage;
+    uint64_t allocations;
+    uint32_t overflow_count;
+    size_t recommended_size;  // Based on observed usage
+} lgx_frame_arena_stats_t;
+
+lgx_result_t lgx_frame_get_stats(lgx_frame_arena_stats_t* stats);
+lgx_result_t lgx_frame_arena_dump(const char* output_path);  // Export allocation map
+```
+
+**Adaptive Sizing Strategy:**
+1. Start with 64MB default capacity
+2. Monitor peak usage per frame with rolling average
+3. Warn when usage exceeds 80% (early warning)
+4. On overflow, attempt to double arena size (max 256MB)
+5. If growth fails or max reached, fall back to persistent heap
+6. Recommend optimal size based on observed patterns
+
+**Overflow Handling:**
+- Rate-limited warnings (max 1 per second) to prevent log spam
+- Telemetry events with full context (frame, size, usage)
+- Graceful fallback to persistent heap (<5% performance penalty)
+- Track overflow statistics for debugging
+
+**Debugging Tools:**
+- Allocation histogram: size distribution per frame
+- Call site tracking: top allocation locations
+- Usage visualization: arena usage over time
+- Profiler integration: Tracy, Optick support
+
 ### 4.2 GPU Memory Pool
 
 **Purpose:** Pre-allocated GPU-visible memory with alignment guarantees

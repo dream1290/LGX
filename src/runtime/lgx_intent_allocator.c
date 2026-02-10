@@ -321,13 +321,33 @@ void* lgx_alloc_with_intent_ex(const void* intent, size_t intent_type_id) {
         return NULL;
     }
     
-    // For now, just extract base intent and delegate
-    // Future: Handle Layer 2+ specific fields (priority, predictive prefetch, etc.)
-    const lgx_allocation_intent_base_t* base_intent = (const lgx_allocation_intent_base_t*)intent;
-    
-    (void)intent_type_id;  // Unused for now
-    
-    return lgx_alloc_with_intent(base_intent);
+    // Handle different intent types
+    if (intent_type_id == 0) {
+        // Type 0 = base intent
+        return lgx_alloc_with_intent((const lgx_allocation_intent_base_t*)intent);
+    } else if (intent_type_id == 1) {
+        // Type 1 = L2 intent
+        const lgx_allocation_intent_l2_t* l2_intent = (const lgx_allocation_intent_l2_t*)intent;
+        
+        // Validate L2 struct_size
+        if (l2_intent->struct_size < sizeof(lgx_allocation_intent_l2_t)) {
+#ifdef DEBUG
+            fprintf(stderr, "[LGX ERROR] lgx_alloc_with_intent_ex: invalid L2 struct_size %zu (expected >= %zu)\n",
+                    l2_intent->struct_size, sizeof(lgx_allocation_intent_l2_t));
+#endif
+            return NULL;
+        }
+        
+        // For now, L2 intents are not fully implemented - just use base intent
+        // Future: Handle L2-specific fields (priority, predictive prefetch, etc.)
+        return lgx_alloc_with_intent(&l2_intent->base);
+    } else {
+        // Unknown intent type
+#ifdef DEBUG
+        fprintf(stderr, "[LGX ERROR] lgx_alloc_with_intent_ex: unknown intent_type_id %zu\n", intent_type_id);
+#endif
+        return NULL;
+    }
 }
 
 /**

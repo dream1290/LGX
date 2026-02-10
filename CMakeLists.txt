@@ -65,6 +65,7 @@ set(LGX_RUNTIME_SOURCES
     src/runtime/lgx_telemetry_process.c
     src/runtime/lgx_error_handler.c
     src/runtime/lgx_health_monitor.c
+    src/runtime/lgx_leak_detector.c
     src/runtime/lgx_memory_monitor.c
     src/runtime/lgx_performance_counters.c
     src/runtime/lgx_chaos_testing.c
@@ -73,6 +74,7 @@ set(LGX_RUNTIME_SOURCES
     src/runtime/lgx_library_manifest.c
     src/runtime/lgx_input_validation.c
     src/runtime/lgx_memory_safety.c
+    src/runtime/lgx_resource_limits.c
     
     # Legacy Phase 0 sources (temporarily disabled)
     # src/lgx_runtime.c
@@ -169,6 +171,10 @@ foreach(test_file ${PHASE0_TESTS})
     endif()
     
     add_test(NAME ${test_name} COMMAND ${test_name})
+    set_tests_properties(${test_name} PROPERTIES
+        LABELS "phase0"
+        TIMEOUT 300  # 5 minutes for AddressSanitizer overhead
+    )
 endforeach()
 
 # Phase 1 Unit Tests

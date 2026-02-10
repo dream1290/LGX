@@ -70,6 +70,7 @@ typedef struct {
     bool canaries_enabled;
     bool delayed_reclamation_enabled;
     bool tracking_enabled;
+    bool secure_wiping_enabled;
 } lgx_memory_safety_state_t;
 
 static lgx_memory_safety_state_t g_safety_state = {
@@ -89,11 +90,13 @@ static lgx_memory_safety_state_t g_safety_state = {
     .canaries_enabled = true,
     .delayed_reclamation_enabled = true,
     .tracking_enabled = true,
+    .secure_wiping_enabled = false,  // Optional even in debug
 #else
     .guard_pages_enabled = false,
     .canaries_enabled = false,
     .delayed_reclamation_enabled = false,
     .tracking_enabled = false,
+    .secure_wiping_enabled = false,
 #endif
 };
 
@@ -320,7 +323,12 @@ void lgx_memory_safety_free(void* user_ptr) {
     metadata->frame_freed = g_safety_state.current_frame;
     
     // Fill with freed pattern (helps detect use-after-free)
-    memset(user_ptr, 0xFE, metadata->size);
+    // Use secure wiping if enabled
+    if (g_safety_state.secure_wiping_enabled) {
+        lgx_memory_safety_secure_wipe(user_ptr, metadata->size);
+    } else {
+        memset(user_ptr, 0xFE, metadata->size);
+    }
     
     // Delayed reclamation (if enabled)
     if (g_safety_state.delayed_reclamation_enabled) {
@@ -395,4 +403,107 @@ void lgx_memory_safety_get_stats(lgx_memory_safety_stats_t* stats) {
     stats->current_frame = g_safety_state.current_frame;
     
     pthread_mutex_unlock(&g_safety_state.mutex);
+}
+
+
+/**
+ * Secure memory wiping (Task 14.2.3)
+ * 
+ * Overwrites memory with zeros in a way that prevents compiler optimization.
+ * This ensures sensitive data is actually erased from memory.
+ */
+void lgx_memory_safety_secure_wipe(void* ptr, size_t size) {
+    if (!ptr || size == 0) {
+        return;
+    }
+    
+    // Use volatile to prevent compiler optimization
+    volatile uint8_t* p = (volatile uint8_t*)ptr;
+    
+    // Multiple passes for extra security (optional, configurable)
+    const int passes = 3;
+    
+    for (int pass = 0; pass < passes; pass++) {
+        uint8_t pattern;
+        
+        switch (pass) {
+            case 0:
+                pattern = 0xFF;  // All ones
+                break;
+            case 1:
+                pattern = 0x00;  // All zeros
+                break;
+            case 2:
+                pattern = 0xAA;  // Alternating pattern
+                break;
+            default:
+                pattern = 0x00;
+                break;
+        }
+        
+        for (size_t i = 0; i < size; i++) {
+            p[i] = pattern;
+        }
+    }
+    
+    // Final pass with zeros
+    for (size_t i = 0; i < size; i++) {
+        p[i] = 0;
+    }
+    
+    // Memory barrier to ensure writes complete
+    __sync_synchronize();
+}
+
+/**
+ * Enable/disable secure wiping
+ */
+void lgx_memory_safety_set_secure_wiping(bool enabled) {
+    g_safety_state.secure_wiping_enabled = enabled;
+    
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO,
+                  "Secure memory wiping: %s", enabled ? "enabled" : "disabled");
+}
+
+/**
+ * Get memory safety configuration
+ */
+void lgx_memory_safety_get_config(lgx_memory_safety_config_t* config) {
+    if (!config) {
+        return;
+    }
+    
+    config->guard_pages_enabled = g_safety_state.guard_pages_enabled;
+    config->canaries_enabled = g_safety_state.canaries_enabled;
+    config->delayed_reclamation_enabled = g_safety_state.delayed_reclamation_enabled;
+    config->tracking_enabled = g_safety_state.tracking_enabled;
+    config->secure_wiping_enabled = g_safety_state.secure_wiping_enabled;
+}
+
+/**
+ * Set memory safety configuration
+ */
+void lgx_memory_safety_set_config(const lgx_memory_safety_config_t* config) {
+    if (!config) {
+        return;
+    }
+    
+    g_safety_state.guard_pages_enabled = config->guard_pages_enabled;
+    g_safety_state.canaries_enabled = config->canaries_enabled;
+    g_safety_state.delayed_reclamation_enabled = config->delayed_reclamation_enabled;
+    g_safety_state.tracking_enabled = config->tracking_enabled;
+    g_safety_state.secure_wiping_enabled = config->secure_wiping_enabled;
+    
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO,
+                  "Memory safety configuration updated:");
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO,
+                  "  Guard pages: %s", g_safety_state.guard_pages_enabled ? "enabled" : "disabled");
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO,
+                  "  Canaries: %s", g_safety_state.canaries_enabled ? "enabled" : "disabled");
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO,
+                  "  Delayed reclamation: %s", g_safety_state.delayed_reclamation_enabled ? "enabled" : "disabled");
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO,
+                  "  Allocation tracking: %s", g_safety_state.tracking_enabled ? "enabled" : "disabled");
+    lgx_log_tagged(LGX_SUBSYSTEM_MEMORY, LGX_LOG_INFO,
+                  "  Secure wiping: %s", g_safety_state.secure_wiping_enabled ? "enabled" : "disabled");
 }

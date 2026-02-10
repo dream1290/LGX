@@ -200,6 +200,19 @@ See `REVOLUTIONARY_ARCHITECTURE.md` for complete vision.
 - The runtime SHALL provide usage statistics to help developers improve intent accuracy
 - The runtime SHALL gracefully handle incorrect intent by adapting allocations based on observed patterns
 
+**AC-16: Frame Arena Adaptive Sizing and Overflow Handling (NEW)**
+- The runtime SHALL support configurable frame arena size via `lgx_config_set_frame_arena_size()`
+- The runtime SHALL implement adaptive arena growth when overflow detected (double size, max 256MB)
+- The runtime SHALL provide early warning when arena usage exceeds 80% of capacity
+- The runtime SHALL track allocation patterns and recommend optimal arena size
+- The runtime SHALL fall back to persistent heap on overflow with <5% performance penalty
+- The runtime SHALL rate-limit overflow warnings (max 1 per second) to prevent log spam
+- The runtime SHALL provide detailed overflow telemetry (frame number, allocation size, call site)
+- The runtime SHALL verify `lgx_frame_reset()` is called at frame boundaries
+- The runtime SHALL detect and report frame arena memory leaks (allocations not reset)
+- The runtime SHALL provide debugging tools: allocation histogram, call site tracking, usage visualization
+- The runtime SHALL gracefully handle incorrect intent by adapting allocations based on observed patterns
+
 **AC-14: Error Context and Debugging**
 - The runtime SHALL provide `lgx_get_last_error()` returning thread-local error details
 - The runtime SHALL provide `lgx_set_error_handler()` for custom error callbacks

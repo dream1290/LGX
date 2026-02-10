@@ -1,0 +1,33 @@
+[  1%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o
+[  1%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o
+[  1%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o
+[  1%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o
+[  3%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o
+[  3%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o
+[  3%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o
+[  4%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o
+[  5%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o
+[  7%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o
+[  6%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_runtime_core.c.o
+[  8%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry_process.c.o
+[  8%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o
+[  8%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o
+[  8%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_leak_detector.c.o
+[  9%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o
+[ 10%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.o
+[ 10%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_chaos_testing.c.o
+[ 11%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.o
+[ 11%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o
+[ 12%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_library_manifest.c.o
+[ 12%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_input_validation.c.o
+[ 13%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o
+/home/karl/Projects/LGX/src/runtime/lgx_namespace_isolation.c: In function ‘get_library_version’:
+/home/karl/Projects/LGX/src/runtime/lgx_namespace_isolation.c:113:45: error: ISO C forbids initialization between function pointer and ‘void *’ [-Werror=pedantic]
+  113 |         const char* (*version_func)(void) = dlsym(handle, "gnu_get_libc_version");
+      |                                             ^~~~~
+[ 13%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_resource_limits.c.o
+cc1: all warnings being treated as errors
+gmake[2]: *** [CMakeFiles/lgx_runtime.dir/build.make:342: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:311: CMakeFiles/lgx_runtime.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

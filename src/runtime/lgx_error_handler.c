@@ -16,6 +16,11 @@
 static __thread lgx_error_context_ex_t g_last_error = {0};
 static __thread bool g_error_set = false;
 
+// Global error callback (works even before runtime init)
+static lgx_error_callback_t g_global_callback = NULL;
+static void* g_global_callback_user_data = NULL;
+static pthread_mutex_t g_global_callback_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 // Error metadata mapping
 typedef struct {
     lgx_result_t code;
@@ -223,10 +228,6 @@ lgx_result_t lgx_error_handler_set_error(lgx_error_handler_t* handler,
                                         const char* function,
                                         const char* file,
                                         int line) {
-    if (!handler) {
-        return LGX_ERROR_INVALID_PARAM;
-    }
-    
     // Get error metadata
     const lgx_error_metadata_t* metadata = get_error_metadata(error);
     
@@ -248,12 +249,21 @@ lgx_result_t lgx_error_handler_set_error(lgx_error_handler_t* handler,
     
     g_error_set = true;
     
-    // Call registered callback if any
-    pthread_mutex_lock(&handler->mutex);
-    if (handler->callback) {
-        handler->callback(&g_last_error, handler->callback_user_data);
+    // Call registered callback if handler is available
+    if (handler) {
+        pthread_mutex_lock(&handler->mutex);
+        if (handler->callback) {
+            handler->callback(&g_last_error, handler->callback_user_data);
+        }
+        pthread_mutex_unlock(&handler->mutex);
     }
-    pthread_mutex_unlock(&handler->mutex);
+    
+    // Also call global callback if set
+    pthread_mutex_lock(&g_global_callback_mutex);
+    if (g_global_callback) {
+        g_global_callback(&g_last_error, g_global_callback_user_data);
+    }
+    pthread_mutex_unlock(&g_global_callback_mutex);
     
     return LGX_SUCCESS;
 }
@@ -314,6 +324,9 @@ lgx_error_context_t lgx_get_last_error(void) {
         lgx_error_context_t empty = {0};
         empty.struct_size = sizeof(lgx_error_context_t);
         empty.error_code = LGX_SUCCESS;
+        empty.error_message = ""; // Always provide a valid string, even if empty
+        empty.function_name = "";
+        empty.file_name = "";
         return empty;
     }
     
@@ -337,15 +350,20 @@ void lgx_clear_last_error(void) {
 }
 
 void lgx_set_error_handler(lgx_error_callback_t callback, void* user_data) {
-    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
-    if (!runtime || !runtime->error_handler) {
-        return;
-    }
+    // Set global callback (works even before runtime init)
+    pthread_mutex_lock(&g_global_callback_mutex);
+    g_global_callback = callback;
+    g_global_callback_user_data = user_data;
+    pthread_mutex_unlock(&g_global_callback_mutex);
     
-    pthread_mutex_lock(&runtime->error_handler->mutex);
-    runtime->error_handler->callback = callback;
-    runtime->error_handler->callback_user_data = user_data;
-    pthread_mutex_unlock(&runtime->error_handler->mutex);
+    // Also set runtime-specific callback if runtime is initialized
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (runtime && runtime->error_handler) {
+        pthread_mutex_lock(&runtime->error_handler->mutex);
+        runtime->error_handler->callback = callback;
+        runtime->error_handler->callback_user_data = user_data;
+        pthread_mutex_unlock(&runtime->error_handler->mutex);
+    }
 }
 
 const char* lgx_result_to_string(lgx_result_t result) {

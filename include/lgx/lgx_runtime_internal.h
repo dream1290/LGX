@@ -152,6 +152,29 @@ lgx_result_t lgx_health_monitor_check(lgx_health_monitor_t* monitor,
                                      lgx_health_status_t* status);
 lgx_health_status_t lgx_health_monitor_get_status(lgx_health_monitor_t* monitor);
 
+// Health monitoring with alerts (Task 14.3.3) - Internal functions
+lgx_result_t lgx_health_monitor_start_monitoring(lgx_health_monitor_t* monitor, uint32_t interval_ms);
+lgx_result_t lgx_health_monitor_stop_monitoring(lgx_health_monitor_t* monitor);
+bool lgx_health_monitor_is_monitoring_running(lgx_health_monitor_t* monitor);
+void lgx_health_monitor_set_alert_callback(lgx_health_monitor_t* monitor,
+                                           lgx_health_alert_callback_t callback, void* user_data);
+void lgx_health_monitor_set_thresholds(lgx_health_monitor_t* monitor,
+                                       float memory_warning, float memory_critical,
+                                       float cpu_warning, float cpu_critical);
+lgx_result_t lgx_health_monitor_get_monitoring_stats(lgx_health_monitor_t* monitor,
+                                                     uint64_t* total_checks,
+                                                     uint64_t* warnings, uint64_t* criticals);
+
+// Public API wrappers
+lgx_result_t lgx_health_monitoring_start_public(uint32_t interval_ms);
+lgx_result_t lgx_health_monitoring_stop_public(void);
+bool lgx_health_monitoring_is_running_public(void);
+void lgx_health_set_alert_callback_public(lgx_health_alert_callback_t callback, void* user_data);
+void lgx_health_set_thresholds_public(float memory_warning, float memory_critical,
+                                      float cpu_warning, float cpu_critical);
+lgx_result_t lgx_health_get_monitoring_stats_public(uint64_t* total_checks,
+                                                    uint64_t* warnings, uint64_t* criticals);
+
 // Telemetry API functions
 lgx_result_t lgx_telemetry_enable(lgx_telemetry_t* telemetry, bool user_consent);
 lgx_result_t lgx_telemetry_record_frame_time(lgx_telemetry_t* telemetry, float frame_time_ms);
@@ -191,6 +214,8 @@ typedef struct {
     uint64_t total_allocations;
     uint64_t total_bytes_allocated;
     uint64_t overflow_count;
+    uint64_t fallback_count;        // Number of times we fell back to persistent heap
+    uint64_t fallback_bytes;        // Total bytes allocated via fallback
     uint64_t peak_usage_bytes;
     uint64_t current_frame;
 } frame_arena_stats_t;
@@ -420,3 +445,89 @@ void lgx_memory_safety_get_stats(lgx_memory_safety_stats_t* stats);
 #endif
 
 #endif // LGX_RUNTIME_INTERNAL_H
+
+// ============================================================================
+// Resource Limits (Task 14.1)
+// ============================================================================
+
+// Resource limits configuration
+typedef struct lgx_resource_limits_config {
+    size_t max_memory_bytes;           // Maximum memory limit (default: 16GB)
+    size_t max_file_handles;           // Maximum file handles (default: 1024)
+    size_t max_log_size_bytes;         // Maximum log file size (default: 100MB)
+    size_t max_allocations_per_sec;    // Maximum allocations per second (default: 1M)
+    const char* log_file_path;         // Log file path (default: /tmp/lgx_runtime.log)
+} lgx_resource_limits_config_t;
+
+// Resource limits statistics
+typedef struct lgx_resource_limits_stats {
+    size_t struct_size;
+    
+    // Memory stats
+    size_t current_memory_bytes;
+    size_t peak_memory_bytes;
+    size_t max_memory_bytes;
+    uint64_t memory_limit_hits;
+    
+    // File handle stats
+    size_t current_file_handles;
+    size_t max_file_handles;
+    uint64_t file_handle_limit_hits;
+    
+    // Log stats
+    size_t current_log_size_bytes;
+    size_t max_log_size_bytes;
+    uint64_t log_rotation_count;
+    
+    // Rate limiting stats
+    uint64_t allocation_count;
+    size_t max_allocations_per_sec;
+    uint64_t rate_limit_violations;
+} lgx_resource_limits_stats_t;
+
+// Resource limits API
+lgx_result_t lgx_resource_limits_init(const lgx_resource_limits_config_t* config);
+lgx_result_t lgx_resource_limits_shutdown(void);
+
+// Memory limit checks
+bool lgx_resource_limits_check_memory(size_t size);
+void lgx_resource_limits_track_allocation(size_t size);
+void lgx_resource_limits_track_deallocation(size_t size);
+
+// Allocation rate limiting
+bool lgx_resource_limits_check_allocation_rate(void);
+
+// File handle limits
+bool lgx_resource_limits_check_file_handle(void);
+void lgx_resource_limits_track_file_open(void);
+void lgx_resource_limits_track_file_close(void);
+
+// Log rotation
+bool lgx_resource_limits_check_log_rotation(size_t bytes_to_write);
+lgx_result_t lgx_resource_limits_rotate_log(void);
+void lgx_resource_limits_track_log_write(size_t bytes);
+
+// Statistics
+lgx_result_t lgx_resource_limits_get_stats(lgx_resource_limits_stats_t* stats);
+lgx_result_t lgx_resource_limits_reset_stats(void);
+
+
+// ============================================================================
+// Memory Protection (Task 14.2)
+// ============================================================================
+
+// Memory safety configuration
+typedef struct lgx_memory_safety_config {
+    bool guard_pages_enabled;           // Guard pages after allocations (debug builds)
+    bool canaries_enabled;              // Memory canaries to detect corruption
+    bool delayed_reclamation_enabled;   // 3-frame delayed reclamation
+    bool tracking_enabled;              // Allocation tracking (double-free prevention)
+    bool secure_wiping_enabled;         // Secure memory wiping on free (optional)
+} lgx_memory_safety_config_t;
+
+// Memory safety API
+void lgx_memory_safety_secure_wipe(void* ptr, size_t size);
+void lgx_memory_safety_set_secure_wiping(bool enabled);
+void lgx_memory_safety_get_config(lgx_memory_safety_config_t* config);
+void lgx_memory_safety_set_config(const lgx_memory_safety_config_t* config);
+
