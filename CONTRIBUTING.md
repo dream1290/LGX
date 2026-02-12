@@ -196,12 +196,12 @@ valgrind --leak-check=full ./build/tests/unit/test_name
 
 ### PR Requirements
 
-- ✅ All tests pass
-- ✅ No compiler warnings
-- ✅ Code follows style guidelines
-- ✅ Documentation updated
-- ✅ CHANGELOG.md updated
-- ✅ Commits are clean and descriptive
+- All tests pass
+- No compiler warnings
+- Code follows style guidelines
+- Documentation updated
+- CHANGELOG.md updated
+- Commits are clean and descriptive
 
 ### Review Process
 
@@ -246,14 +246,14 @@ We follow [Semantic Versioning](https://semver.org/):
 
 The following should NEVER be committed to the repository:
 
-- ❌ Build directories (`build/`, `build-*/`)
-- ❌ IDE configuration (`.vscode/`, `.idea/`, `.kiro/`)
-- ❌ Build artifacts (`*.o`, `*.a`, `*.so`)
-- ❌ Test results files
-- ❌ Temporary files (`*.tmp`, `*.log`)
-- ❌ Security audit results
-- ❌ Package outputs (`*.deb`, `*.rpm`, `*.tar.gz`)
-- ❌ Development notes and summaries
+- Build directories (`build/`, `build-*/`)
+- IDE configuration (`.vscode/`, `.idea/`, `.kiro/`)
+- Build artifacts (`*.o`, `*.a`, `*.so`)
+- Test results files
+- Temporary files (`*.tmp`, `*.log`)
+- Security audit results
+- Package outputs (`*.deb`, `*.rpm`, `*.tar.gz`)
+- Development notes and summaries
 
 Always check `.gitignore` and use `git status` before committing.
 
