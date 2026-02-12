@@ -24,15 +24,18 @@ cmake_install.cmake
 CTestTestfile.cmake
 Testing/
 
-# IDE
+# IDE and Editor
 .vscode/
 .idea/
+.kiro/
 *.swp
 *.swo
 *~
+.DS_Store
 
 # Security audit results
 security_audit_*/
+security_audit_report/
 
 # Packaging output
 packaging/output/
@@ -43,11 +46,19 @@ packaging/output/
 *.tar.xz
 *.tar.bz2
 
-# Temporary files
+# Temporary and development files
 *.tmp
 *.log
 *.bak
 *.orig
+*_SUMMARY.md
+*_STATUS.md
+*_FIXES*.md
+*_NOTES.md
+*_SUCCESS.md
+*_COMPLETE.md
+GIT_PUSH_SUCCESS.md
+BUILD_SUMMARY*.md
 
 # OS specific
 .DS_Store
@@ -93,3 +104,15 @@ dist/
 # Backup files
 *~
 *.backup
+
+# Keep these important files (exceptions)
+!README.md
+!CHANGELOG.md
+!LICENSE
+!VERSION_*.md
+!docs/**/*.md
+!benchmarks/README.md
+!benchmarks/BENCHMARKS_COMPLETE.md
+!packaging/README.md
+!packaging/QUICKSTART.md
+!tests/**/README.md
