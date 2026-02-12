@@ -1,0 +1,95 @@
+# Build directories
+build/
+build-*/
+cmake-build-*/
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# Test results
+test_results.txt
+tests/test_results.txt
+**/test_results.txt
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Security audit results
+security_audit_*/
+
+# Packaging output
+packaging/output/
+*.deb
+*.rpm
+*.pkg.tar.zst
+*.tar.gz
+*.tar.xz
+*.tar.bz2
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.orig
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Coverage
+*.gcda
+*.gcno
+*.gcov
+coverage/
+htmlcov/
+
+# Profiling
+*.prof
+gmon.out
+perf.data*
+
+# Valgrind
+*.valgrind
+vgcore.*
+
+# AddressSanitizer
+*.asan
+
+# Fuzzing
+findings/
+crashes/
+hangs/
+queue/
+
+# Documentation build
+docs/_build/
+docs/.doctrees/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+dist/
+
+# Backup files
+*~
+*.backup
