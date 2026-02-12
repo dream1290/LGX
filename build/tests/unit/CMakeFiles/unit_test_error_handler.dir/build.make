@@ -92,7 +92,7 @@ unit_test_error_handler_EXTERNAL_OBJECTS =
 
 tests/unit/unit_test_error_handler: tests/unit/CMakeFiles/unit_test_error_handler.dir/test_error_handler.c.o
 tests/unit/unit_test_error_handler: tests/unit/CMakeFiles/unit_test_error_handler.dir/build.make
-tests/unit/unit_test_error_handler: liblgx_runtime.so.1.0.0
+tests/unit/unit_test_error_handler: liblgx_runtime.so.1.0.1
 tests/unit/unit_test_error_handler: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/unit/unit_test_error_handler: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/unit/unit_test_error_handler: tests/unit/CMakeFiles/unit_test_error_handler.dir/link.txt

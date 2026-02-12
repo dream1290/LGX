@@ -16,11 +16,6 @@
 #include <errno.h>
 #include <time.h>
 
-// Version constants
-#define LGX_VERSION_MAJOR 1
-#define LGX_VERSION_MINOR 0
-#define LGX_VERSION_PATCH 0
-
 // Global runtime state
 static lgx_runtime_state_t g_runtime = {
     .initialized = false,
@@ -259,6 +254,32 @@ void lgx_config_set_memory_pool_size(lgx_runtime_config_t* config, size_t size) 
 void lgx_config_set_flags(lgx_runtime_config_t* config, uint32_t flags) {
     if (!config) return;
     config->flags = flags;
+}
+
+/**
+ * Set frame arena size (Task 3.4.5.2.1)
+ * 
+ * Configures the initial size of each frame arena. Must be called before lgx_runtime_init().
+ * 
+ * @param config Configuration object
+ * @param size Arena size in bytes (will be clamped to 16MB - 256MB range)
+ */
+void lgx_config_set_frame_arena_size(lgx_runtime_config_t* config, size_t size) {
+    if (!config) return;
+    config->frame_arena_size = size;
+}
+
+/**
+ * Set frame arena maximum size (Task 3.4.5.2.2)
+ * 
+ * Configures the maximum size that arenas can grow to. Must be called before lgx_runtime_init().
+ * 
+ * @param config Configuration object
+ * @param max_size Maximum arena size in bytes (will be clamped to 16MB - 256MB range)
+ */
+void lgx_config_set_frame_arena_max_size(lgx_runtime_config_t* config, size_t max_size) {
+    if (!config) return;
+    config->frame_arena_max_size = max_size;
 }
 
 void lgx_config_destroy(lgx_runtime_config_t* config) {
@@ -585,6 +606,14 @@ static lgx_result_t initialize_subsystems(const lgx_runtime_config_t* config) {
     result = lgx_memory_manager_init(&g_runtime.memory_manager, config, g_runtime.hardware_adapter);
     if (result != LGX_SUCCESS) {
         return result;
+    }
+    
+    // 5.4. Configure frame arena (Task 3.4.5.2.1)
+    if (config && config->frame_arena_size > 0) {
+        lgx_frame_arena_set_config_size(config->frame_arena_size);
+    }
+    if (config && config->frame_arena_max_size > 0) {
+        lgx_frame_arena_set_config_max_size(config->frame_arena_max_size);
     }
     
     // 5.5. Intent Allocator (specialized allocators - frame arena, persistent heap)

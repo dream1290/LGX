@@ -186,34 +186,6 @@ unit_test_init_shutdown/fast:
 .PHONY : unit_test_init_shutdown/fast
 
 # Convenience name for target.
-tests/unit/CMakeFiles/unit_test_version_compatibility.dir/rule:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_version_compatibility.dir/rule
-.PHONY : tests/unit/CMakeFiles/unit_test_version_compatibility.dir/rule
-
-# Convenience name for target.
-unit_test_version_compatibility: tests/unit/CMakeFiles/unit_test_version_compatibility.dir/rule
-.PHONY : unit_test_version_compatibility
-
-# fast build rule for target.
-unit_test_version_compatibility/fast:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build.make tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build
-.PHONY : unit_test_version_compatibility/fast
-
-# Convenience name for target.
-tests/unit/CMakeFiles/unit_test_memory_allocation.dir/rule:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_memory_allocation.dir/rule
-.PHONY : tests/unit/CMakeFiles/unit_test_memory_allocation.dir/rule
-
-# Convenience name for target.
-unit_test_memory_allocation: tests/unit/CMakeFiles/unit_test_memory_allocation.dir/rule
-.PHONY : unit_test_memory_allocation
-
-# fast build rule for target.
-unit_test_memory_allocation/fast:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build.make tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build
-.PHONY : unit_test_memory_allocation/fast
-
-# Convenience name for target.
 tests/unit/CMakeFiles/unit_test_platform_services.dir/rule:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_platform_services.dir/rule
 .PHONY : tests/unit/CMakeFiles/unit_test_platform_services.dir/rule
@@ -254,6 +226,20 @@ unit_test_health_monitor: tests/unit/CMakeFiles/unit_test_health_monitor.dir/rul
 unit_test_health_monitor/fast:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_health_monitor.dir/build.make tests/unit/CMakeFiles/unit_test_health_monitor.dir/build
 .PHONY : unit_test_health_monitor/fast
+
+# Convenience name for target.
+tests/unit/CMakeFiles/unit_test_resource_limits.dir/rule:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_resource_limits.dir/rule
+.PHONY : tests/unit/CMakeFiles/unit_test_resource_limits.dir/rule
+
+# Convenience name for target.
+unit_test_resource_limits: tests/unit/CMakeFiles/unit_test_resource_limits.dir/rule
+.PHONY : unit_test_resource_limits
+
+# fast build rule for target.
+unit_test_resource_limits/fast:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_resource_limits.dir/build.make tests/unit/CMakeFiles/unit_test_resource_limits.dir/build
+.PHONY : unit_test_resource_limits/fast
 
 test_error_handler.o: test_error_handler.c.o
 .PHONY : test_error_handler.o
@@ -327,30 +313,6 @@ test_init_shutdown.c.s:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_init_shutdown.dir/build.make tests/unit/CMakeFiles/unit_test_init_shutdown.dir/test_init_shutdown.c.s
 .PHONY : test_init_shutdown.c.s
 
-test_memory_allocation.o: test_memory_allocation.c.o
-.PHONY : test_memory_allocation.o
-
-# target to build an object file
-test_memory_allocation.c.o:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build.make tests/unit/CMakeFiles/unit_test_memory_allocation.dir/test_memory_allocation.c.o
-.PHONY : test_memory_allocation.c.o
-
-test_memory_allocation.i: test_memory_allocation.c.i
-.PHONY : test_memory_allocation.i
-
-# target to preprocess a source file
-test_memory_allocation.c.i:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build.make tests/unit/CMakeFiles/unit_test_memory_allocation.dir/test_memory_allocation.c.i
-.PHONY : test_memory_allocation.c.i
-
-test_memory_allocation.s: test_memory_allocation.c.s
-.PHONY : test_memory_allocation.s
-
-# target to generate assembly for a file
-test_memory_allocation.c.s:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_memory_allocation.dir/build.make tests/unit/CMakeFiles/unit_test_memory_allocation.dir/test_memory_allocation.c.s
-.PHONY : test_memory_allocation.c.s
-
 test_platform_services.o: test_platform_services.c.o
 .PHONY : test_platform_services.o
 
@@ -375,29 +337,29 @@ test_platform_services.c.s:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_platform_services.dir/build.make tests/unit/CMakeFiles/unit_test_platform_services.dir/test_platform_services.c.s
 .PHONY : test_platform_services.c.s
 
-test_version_compatibility.o: test_version_compatibility.c.o
-.PHONY : test_version_compatibility.o
+test_resource_limits.o: test_resource_limits.c.o
+.PHONY : test_resource_limits.o
 
 # target to build an object file
-test_version_compatibility.c.o:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build.make tests/unit/CMakeFiles/unit_test_version_compatibility.dir/test_version_compatibility.c.o
-.PHONY : test_version_compatibility.c.o
+test_resource_limits.c.o:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_resource_limits.dir/build.make tests/unit/CMakeFiles/unit_test_resource_limits.dir/test_resource_limits.c.o
+.PHONY : test_resource_limits.c.o
 
-test_version_compatibility.i: test_version_compatibility.c.i
-.PHONY : test_version_compatibility.i
+test_resource_limits.i: test_resource_limits.c.i
+.PHONY : test_resource_limits.i
 
 # target to preprocess a source file
-test_version_compatibility.c.i:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build.make tests/unit/CMakeFiles/unit_test_version_compatibility.dir/test_version_compatibility.c.i
-.PHONY : test_version_compatibility.c.i
+test_resource_limits.c.i:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_resource_limits.dir/build.make tests/unit/CMakeFiles/unit_test_resource_limits.dir/test_resource_limits.c.i
+.PHONY : test_resource_limits.c.i
 
-test_version_compatibility.s: test_version_compatibility.c.s
-.PHONY : test_version_compatibility.s
+test_resource_limits.s: test_resource_limits.c.s
+.PHONY : test_resource_limits.s
 
 # target to generate assembly for a file
-test_version_compatibility.c.s:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_version_compatibility.dir/build.make tests/unit/CMakeFiles/unit_test_version_compatibility.dir/test_version_compatibility.c.s
-.PHONY : test_version_compatibility.c.s
+test_resource_limits.c.s:
+	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/unit_test_resource_limits.dir/build.make tests/unit/CMakeFiles/unit_test_resource_limits.dir/test_resource_limits.c.s
+.PHONY : test_resource_limits.c.s
 
 # Help Target
 help:
@@ -415,9 +377,8 @@ help:
 	@echo "... unit_test_error_handler"
 	@echo "... unit_test_health_monitor"
 	@echo "... unit_test_init_shutdown"
-	@echo "... unit_test_memory_allocation"
 	@echo "... unit_test_platform_services"
-	@echo "... unit_test_version_compatibility"
+	@echo "... unit_test_resource_limits"
 	@echo "... test_error_handler.o"
 	@echo "... test_error_handler.i"
 	@echo "... test_error_handler.s"
@@ -427,15 +388,12 @@ help:
 	@echo "... test_init_shutdown.o"
 	@echo "... test_init_shutdown.i"
 	@echo "... test_init_shutdown.s"
-	@echo "... test_memory_allocation.o"
-	@echo "... test_memory_allocation.i"
-	@echo "... test_memory_allocation.s"
 	@echo "... test_platform_services.o"
 	@echo "... test_platform_services.i"
 	@echo "... test_platform_services.s"
-	@echo "... test_version_compatibility.o"
-	@echo "... test_version_compatibility.i"
-	@echo "... test_version_compatibility.s"
+	@echo "... test_resource_limits.o"
+	@echo "... test_resource_limits.i"
+	@echo "... test_resource_limits.s"
 .PHONY : help
 
 

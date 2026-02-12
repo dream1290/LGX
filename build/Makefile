@@ -809,19 +809,6 @@ run_performance_tests/fast:
 .PHONY : run_performance_tests/fast
 
 #=============================================================================
-# Target rules for targets named run_benchmarks
-
-# Build rule for target.
-run_benchmarks: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_benchmarks
-.PHONY : run_benchmarks
-
-# fast build rule for target.
-run_benchmarks/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_benchmarks.dir/build.make CMakeFiles/run_benchmarks.dir/build
-.PHONY : run_benchmarks/fast
-
-#=============================================================================
 # Target rules for targets named unit_test_init_shutdown
 
 # Build rule for target.
@@ -1041,6 +1028,97 @@ run_failure_injection_tests: cmake_check_build_system
 run_failure_injection_tests/fast:
 	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build.make tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build
 .PHONY : run_failure_injection_tests/fast
+
+#=============================================================================
+# Target rules for targets named benchmark_framework
+
+# Build rule for target.
+benchmark_framework: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_framework
+.PHONY : benchmark_framework
+
+# fast build rule for target.
+benchmark_framework/fast:
+	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_framework.dir/build.make benchmarks/CMakeFiles/benchmark_framework.dir/build
+.PHONY : benchmark_framework/fast
+
+#=============================================================================
+# Target rules for targets named benchmark_benchmark_allocation_throughput
+
+# Build rule for target.
+benchmark_benchmark_allocation_throughput: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_benchmark_allocation_throughput
+.PHONY : benchmark_benchmark_allocation_throughput
+
+# fast build rule for target.
+benchmark_benchmark_allocation_throughput/fast:
+	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir/build.make benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir/build
+.PHONY : benchmark_benchmark_allocation_throughput/fast
+
+#=============================================================================
+# Target rules for targets named benchmark_benchmark_memory_patterns
+
+# Build rule for target.
+benchmark_benchmark_memory_patterns: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_benchmark_memory_patterns
+.PHONY : benchmark_benchmark_memory_patterns
+
+# fast build rule for target.
+benchmark_benchmark_memory_patterns/fast:
+	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir/build.make benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir/build
+.PHONY : benchmark_benchmark_memory_patterns/fast
+
+#=============================================================================
+# Target rules for targets named benchmark_benchmark_hardware_adaptation
+
+# Build rule for target.
+benchmark_benchmark_hardware_adaptation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_benchmark_hardware_adaptation
+.PHONY : benchmark_benchmark_hardware_adaptation
+
+# fast build rule for target.
+benchmark_benchmark_hardware_adaptation/fast:
+	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir/build.make benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir/build
+.PHONY : benchmark_benchmark_hardware_adaptation/fast
+
+#=============================================================================
+# Target rules for targets named benchmark_benchmark_intent_accuracy
+
+# Build rule for target.
+benchmark_benchmark_intent_accuracy: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_benchmark_intent_accuracy
+.PHONY : benchmark_benchmark_intent_accuracy
+
+# fast build rule for target.
+benchmark_benchmark_intent_accuracy/fast:
+	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir/build.make benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir/build
+.PHONY : benchmark_benchmark_intent_accuracy/fast
+
+#=============================================================================
+# Target rules for targets named benchmark_benchmark_telemetry_overhead
+
+# Build rule for target.
+benchmark_benchmark_telemetry_overhead: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_benchmark_telemetry_overhead
+.PHONY : benchmark_benchmark_telemetry_overhead
+
+# fast build rule for target.
+benchmark_benchmark_telemetry_overhead/fast:
+	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir/build.make benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir/build
+.PHONY : benchmark_benchmark_telemetry_overhead/fast
+
+#=============================================================================
+# Target rules for targets named run_benchmarks
+
+# Build rule for target.
+run_benchmarks: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_benchmarks
+.PHONY : run_benchmarks
+
+# fast build rule for target.
+run_benchmarks/fast:
+	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/run_benchmarks.dir/build.make benchmarks/CMakeFiles/run_benchmarks.dir/build
+.PHONY : run_benchmarks/fast
 
 src/lgx_allocator_prototype.o: src/lgx_allocator_prototype.c.o
 .PHONY : src/lgx_allocator_prototype.o
@@ -2814,6 +2892,12 @@ help:
 	@echo "... run_performance_tests"
 	@echo "... run_phase0_tests"
 	@echo "... run_unit_tests"
+	@echo "... benchmark_benchmark_allocation_throughput"
+	@echo "... benchmark_benchmark_hardware_adaptation"
+	@echo "... benchmark_benchmark_intent_accuracy"
+	@echo "... benchmark_benchmark_memory_patterns"
+	@echo "... benchmark_benchmark_telemetry_overhead"
+	@echo "... benchmark_framework"
 	@echo "... integration_test_memory_stress"
 	@echo "... lgx_runtime"
 	@echo "... perf_test_allocation_latency"

@@ -1,0 +1,218 @@
+[  0%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_runtime_core.c.o
+[  1%] Building C object benchmarks/CMakeFiles/benchmark_framework.dir/benchmark_framework.c.o
+[  3%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o
+[  3%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o
+[  3%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o
+[  4%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o
+[  4%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o
+[  5%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o
+[  6%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o
+[  6%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o
+[  7%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o
+[  7%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o
+[  8%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry_process.c.o
+[  9%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o
+[  9%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o
+[ 10%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_leak_detector.c.o
+[ 11%] Linking C static library libbenchmark_framework.a
+[ 11%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o
+[ 12%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.o
+[ 13%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_chaos_testing.c.o
+[ 13%] Built target benchmark_framework
+[ 14%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o
+[ 14%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.o
+[ 14%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_library_manifest.c.o
+[ 15%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_input_validation.c.o
+[ 16%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o
+[ 16%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_resource_limits.c.o
+[ 16%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o
+[ 17%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_capability.c.o
+[ 18%] Building C object CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o
+[ 19%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o
+[ 19%] Building C object CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o
+[ 20%] Linking C shared library liblgx_runtime.so
+[ 20%] Built target lgx_runtime
+[ 21%] Building C object CMakeFiles/test_csf5_telemetry_overhead.dir/tests/phase0/test_csf5_telemetry_overhead.c.o
+[ 22%] Building C object CMakeFiles/test_filesystem.dir/tests/phase0/test_filesystem.c.o
+[ 23%] Building C object CMakeFiles/test_csf2_numa_awareness.dir/tests/phase0/test_csf2_numa_awareness.c.o
+[ 25%] Building C object CMakeFiles/test_csf1_hybrid_allocator.dir/tests/phase0/test_csf1_hybrid_allocator.c.o
+[ 26%] Building C object CMakeFiles/test_csf1_comparison.dir/tests/phase0/test_csf1_comparison.c.o
+[ 26%] Building C object CMakeFiles/test_frame_arena_polish.dir/tests/phase0/test_frame_arena_polish.c.o
+[ 27%] Building C object CMakeFiles/test_day10_hugepages.dir/tests/phase0/test_day10_hugepages.c.o
+[ 27%] Building C object CMakeFiles/test_gpu_perf_simple.dir/tests/phase0/test_gpu_perf_simple.c.o
+[ 28%] Building C object CMakeFiles/test_csf3_namespace_isolation.dir/tests/phase0/test_csf3_namespace_isolation.c.o
+[ 29%] Building C object CMakeFiles/test_gpu_buddy_allocator.dir/tests/phase0/test_gpu_buddy_allocator.c.o
+[ 29%] Building C object CMakeFiles/test_frame_arena.dir/tests/phase0/test_frame_arena.c.o
+[ 28%] Building C object CMakeFiles/test_gpu_capability.dir/tests/phase0/test_gpu_capability.c.o
+[ 29%] Building C object CMakeFiles/test_gpu_detection.dir/tests/phase0/test_gpu_detection.c.o
+[ 29%] Building C object CMakeFiles/test_csf4_abi_stability.dir/tests/phase0/test_csf4_abi_stability.c.o
+[ 30%] Linking C executable test_csf4_abi_stability
+[ 31%] Linking C executable test_filesystem
+[ 32%] Linking C executable test_gpu_detection
+[ 33%] Linking C executable test_gpu_perf_simple
+[ 35%] Linking C executable test_frame_arena
+[ 35%] Linking C executable test_frame_arena_polish
+[ 35%] Linking C executable test_day10_hugepages
+[ 35%] Linking C executable test_csf5_telemetry_overhead
+[ 36%] Linking C executable test_csf2_numa_awareness
+[ 36%] Built target test_filesystem
+[ 36%] Built target test_gpu_detection
+[ 36%] Built target test_gpu_perf_simple
+[ 37%] Linking C executable test_csf3_namespace_isolation
+[ 38%] Building C object CMakeFiles/test_gpu_performance.dir/tests/phase0/test_gpu_performance.c.o
+[ 38%] Built target test_csf4_abi_stability
+[ 39%] Building C object CMakeFiles/test_hardware_adaptation.dir/tests/phase0/test_hardware_adaptation.c.o
+[ 40%] Building C object CMakeFiles/test_gpu_pool.dir/tests/phase0/test_gpu_pool.c.o
+[ 41%] Linking C executable test_gpu_capability
+[ 41%] Building C object CMakeFiles/test_hardware_tier.dir/tests/phase0/test_hardware_tier.c.o
+[ 41%] Built target test_frame_arena_polish
+[ 41%] Built target test_frame_arena
+[ 41%] Built target test_day10_hugepages
+[ 41%] Linking C executable test_csf1_hybrid_allocator
+[ 41%] Built target test_csf2_numa_awareness
+[ 41%] Building C object CMakeFiles/test_hierarchical_intents.dir/tests/phase0/test_hierarchical_intents.c.o
+[ 42%] Building C object CMakeFiles/test_input_validation.dir/tests/phase0/test_input_validation.c.o
+[ 42%] Built target test_csf5_telemetry_overhead
+[ 43%] Building C object CMakeFiles/test_intent_accuracy.dir/tests/phase0/test_intent_accuracy.c.o
+[ 43%] Built target test_csf3_namespace_isolation
+[ 44%] Building C object CMakeFiles/test_intent_allocator.dir/tests/phase0/test_intent_allocator.c.o
+[ 44%] Building C object CMakeFiles/test_intent_mismatch_rates.dir/tests/phase0/test_intent_mismatch_rates.c.o
+[ 44%] Building C object CMakeFiles/test_intent_validation.dir/tests/phase0/test_intent_validation.c.o
+[ 44%] Built target test_gpu_capability
+[ 44%] Linking C executable test_gpu_buddy_allocator
+[ 45%] Building C object CMakeFiles/test_library_manifest.dir/tests/phase0/test_library_manifest.c.o
+[ 45%] Built target test_csf1_hybrid_allocator
+[ 46%] Linking C executable test_hierarchical_intents
+[ 47%] Linking C executable test_hardware_tier
+[ 47%] Linking C executable test_input_validation
+[ 48%] Building C object CMakeFiles/test_logging.dir/tests/phase0/test_logging.c.o
+[ 50%] Linking C executable test_hardware_adaptation
+[ 50%] Built target test_gpu_buddy_allocator
+[ 50%] Building C object CMakeFiles/test_logging_simple.dir/tests/phase0/test_logging_simple.c.o
+[ 51%] Linking C executable test_intent_validation
+[ 51%] Linking C executable test_intent_accuracy
+[ 51%] Built target test_hardware_tier
+[ 51%] Built target test_hierarchical_intents
+[ 51%] Linking C executable test_gpu_pool
+[ 51%] Linking C executable test_library_manifest
+[ 51%] Built target test_input_validation
+[ 51%] Building C object CMakeFiles/test_memory_safety.dir/tests/phase0/test_memory_safety.c.o
+[ 52%] Building C object CMakeFiles/test_namespace_isolation.dir/tests/phase0/test_namespace_isolation.c.o
+[ 53%] Building C object CMakeFiles/test_observability_overhead.dir/tests/phase0/test_observability_overhead.c.o
+[ 54%] Linking C executable test_logging_simple
+[ 54%] Built target test_hardware_adaptation
+[ 55%] Building C object CMakeFiles/test_performance.dir/tests/phase0/test_performance.c.o
+[ 55%] Built target test_library_manifest
+[ 55%] Linking C executable test_namespace_isolation
+[ 56%] Linking C executable test_logging
+[ 56%] Built target test_gpu_pool
+[ 56%] Built target test_intent_accuracy
+[ 56%] Built target test_intent_validation
+[ 56%] Linking C executable test_gpu_performance
+[ 57%] Linking C executable test_memory_safety
+[ 58%] Linking C executable test_intent_allocator
+[ 58%] Built target test_logging_simple
+[ 58%] Building C object CMakeFiles/test_persistent_heap.dir/tests/phase0/test_persistent_heap.c.o
+[ 58%] Linking C executable test_observability_overhead
+[ 58%] Building C object CMakeFiles/test_persistent_heap_buddy.dir/tests/phase0/test_persistent_heap_buddy.c.o
+[ 59%] Building C object CMakeFiles/test_signal_handling.dir/tests/phase0/test_signal_handling.c.o
+[ 60%] Building C object CMakeFiles/test_persistent_heap_perf.dir/tests/phase0/test_persistent_heap_perf.c.o
+[ 61%] Building C object CMakeFiles/test_simd_fallback.dir/tests/phase0/test_simd_fallback.c.o
+[ 62%] Linking C executable test_intent_mismatch_rates
+[ 62%] Built target test_namespace_isolation
+[ 62%] Built target test_observability_overhead
+[ 62%] Linking C executable test_signal_handling
+[ 62%] Built target test_logging
+[ 63%] Linking C executable test_performance
+[ 64%] Building C object CMakeFiles/test_telemetry_anonymization.dir/tests/phase0/test_telemetry_anonymization.c.o
+[ 64%] Built target test_memory_safety
+[ 64%] Linking C executable test_persistent_heap_perf
+[ 64%] Building C object CMakeFiles/test_structured_logging.dir/tests/phase0/test_structured_logging.c.o
+[ 65%] Building C object CMakeFiles/test_suspend_resume.dir/tests/phase0/test_suspend_resume.c.o
+[ 65%] Built target test_intent_allocator
+[ 65%] Built target test_gpu_performance
+[ 65%] Building C object CMakeFiles/test_telemetry_process.dir/tests/phase0/test_telemetry_process.c.o
+[ 66%] Linking C executable test_simd_fallback
+[ 66%] Building C object CMakeFiles/test_telemetry_simple.dir/tests/phase0/test_telemetry_simple.c.o
+[ 66%] Built target test_intent_mismatch_rates
+[ 66%] Built target test_signal_handling
+[ 67%] Building C object CMakeFiles/test_tiered_performance.dir/tests/phase0/test_tiered_performance.c.o
+[ 68%] Linking C executable test_structured_logging
+[ 68%] Built target test_persistent_heap_perf
+[ 70%] Building C object CMakeFiles/test_trace_events.dir/tests/phase0/test_trace_events.c.o
+[ 70%] Building C object CMakeFiles/test_timing_services.dir/tests/phase0/test_timing_services.c.o
+[ 71%] Linking C executable test_telemetry_process
+[ 71%] Built target test_performance
+[ 71%] Linking C executable test_suspend_resume
+[ 72%] Building C object tests/unit/CMakeFiles/unit_test_init_shutdown.dir/test_init_shutdown.c.o
+[ 73%] Building C object tests/unit/CMakeFiles/unit_test_platform_services.dir/test_platform_services.c.o
+[ 75%] Linking C executable test_telemetry_anonymization
+[ 75%] Built target test_simd_fallback
+[ 75%] Linking C executable test_tiered_performance
+[ 76%] Linking C executable test_telemetry_simple
+[ 76%] Linking C executable test_csf1_comparison
+[ 76%] Built target test_telemetry_process
+[ 76%] Building C object tests/unit/CMakeFiles/unit_test_error_handler.dir/test_error_handler.c.o
+[ 77%] Linking C executable test_persistent_heap_buddy
+[ 77%] Building C object tests/unit/CMakeFiles/unit_test_health_monitor.dir/test_health_monitor.c.o
+[ 77%] Linking C executable test_timing_services
+[ 78%] Linking C executable test_persistent_heap
+[ 78%] Built target test_structured_logging
+[ 79%] Linking C executable test_trace_events
+[ 79%] Built target test_telemetry_simple
+[ 79%] Built target test_suspend_resume
+[ 80%] Building C object tests/unit/CMakeFiles/unit_test_resource_limits.dir/test_resource_limits.c.o
+[ 80%] Linking C executable unit_test_init_shutdown
+[ 80%] Building C object tests/integration/CMakeFiles/integration_test_memory_stress.dir/test_memory_stress.c.o
+[ 80%] Built target test_telemetry_anonymization
+[ 80%] Built target test_csf1_comparison
+[ 81%] Building C object tests/abi/CMakeFiles/test_game_v1_0.dir/test_game_v1_0.c.o
+[ 81%] Built target test_persistent_heap_buddy
+[ 81%] Building C object tests/abi/CMakeFiles/test_struct_evolution.dir/test_struct_evolution.c.o
+[ 81%] Built target test_tiered_performance
+[ 81%] Built target test_timing_services
+[ 82%] Building C object tests/abi/CMakeFiles/test_symbol_versioning.dir/test_symbol_versioning.c.o
+[ 82%] Built target test_persistent_heap
+[ 83%] Building C object tests/performance/CMakeFiles/perf_test_initialization_time.dir/test_initialization_time.c.o
+[ 84%] Building C object tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/test_frame_time_contribution.c.o
+[ 84%] Built target test_trace_events
+[ 84%] Building C object tests/performance/CMakeFiles/perf_test_allocation_latency.dir/test_allocation_latency.c.o
+[ 84%] Building C object tests/performance/CMakeFiles/perf_test_memory_overhead.dir/test_memory_overhead.c.o
+[ 84%] Built target unit_test_init_shutdown
+[ 85%] Building C object tests/performance/CMakeFiles/perf_test_memory_footprint.dir/test_memory_footprint.c.o
+[ 86%] Linking C executable unit_test_resource_limits
+[ 87%] Building C object tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/test_library_version_mismatch.c.o
+[ 87%] Linking C executable unit_test_platform_services
+[ 89%] Linking C executable unit_test_health_monitor
+[ 89%] Linking C executable unit_test_error_handler
+[ 89%] Linking C executable test_symbol_versioning
+/home/karl/Projects/LGX/tests/performance/test_initialization_time.c: In function ‘main’:
+/home/karl/Projects/LGX/tests/performance/test_initialization_time.c:15:5: error: stack protector not protecting local variables: variable length buffer [-Werror=stack-protector]
+   15 | int main(void) {
+      |     ^~~~
+[ 89%] Linking C executable test_game_v1_0
+[ 90%] Linking C executable test_struct_evolution
+cc1: all warnings being treated as errors
+gmake[2]: *** [tests/performance/CMakeFiles/perf_test_initialization_time.dir/build.make:76: tests/performance/CMakeFiles/perf_test_initialization_time.dir/test_initialization_time.c.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:1849: tests/performance/CMakeFiles/perf_test_initialization_time.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+[ 91%] Linking C executable perf_test_memory_footprint
+[ 91%] Built target unit_test_resource_limits
+[ 91%] Built target unit_test_error_handler
+[ 91%] Linking C executable test_library_version_mismatch
+[ 91%] Built target unit_test_health_monitor
+[ 91%] Built target unit_test_platform_services
+[ 91%] Built target test_symbol_versioning
+[ 92%] Linking C executable perf_test_memory_overhead
+[ 92%] Built target perf_test_memory_footprint
+[ 92%] Built target test_game_v1_0
+[ 92%] Built target test_struct_evolution
+[ 92%] Built target test_library_version_mismatch
+[ 93%] Linking C executable integration_test_memory_stress
+[ 93%] Built target perf_test_memory_overhead
+[ 94%] Linking C executable perf_test_allocation_latency
+[ 94%] Built target integration_test_memory_stress
+[ 94%] Built target perf_test_allocation_latency
+[ 94%] Linking C executable perf_test_frame_time_contribution
+[ 94%] Built target perf_test_frame_time_contribution
+gmake: *** [Makefile:146: all] Error 2

@@ -410,6 +410,7 @@ int main(void) {
     test_peak_usage_tracking(instance, physical_device, device);
     
     // Cleanup
+    vkDeviceWaitIdle(device);  // Wait for all operations to complete
     vkDestroyDevice(device, NULL);
     vkDestroyInstance(instance, NULL);
     

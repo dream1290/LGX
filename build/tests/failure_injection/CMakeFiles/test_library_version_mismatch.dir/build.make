@@ -92,7 +92,7 @@ test_library_version_mismatch_EXTERNAL_OBJECTS =
 
 tests/failure_injection/test_library_version_mismatch: tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/test_library_version_mismatch.c.o
 tests/failure_injection/test_library_version_mismatch: tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build.make
-tests/failure_injection/test_library_version_mismatch: liblgx_runtime.so.1.0.0
+tests/failure_injection/test_library_version_mismatch: liblgx_runtime.so.1.0.1
 tests/failure_injection/test_library_version_mismatch: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/failure_injection/test_library_version_mismatch: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/failure_injection/test_library_version_mismatch: tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/link.txt

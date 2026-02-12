@@ -1,3 +1,26 @@
+lgx-runtime (1.0.1-1) unstable; urgency=medium
+
+  * Bug fixes and improvements:
+    - Fixed ISO C pedantic compliance in namespace isolation
+    - Eliminated variable length arrays (VLA) in test code for better portability
+    - Added NULL safety checks in test code
+    - Suppressed intentional NULL dereference warnings in signal handling tests
+    - Fixed stack protector warnings across test suite
+  * New features:
+    - Added comprehensive benchmark suite (5 benchmarks)
+    - Benchmark framework with statistical analysis
+    - Performance measurement tools for allocation, memory patterns, hardware adaptation
+  * Security improvements:
+    - All code passes strict GCC static analysis with -fanalyzer
+    - Zero warnings with -Wpedantic -Werror
+    - Enhanced code quality and ISO C compliance
+  * Build improvements:
+    - All 59 tests compile cleanly
+    - All 5 benchmarks compile cleanly
+    - Zero compilation warnings in release builds
+
+ -- LGX Platform Team <team@lgx-platform.org>  Thu, 12 Feb 2026 23:10:00 +0100
+
 lgx-runtime (1.0.0-1) unstable; urgency=medium
 
   * Initial release of LGX Runtime Core

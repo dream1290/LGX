@@ -92,7 +92,7 @@ test_structured_logging_EXTERNAL_OBJECTS =
 
 test_structured_logging: CMakeFiles/test_structured_logging.dir/tests/phase0/test_structured_logging.c.o
 test_structured_logging: CMakeFiles/test_structured_logging.dir/build.make
-test_structured_logging: liblgx_runtime.so.1.0.0
+test_structured_logging: liblgx_runtime.so.1.0.1
 test_structured_logging: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_structured_logging: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_structured_logging: CMakeFiles/test_structured_logging.dir/link.txt

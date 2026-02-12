@@ -92,7 +92,7 @@ perf_test_memory_footprint_EXTERNAL_OBJECTS =
 
 tests/performance/perf_test_memory_footprint: tests/performance/CMakeFiles/perf_test_memory_footprint.dir/test_memory_footprint.c.o
 tests/performance/perf_test_memory_footprint: tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make
-tests/performance/perf_test_memory_footprint: liblgx_runtime.so.1.0.0
+tests/performance/perf_test_memory_footprint: liblgx_runtime.so.1.0.1
 tests/performance/perf_test_memory_footprint: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/performance/perf_test_memory_footprint: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/performance/perf_test_memory_footprint: tests/performance/CMakeFiles/perf_test_memory_footprint.dir/link.txt

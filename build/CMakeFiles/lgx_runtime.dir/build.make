@@ -510,47 +510,47 @@ lgx_runtime_OBJECTS = \
 # External object files for target lgx_runtime
 lgx_runtime_EXTERNAL_OBJECTS =
 
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_runtime_core.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry_process.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_leak_detector.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_chaos_testing.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_library_manifest.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_input_validation.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_resource_limits.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_capability.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/build.make
-liblgx_runtime.so.1.0.0: /usr/lib/x86_64-linux-gnu/libvulkan.so
-liblgx_runtime.so.1.0.0: /usr/lib/x86_64-linux-gnu/libjemalloc.so
-liblgx_runtime.so.1.0.0: CMakeFiles/lgx_runtime.dir/link.txt
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_runtime_core.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_manager.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lockfree_pool.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_simd_ops.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hugepages.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_frame_arena.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_hardware_adapter.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_capability_detector.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_lifecycle_manager.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_platform_services.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_telemetry_process.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_error_handler.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_health_monitor.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_leak_detector.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_monitor.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_performance_counters.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_chaos_testing.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_namespace_isolation.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_library_manifest.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_input_validation.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_memory_safety.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_resource_limits.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_pool.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_gpu_capability.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_persistent_heap.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/src/runtime/lgx_intent_allocator.c.o
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/build.make
+liblgx_runtime.so.1.0.1: /usr/lib/x86_64-linux-gnu/libvulkan.so
+liblgx_runtime.so.1.0.1: /usr/lib/x86_64-linux-gnu/libjemalloc.so
+liblgx_runtime.so.1.0.1: CMakeFiles/lgx_runtime.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Linking C shared library liblgx_runtime.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lgx_runtime.dir/link.txt --verbose=$(VERBOSE)
-	$(CMAKE_COMMAND) -E cmake_symlink_library liblgx_runtime.so.1.0.0 liblgx_runtime.so.1 liblgx_runtime.so
+	$(CMAKE_COMMAND) -E cmake_symlink_library liblgx_runtime.so.1.0.1 liblgx_runtime.so.1 liblgx_runtime.so
 
-liblgx_runtime.so.1: liblgx_runtime.so.1.0.0
+liblgx_runtime.so.1: liblgx_runtime.so.1.0.1
 	@$(CMAKE_COMMAND) -E touch_nocreate liblgx_runtime.so.1
 
-liblgx_runtime.so: liblgx_runtime.so.1.0.0
+liblgx_runtime.so: liblgx_runtime.so.1.0.1
 	@$(CMAKE_COMMAND) -E touch_nocreate liblgx_runtime.so
 
 # Rule to build all files generated by this target.

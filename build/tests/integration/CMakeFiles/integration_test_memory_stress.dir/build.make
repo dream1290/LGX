@@ -92,7 +92,7 @@ integration_test_memory_stress_EXTERNAL_OBJECTS =
 
 tests/integration/integration_test_memory_stress: tests/integration/CMakeFiles/integration_test_memory_stress.dir/test_memory_stress.c.o
 tests/integration/integration_test_memory_stress: tests/integration/CMakeFiles/integration_test_memory_stress.dir/build.make
-tests/integration/integration_test_memory_stress: liblgx_runtime.so.1.0.0
+tests/integration/integration_test_memory_stress: liblgx_runtime.so.1.0.1
 tests/integration/integration_test_memory_stress: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/integration/integration_test_memory_stress: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/integration/integration_test_memory_stress: tests/integration/CMakeFiles/integration_test_memory_stress.dir/link.txt

@@ -92,7 +92,7 @@ test_suspend_resume_EXTERNAL_OBJECTS =
 
 test_suspend_resume: CMakeFiles/test_suspend_resume.dir/tests/phase0/test_suspend_resume.c.o
 test_suspend_resume: CMakeFiles/test_suspend_resume.dir/build.make
-test_suspend_resume: liblgx_runtime.so.1.0.0
+test_suspend_resume: liblgx_runtime.so.1.0.1
 test_suspend_resume: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_suspend_resume: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_suspend_resume: CMakeFiles/test_suspend_resume.dir/link.txt

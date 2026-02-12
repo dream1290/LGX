@@ -92,7 +92,7 @@ test_gpu_detection_EXTERNAL_OBJECTS =
 
 test_gpu_detection: CMakeFiles/test_gpu_detection.dir/tests/phase0/test_gpu_detection.c.o
 test_gpu_detection: CMakeFiles/test_gpu_detection.dir/build.make
-test_gpu_detection: liblgx_runtime.so.1.0.0
+test_gpu_detection: liblgx_runtime.so.1.0.1
 test_gpu_detection: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_detection: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_detection: /usr/lib/x86_64-linux-gnu/libjemalloc.so

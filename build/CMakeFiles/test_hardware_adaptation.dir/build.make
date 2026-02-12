@@ -92,7 +92,7 @@ test_hardware_adaptation_EXTERNAL_OBJECTS =
 
 test_hardware_adaptation: CMakeFiles/test_hardware_adaptation.dir/tests/phase0/test_hardware_adaptation.c.o
 test_hardware_adaptation: CMakeFiles/test_hardware_adaptation.dir/build.make
-test_hardware_adaptation: liblgx_runtime.so.1.0.0
+test_hardware_adaptation: liblgx_runtime.so.1.0.1
 test_hardware_adaptation: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_hardware_adaptation: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_hardware_adaptation: CMakeFiles/test_hardware_adaptation.dir/link.txt

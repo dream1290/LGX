@@ -92,7 +92,7 @@ perf_test_memory_overhead_EXTERNAL_OBJECTS =
 
 tests/performance/perf_test_memory_overhead: tests/performance/CMakeFiles/perf_test_memory_overhead.dir/test_memory_overhead.c.o
 tests/performance/perf_test_memory_overhead: tests/performance/CMakeFiles/perf_test_memory_overhead.dir/build.make
-tests/performance/perf_test_memory_overhead: liblgx_runtime.so.1.0.0
+tests/performance/perf_test_memory_overhead: liblgx_runtime.so.1.0.1
 tests/performance/perf_test_memory_overhead: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/performance/perf_test_memory_overhead: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/performance/perf_test_memory_overhead: tests/performance/CMakeFiles/perf_test_memory_overhead.dir/link.txt

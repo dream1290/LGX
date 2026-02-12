@@ -92,7 +92,7 @@ test_gpu_buddy_allocator_EXTERNAL_OBJECTS =
 
 test_gpu_buddy_allocator: CMakeFiles/test_gpu_buddy_allocator.dir/tests/phase0/test_gpu_buddy_allocator.c.o
 test_gpu_buddy_allocator: CMakeFiles/test_gpu_buddy_allocator.dir/build.make
-test_gpu_buddy_allocator: liblgx_runtime.so.1.0.0
+test_gpu_buddy_allocator: liblgx_runtime.so.1.0.1
 test_gpu_buddy_allocator: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_buddy_allocator: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_buddy_allocator: /usr/lib/x86_64-linux-gnu/libjemalloc.so

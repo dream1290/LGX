@@ -92,7 +92,7 @@ test_intent_accuracy_EXTERNAL_OBJECTS =
 
 test_intent_accuracy: CMakeFiles/test_intent_accuracy.dir/tests/phase0/test_intent_accuracy.c.o
 test_intent_accuracy: CMakeFiles/test_intent_accuracy.dir/build.make
-test_intent_accuracy: liblgx_runtime.so.1.0.0
+test_intent_accuracy: liblgx_runtime.so.1.0.1
 test_intent_accuracy: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_intent_accuracy: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_intent_accuracy: CMakeFiles/test_intent_accuracy.dir/link.txt

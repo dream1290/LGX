@@ -92,7 +92,7 @@ unit_test_init_shutdown_EXTERNAL_OBJECTS =
 
 tests/unit/unit_test_init_shutdown: tests/unit/CMakeFiles/unit_test_init_shutdown.dir/test_init_shutdown.c.o
 tests/unit/unit_test_init_shutdown: tests/unit/CMakeFiles/unit_test_init_shutdown.dir/build.make
-tests/unit/unit_test_init_shutdown: liblgx_runtime.so.1.0.0
+tests/unit/unit_test_init_shutdown: liblgx_runtime.so.1.0.1
 tests/unit/unit_test_init_shutdown: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/unit/unit_test_init_shutdown: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/unit/unit_test_init_shutdown: tests/unit/CMakeFiles/unit_test_init_shutdown.dir/link.txt

@@ -16,6 +16,8 @@ lgx_runtime_config_t* lgx_config_create(void);
 void lgx_config_set_log_path(lgx_runtime_config_t* config, const char* path);
 void lgx_config_set_memory_pool_size(lgx_runtime_config_t* config, size_t size);
 void lgx_config_set_flags(lgx_runtime_config_t* config, uint32_t flags);
+void lgx_config_set_frame_arena_size(lgx_runtime_config_t* config, size_t size);  // Task 3.4.5.2.1
+void lgx_config_set_frame_arena_max_size(lgx_runtime_config_t* config, size_t max_size);  // Task 3.4.5.2.2
 void lgx_config_destroy(lgx_runtime_config_t* config);
 
 // Initialization and shutdown
@@ -28,6 +30,12 @@ lgx_result_t lgx_runtime_check_compatibility(const lgx_version_t* required_versi
 
 // Memory management
 void* lgx_alloc(size_t size);
+void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent);  // Task 3.4.4.2
+void lgx_free(void* ptr);
+lgx_result_t lgx_memory_stats(lgx_memory_stats_t* stats);
+
+// Frame arena size recommendation (Task 3.4.5.2.3)
+size_t lgx_frame_arena_get_recommended_size(void);
 void* lgx_alloc_aligned(size_t size, size_t alignment);
 void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent);
 void* lgx_alloc_with_intent_ex(const void* intent, size_t intent_type_id);
@@ -267,6 +275,12 @@ lgx_result_t lgx_telemetry_export_collected_data(const char* output_path);
 // Telemetry recording (internal use)
 lgx_result_t lgx_telemetry_record_allocation(size_t size);
 lgx_result_t lgx_telemetry_record_allocation_failure(size_t requested_size);
+lgx_result_t lgx_telemetry_record_arena_overflow(uint32_t frame_number,
+                                                  size_t requested_size,
+                                                  size_t arena_capacity,
+                                                  size_t arena_usage,
+                                                  const char* file,
+                                                  int line);
 
 // Chaos testing framework
 lgx_result_t lgx_runtime_enable_chaos_testing(const lgx_chaos_config_t* config);

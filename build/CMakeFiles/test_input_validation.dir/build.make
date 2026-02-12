@@ -92,7 +92,7 @@ test_input_validation_EXTERNAL_OBJECTS =
 
 test_input_validation: CMakeFiles/test_input_validation.dir/tests/phase0/test_input_validation.c.o
 test_input_validation: CMakeFiles/test_input_validation.dir/build.make
-test_input_validation: liblgx_runtime.so.1.0.0
+test_input_validation: liblgx_runtime.so.1.0.1
 test_input_validation: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_input_validation: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_input_validation: CMakeFiles/test_input_validation.dir/link.txt

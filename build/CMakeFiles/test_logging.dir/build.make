@@ -92,7 +92,7 @@ test_logging_EXTERNAL_OBJECTS =
 
 test_logging: CMakeFiles/test_logging.dir/tests/phase0/test_logging.c.o
 test_logging: CMakeFiles/test_logging.dir/build.make
-test_logging: liblgx_runtime.so.1.0.0
+test_logging: liblgx_runtime.so.1.0.1
 test_logging: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_logging: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_logging: CMakeFiles/test_logging.dir/link.txt

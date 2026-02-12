@@ -1,0 +1,379 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.0)'
+        required: true
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
+
+jobs:
+  validate-release:
+    name: Validate Release
+    runs-on: ubuntu-22.04
+    
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            IS_PRERELEASE="${{ github.event.inputs.prerelease }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            if [[ "$VERSION" =~ (alpha|beta|rc) ]]; then
+              IS_PRERELEASE="true"
+            else
+              IS_PRERELEASE="false"
+            fi
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          
+          echo "Release version: $VERSION"
+          echo "Pre-release: $IS_PRERELEASE"
+      
+      - name: Validate version format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+)?$ ]]; then
+            echo "Invalid version format: $VERSION"
+            echo "Expected format: X.Y.Z or X.Y.Z-suffix"
+            exit 1
+          fi
+      
+      - name: Check if version exists
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Version v$VERSION already exists"
+            exit 1
+          fi
+      
+      - name: Verify CHANGELOG
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if ! grep -q "## \[$VERSION\]" CHANGELOG.md; then
+            echo "Version $VERSION not found in CHANGELOG.md"
+            exit 1
+          fi
+
+  build-source:
+    name: Build Source Tarball
+    runs-on: ubuntu-22.04
+    needs: validate-release
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Create source tarball
+        run: |
+          VERSION="${{ needs.validate-release.outputs.version }}"
+          
+          # Create clean source tree
+          git archive --format=tar --prefix=lgx-runtime-$VERSION/ HEAD | \
+            gzip > lgx-runtime-$VERSION.tar.gz
+          
+          # Generate checksums
+          sha256sum lgx-runtime-$VERSION.tar.gz > lgx-runtime-$VERSION.tar.gz.sha256
+          sha512sum lgx-runtime-$VERSION.tar.gz > lgx-runtime-$VERSION.tar.gz.sha512
+      
+      - name: Upload source artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-tarball
+          path: |
+            lgx-runtime-*.tar.gz
+            lgx-runtime-*.tar.gz.sha256
+            lgx-runtime-*.tar.gz.sha512
+
+  build-packages:
+    name: Build ${{ matrix.distro }} Package
+    runs-on: ubuntu-latest
+    needs: validate-release
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - distro: ubuntu-22.04
+            container: ubuntu:22.04
+            package_type: deb
+            arch: amd64
+          
+          - distro: ubuntu-20.04
+            container: ubuntu:20.04
+            package_type: deb
+            arch: amd64
+          
+          - distro: fedora-38
+            container: fedora:38
+            package_type: rpm
+            arch: x86_64
+          
+          - distro: fedora-39
+            container: fedora:39
+            package_type: rpm
+            arch: x86_64
+          
+          - distro: arch-linux
+            container: archlinux:latest
+            package_type: pkg.tar.zst
+            arch: x86_64
+    
+    container:
+      image: ${{ matrix.container }}
+    
+    steps:
+      - name: Install git
+        run: |
+          if [ "${{ matrix.package_type }}" = "deb" ]; then
+            apt-get update && apt-get install -y git
+          elif [ "${{ matrix.package_type }}" = "rpm" ]; then
+            dnf install -y git
+          elif [ "${{ matrix.package_type }}" = "pkg.tar.zst" ]; then
+            pacman -Syu --noconfirm git
+          fi
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install build dependencies
+        run: |
+          VERSION="${{ needs.validate-release.outputs.version }}"
+          
+          if [ "${{ matrix.package_type }}" = "deb" ]; then
+            apt-get update
+            apt-get install -y \
+              build-essential cmake ninja-build pkg-config \
+              libjemalloc-dev libvulkan-dev \
+              dpkg-dev debhelper
+          
+          elif [ "${{ matrix.package_type }}" = "rpm" ]; then
+            dnf install -y \
+              gcc gcc-c++ cmake ninja-build pkgconf-pkg-config \
+              jemalloc-devel vulkan-headers \
+              rpm-build rpmdevtools
+          
+          elif [ "${{ matrix.package_type }}" = "pkg.tar.zst" ]; then
+            pacman -Syu --noconfirm \
+              base-devel cmake ninja pkgconf \
+              jemalloc vulkan-headers
+          fi
+      
+      - name: Build package
+        run: |
+          VERSION="${{ needs.validate-release.outputs.version }}"
+          cd packaging
+          
+          if [ "${{ matrix.package_type }}" = "deb" ]; then
+            ./build-deb.sh $VERSION
+          elif [ "${{ matrix.package_type }}" = "rpm" ]; then
+            ./build-rpm.sh $VERSION
+          elif [ "${{ matrix.package_type }}" = "pkg.tar.zst" ]; then
+            ./build-arch.sh $VERSION
+          fi
+      
+      - name: Test package installation
+        run: |
+          VERSION="${{ needs.validate-release.outputs.version }}"
+          
+          if [ "${{ matrix.package_type }}" = "deb" ]; then
+            dpkg -i packaging/lgx-runtime_${VERSION}_${{ matrix.arch }}.deb || true
+            apt-get install -f -y
+            dpkg -l | grep lgx-runtime
+          
+          elif [ "${{ matrix.package_type }}" = "rpm" ]; then
+            rpm -i packaging/lgx-runtime-${VERSION}-1.${{ matrix.arch }}.rpm
+            rpm -qa | grep lgx-runtime
+          
+          elif [ "${{ matrix.package_type }}" = "pkg.tar.zst" ]; then
+            pacman -U --noconfirm packaging/lgx-runtime-${VERSION}-1-${{ matrix.arch }}.pkg.tar.zst
+            pacman -Q lgx-runtime
+          fi
+          
+          # Verify installation
+          test -f /usr/local/lib/liblgx_runtime.so
+          test -f /usr/local/include/lgx_runtime.h
+      
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.distro }}
+          path: packaging/lgx-runtime*.${{ matrix.package_type }}
+
+  run-tests:
+    name: Run Release Tests
+    runs-on: ubuntu-22.04
+    needs: validate-release
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build gcc-12 g++-12 \
+            libjemalloc-dev libvulkan-dev
+      
+      - name: Build Release
+        env:
+          CC: gcc-12
+          CXX: g++-12
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DENABLE_TESTING=ON
+          cmake --build build
+      
+      - name: Run full test suite
+        run: |
+          cd build
+          ctest --output-on-failure --timeout 600
+      
+      - name: Verify test results
+        run: |
+          cd build
+          TOTAL=$(ctest --show-only=json-v1 | jq '.tests | length')
+          PASSED=$(ctest --show-only=json-v1 | jq '[.tests[] | select(.status == "Passed")] | length')
+          
+          echo "Tests passed: $PASSED/$TOTAL"
+          
+          if [ "$PASSED" != "$TOTAL" ]; then
+            echo "Not all tests passed!"
+            exit 1
+          fi
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-22.04
+    needs: [validate-release, build-source, build-packages, run-tests]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+      
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          
+          # Copy source tarball
+          cp release-artifacts/source-tarball/* release-assets/
+          
+          # Copy all packages
+          find release-artifacts/package-* -type f -exec cp {} release-assets/ \;
+          
+          # Generate checksums for all assets
+          cd release-assets
+          sha256sum * > SHA256SUMS
+          sha512sum * > SHA512SUMS
+      
+      - name: Extract changelog
+        run: |
+          VERSION="${{ needs.validate-release.outputs.version }}"
+          
+          # Extract changelog for this version
+          awk "/## \[$VERSION\]/,/## \[/" CHANGELOG.md | \
+            head -n -1 | tail -n +2 > release-notes.md
+          
+          # Add download instructions
+          cat >> release-notes.md << 'EOF'
+          
+          ## Installation
+          
+          ### Ubuntu/Debian
+          ```bash
+          wget https://github.com/${{ github.repository }}/releases/download/v$VERSION/lgx-runtime_$VERSION_amd64.deb
+          sudo dpkg -i lgx-runtime_$VERSION_amd64.deb
+          ```
+          
+          ### Fedora/RHEL
+          ```bash
+          wget https://github.com/${{ github.repository }}/releases/download/v$VERSION/lgx-runtime-$VERSION-1.x86_64.rpm
+          sudo rpm -i lgx-runtime-$VERSION-1.x86_64.rpm
+          ```
+          
+          ### Arch Linux
+          ```bash
+          wget https://github.com/${{ github.repository }}/releases/download/v$VERSION/lgx-runtime-$VERSION-1-x86_64.pkg.tar.zst
+          sudo pacman -U lgx-runtime-$VERSION-1-x86_64.pkg.tar.zst
+          ```
+          
+          ### From Source
+          ```bash
+          wget https://github.com/${{ github.repository }}/releases/download/v$VERSION/lgx-runtime-$VERSION.tar.gz
+          tar xzf lgx-runtime-$VERSION.tar.gz
+          cd lgx-runtime-$VERSION
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+          sudo cmake --install build
+          ```
+          
+          ## Verification
+          
+          Verify checksums:
+          ```bash
+          sha256sum -c SHA256SUMS
+          ```
+          EOF
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: LGX Runtime v${{ needs.validate-release.outputs.version }}
+          body_path: release-notes.md
+          prerelease: ${{ needs.validate-release.outputs.is_prerelease }}
+          files: release-assets/*
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Publish release announcement
+        run: |
+          VERSION="${{ needs.validate-release.outputs.version }}"
+          IS_PRERELEASE="${{ needs.validate-release.outputs.is_prerelease }}"
+          
+          if [ "$IS_PRERELEASE" = "false" ]; then
+            echo "Production release v$VERSION published successfully"
+            echo "Announcement should be posted to:"
+            echo "  - Project website"
+            echo "  - Mailing list"
+            echo "  - Social media"
+            echo "  - Community forums"
+          else
+            echo "Pre-release v$VERSION published successfully"
+            echo "This is a pre-release for testing purposes"
+          fi

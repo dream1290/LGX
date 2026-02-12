@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "/home/karl/Projects/LGX/CMakeLists.txt"
+  "/home/karl/Projects/LGX/benchmarks/CMakeLists.txt"
   "CMakeFiles/3.28.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeSystem.cmake"
   "/home/karl/Projects/LGX/lgx_runtime.pc.in"
@@ -57,6 +58,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "tests/abi/CMakeFiles/CMakeDirectoryInformation.cmake"
   "tests/performance/CMakeFiles/CMakeDirectoryInformation.cmake"
   "tests/failure_injection/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "benchmarks/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -110,7 +112,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/run_unit_tests.dir/DependInfo.cmake"
   "CMakeFiles/run_integration_tests.dir/DependInfo.cmake"
   "CMakeFiles/run_performance_tests.dir/DependInfo.cmake"
-  "CMakeFiles/run_benchmarks.dir/DependInfo.cmake"
   "tests/unit/CMakeFiles/unit_test_init_shutdown.dir/DependInfo.cmake"
   "tests/unit/CMakeFiles/unit_test_platform_services.dir/DependInfo.cmake"
   "tests/unit/CMakeFiles/unit_test_error_handler.dir/DependInfo.cmake"
@@ -128,4 +129,11 @@ set(CMAKE_DEPEND_INFO_FILES
   "tests/performance/CMakeFiles/perf_test_memory_footprint.dir/DependInfo.cmake"
   "tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/DependInfo.cmake"
   "tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/DependInfo.cmake"
+  "benchmarks/CMakeFiles/benchmark_framework.dir/DependInfo.cmake"
+  "benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir/DependInfo.cmake"
+  "benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir/DependInfo.cmake"
+  "benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir/DependInfo.cmake"
+  "benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir/DependInfo.cmake"
+  "benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir/DependInfo.cmake"
+  "benchmarks/CMakeFiles/run_benchmarks.dir/DependInfo.cmake"
   )

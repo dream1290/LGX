@@ -92,7 +92,7 @@ test_symbol_versioning_EXTERNAL_OBJECTS =
 
 tests/abi/test_symbol_versioning: tests/abi/CMakeFiles/test_symbol_versioning.dir/test_symbol_versioning.c.o
 tests/abi/test_symbol_versioning: tests/abi/CMakeFiles/test_symbol_versioning.dir/build.make
-tests/abi/test_symbol_versioning: liblgx_runtime.so.1.0.0
+tests/abi/test_symbol_versioning: liblgx_runtime.so.1.0.1
 tests/abi/test_symbol_versioning: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/abi/test_symbol_versioning: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/abi/test_symbol_versioning: tests/abi/CMakeFiles/test_symbol_versioning.dir/link.txt

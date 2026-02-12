@@ -92,7 +92,7 @@ test_persistent_heap_buddy_EXTERNAL_OBJECTS =
 
 test_persistent_heap_buddy: CMakeFiles/test_persistent_heap_buddy.dir/tests/phase0/test_persistent_heap_buddy.c.o
 test_persistent_heap_buddy: CMakeFiles/test_persistent_heap_buddy.dir/build.make
-test_persistent_heap_buddy: liblgx_runtime.so.1.0.0
+test_persistent_heap_buddy: liblgx_runtime.so.1.0.1
 test_persistent_heap_buddy: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_persistent_heap_buddy: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_persistent_heap_buddy: CMakeFiles/test_persistent_heap_buddy.dir/link.txt

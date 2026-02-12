@@ -61,7 +61,7 @@ file(REMOVE_RECURSE
   "liblgx_runtime.pdb"
   "liblgx_runtime.so"
   "liblgx_runtime.so.1"
-  "liblgx_runtime.so.1.0.0"
+  "liblgx_runtime.so.1.0.1"
 )
 
 # Per-language clean rules from dependency scanning.

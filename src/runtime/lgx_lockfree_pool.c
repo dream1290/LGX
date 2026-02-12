@@ -75,17 +75,13 @@ lgx_result_t lgx_lockfree_pool_shutdown(void) {
     }
     
     // Free all blocks in all pools
-    int total_freed = 0;
     for (int i = 0; i < NUM_SIZE_CLASSES; i++) {
         uintptr_t head = atomic_load(&global_lockfree_pool.pools[i].head);
-        int freed_in_class = 0;
         
         while (head != 0) {
             free_block_t* block = (free_block_t*)head;
             uintptr_t next = (uintptr_t)block->next;
             free(block);
-            freed_in_class++;
-            total_freed++;
             head = next;
         }
         

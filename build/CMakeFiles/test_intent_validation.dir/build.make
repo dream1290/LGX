@@ -92,7 +92,7 @@ test_intent_validation_EXTERNAL_OBJECTS =
 
 test_intent_validation: CMakeFiles/test_intent_validation.dir/tests/phase0/test_intent_validation.c.o
 test_intent_validation: CMakeFiles/test_intent_validation.dir/build.make
-test_intent_validation: liblgx_runtime.so.1.0.0
+test_intent_validation: liblgx_runtime.so.1.0.1
 test_intent_validation: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_intent_validation: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_intent_validation: CMakeFiles/test_intent_validation.dir/link.txt

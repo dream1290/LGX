@@ -1,6 +1,6 @@
 pkgbase = lgx-runtime
 	pkgdesc = High-performance deterministic runtime for Linux gaming
-	pkgver = 1.0.0
+	pkgver = 1.0.1
 	pkgrel = 1
 	url = https://github.com/lgx-platform/LGX
 	arch = x86_64
@@ -13,7 +13,7 @@ pkgbase = lgx-runtime
 	depends = jemalloc
 	provides = lgx-runtime
 	conflicts = lgx-runtime-git
-	source = lgx-runtime-1.0.0.tar.gz::https://github.com/lgx-platform/LGX/archive/v1.0.0.tar.gz
+	source = lgx-runtime-1.0.1.tar.gz::https://github.com/lgx-platform/LGX/archive/v1.0.1.tar.gz
 	sha256sums = SKIP
 
 pkgname = lgx-runtime

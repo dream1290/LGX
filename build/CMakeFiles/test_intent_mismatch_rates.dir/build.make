@@ -92,7 +92,7 @@ test_intent_mismatch_rates_EXTERNAL_OBJECTS =
 
 test_intent_mismatch_rates: CMakeFiles/test_intent_mismatch_rates.dir/tests/phase0/test_intent_mismatch_rates.c.o
 test_intent_mismatch_rates: CMakeFiles/test_intent_mismatch_rates.dir/build.make
-test_intent_mismatch_rates: liblgx_runtime.so.1.0.0
+test_intent_mismatch_rates: liblgx_runtime.so.1.0.1
 test_intent_mismatch_rates: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_intent_mismatch_rates: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_intent_mismatch_rates: CMakeFiles/test_intent_mismatch_rates.dir/link.txt

@@ -11,6 +11,7 @@
 #include "lgx_runtime.h"
 #include <pthread.h>
 #include <stdbool.h>
+#include <stdio.h>      // For FILE*
 #include <sys/types.h>  // For ssize_t
 #include <limits.h>     // For PATH_MAX
 
@@ -27,6 +28,8 @@ struct lgx_runtime_config {
     size_t memory_pool_size;
     const char* log_path;
     uint32_t flags;
+    size_t frame_arena_size;      // Task 3.4.5.2.1
+    size_t frame_arena_max_size;  // Task 3.4.5.2.2
 };
 
 // Forward declarations for subsystem handles
@@ -222,7 +225,27 @@ typedef struct {
 
 lgx_result_t lgx_frame_arena_init(void);
 lgx_result_t lgx_frame_arena_shutdown(void);
+void lgx_frame_arena_set_config_size(size_t size);  // Task 3.4.5.2.1
+void lgx_frame_arena_set_config_max_size(size_t size);  // Task 3.4.5.2.2
+
+// Internal function with call site tracking (Task 3.4.5.1.3)
+// Always available for testing and debugging
+void* lgx_frame_alloc_internal(size_t size, const char* file, int line);
+
+// Tagged allocation function (Task 3.4.5.4.3)
+void* lgx_frame_alloc_tagged_internal(size_t size, const char* tag, const char* file, int line);
+
+// Public API - use macro to capture call site automatically in debug builds
+#ifndef NDEBUG
+// Debug build: macro captures file/line automatically
+#define lgx_frame_alloc(size) lgx_frame_alloc_internal((size), __FILE__, __LINE__)
+#define lgx_frame_alloc_tagged(size, tag) lgx_frame_alloc_tagged_internal((size), (tag), __FILE__, __LINE__)
+#else
+// Release build: regular function (no overhead)
 void* lgx_frame_alloc(size_t size);
+#define lgx_frame_alloc_tagged(size, tag) lgx_frame_alloc_tagged_internal((size), (tag), "unknown", 0)
+#endif
+
 lgx_result_t lgx_frame_reset(void);
 lgx_result_t lgx_frame_get_stats(frame_arena_stats_t* stats);
 bool lgx_frame_arena_is_initialized(void);
@@ -230,6 +253,14 @@ uint32_t lgx_frame_get_current_frame(void);
 size_t lgx_frame_get_current_usage(void);
 size_t lgx_frame_get_peak_usage(void);
 bool lgx_frame_is_frame_pointer(void* ptr);
+void lgx_frame_arena_dump_stats(FILE* output);  // Task 3.4.5.1 - dump detailed stats
+size_t lgx_frame_arena_get_recommended_size(void);  // Task 3.4.5.2.3 - size recommendation
+lgx_result_t lgx_frame_arena_dump(const char* output_path);  // Task 3.4.5.4.1 - export allocation map
+
+// Profiler integration (Task 3.4.5.4.4)
+lgx_result_t lgx_frame_arena_enable_tracy(bool enabled);
+lgx_result_t lgx_frame_arena_enable_optick(bool enabled);
+lgx_result_t lgx_frame_arena_enable_chrome_trace(bool enabled, const char* output_path);
 
 // GPU memory pool API functions (Month 2 - Specialized Allocators)
 // Forward declare Vulkan types to avoid requiring vulkan.h in this header

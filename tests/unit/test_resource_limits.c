@@ -22,6 +22,7 @@ static void test_memory_limit(void) {
     };
     
     assert(lgx_resource_limits_init(&config) == LGX_SUCCESS);
+    (void)config;  // Suppress unused warning in optimized builds
     
     // Should allow allocation within limit
     assert(lgx_resource_limits_check_memory(50 * 1024 * 1024) == true);
@@ -41,7 +42,7 @@ static void test_memory_limit(void) {
     assert(lgx_resource_limits_check_memory(50 * 1024 * 1024) == true);
     
     // Get stats
-    lgx_resource_limits_stats_t stats;
+    lgx_resource_limits_stats_t stats = {0};
     assert(lgx_resource_limits_get_stats(&stats) == LGX_SUCCESS);
     assert(stats.current_memory_bytes == 25 * 1024 * 1024);
     assert(stats.peak_memory_bytes == 75 * 1024 * 1024);
@@ -68,6 +69,7 @@ static void test_file_handle_limit(void) {
     };
     
     assert(lgx_resource_limits_init(&config) == LGX_SUCCESS);
+    (void)config;  // Suppress unused warning in optimized builds
     
     // Open files up to limit
     for (int i = 0; i < 10; i++) {
@@ -86,8 +88,9 @@ static void test_file_handle_limit(void) {
     assert(lgx_resource_limits_check_file_handle() == true);
     
     // Get stats
-    lgx_resource_limits_stats_t stats;
+    lgx_resource_limits_stats_t stats = {0};
     assert(lgx_resource_limits_get_stats(&stats) == LGX_SUCCESS);
+    (void)stats;  // Suppress unused warning in optimized builds
     assert(stats.current_file_handles == 8);
     assert(stats.file_handle_limit_hits == 1);
     
@@ -111,6 +114,7 @@ static void test_allocation_rate_limit(void) {
     };
     
     assert(lgx_resource_limits_init(&config) == LGX_SUCCESS);
+    (void)config;  // Suppress unused warning in optimized builds
     
     // Allocate up to limit
     int allowed = 0;
@@ -124,8 +128,9 @@ static void test_allocation_rate_limit(void) {
     assert(allowed >= 100 && allowed <= 105);  // Allow small margin
     
     // Get stats
-    lgx_resource_limits_stats_t stats;
+    lgx_resource_limits_stats_t stats = {0};
     assert(lgx_resource_limits_get_stats(&stats) == LGX_SUCCESS);
+    (void)stats;  // Suppress unused warning in optimized builds
     assert(stats.rate_limit_violations > 0);
     
     printf("  Allocations allowed: %d\n", allowed);
@@ -155,6 +160,7 @@ static void test_log_rotation(void) {
     };
     
     assert(lgx_resource_limits_init(&config) == LGX_SUCCESS);
+    (void)config;  // Suppress unused warning in optimized builds
     
     // Create log file
     FILE* f = fopen("/tmp/lgx_test_rotation.log", "w");
@@ -192,8 +198,9 @@ static void test_log_rotation(void) {
     }
     
     // Get stats
-    lgx_resource_limits_stats_t stats;
+    lgx_resource_limits_stats_t stats = {0};
     assert(lgx_resource_limits_get_stats(&stats) == LGX_SUCCESS);
+    (void)stats;  // Suppress unused warning in optimized builds
     assert(stats.log_rotation_count == 1);
     
     printf("  Log rotations: %lu\n", stats.log_rotation_count);
@@ -219,14 +226,16 @@ static void test_stats_reset(void) {
     };
     
     assert(lgx_resource_limits_init(&config) == LGX_SUCCESS);
+    (void)config;  // Suppress unused warning in optimized builds
     
     // Generate some activity - try to allocate more than limit
     lgx_resource_limits_check_memory(200 * 1024 * 1024);  // Trigger limit hit (200MB > 100MB)
     lgx_resource_limits_track_allocation(1024 * 1024);
     
     // Get stats
-    lgx_resource_limits_stats_t stats;
+    lgx_resource_limits_stats_t stats = {0};
     assert(lgx_resource_limits_get_stats(&stats) == LGX_SUCCESS);
+    (void)stats;  // Suppress unused warning in optimized builds
     assert(stats.memory_limit_hits > 0);
     
     // Reset stats

@@ -14,10 +14,10 @@ extern "C" {
 // Version constants
 #define LGX_VERSION_MAJOR 1
 #define LGX_VERSION_MINOR 0
-#define LGX_VERSION_PATCH 0
+#define LGX_VERSION_PATCH 1
 
 // Version string
-#define LGX_VERSION_STRING "1.0.0"
+#define LGX_VERSION_STRING "1.0.1"
 
 // Version as single integer (for comparisons)
 #define LGX_VERSION_INT ((LGX_VERSION_MAJOR << 16) | (LGX_VERSION_MINOR << 8) | LGX_VERSION_PATCH)

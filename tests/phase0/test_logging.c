@@ -138,6 +138,12 @@ static void test_log_level_filtering(void) {
     assert(expected_warn_found == 1 && "WARN should appear");
     assert(expected_error_found == 1 && "ERROR should appear");
     
+    // Prevent unused variable warnings in optimized builds
+    (void)filtered_debug_found;
+    (void)filtered_info_found;
+    (void)expected_warn_found;
+    (void)expected_error_found;
+    
     printf("  ✓ Log level filtering works\n");
     printf("  ✓ Filtered out DEBUG and INFO, kept WARN and ERROR\n");
     
@@ -196,6 +202,12 @@ static void test_subsystem_filtering(void) {
     // Expected messages SHOULD appear
     assert(memory_found == 1 && "MEMORY should appear");
     assert(gpu_found == 1 && "GPU should appear");
+    
+    // Prevent unused variable warnings in optimized builds
+    (void)core_found;
+    (void)memory_found;
+    (void)gpu_found;
+    (void)fs_found;
     
     printf("  ✓ Subsystem filtering works\n");
     printf("  ✓ Filtered correctly based on bitmask\n");
@@ -263,19 +275,20 @@ static void test_thread_safe_logging(void) {
     assert(lgx_runtime_init(config) == LGX_SUCCESS);
     
     // Create multiple threads that log concurrently
-    const int num_threads = 4;
-    pthread_t threads[num_threads];
-    int thread_ids[num_threads];
+    #define NUM_LOG_THREADS 4
+    pthread_t threads[NUM_LOG_THREADS];
+    int thread_ids[NUM_LOG_THREADS];
     
-    for (int i = 0; i < num_threads; i++) {
+    for (int i = 0; i < NUM_LOG_THREADS; i++) {
         thread_ids[i] = i;
         pthread_create(&threads[i], NULL, thread_log_func, &thread_ids[i]);
     }
     
     // Wait for all threads
-    for (int i = 0; i < num_threads; i++) {
+    for (int i = 0; i < NUM_LOG_THREADS; i++) {
         pthread_join(threads[i], NULL);
     }
+    #undef NUM_LOG_THREADS
     
     lgx_runtime_shutdown();
     lgx_config_destroy(config);
@@ -314,8 +327,8 @@ static void test_thread_safe_logging(void) {
     assert(corrupted_lines == 0);
     
     printf("  ✓ Thread-safe logging works\n");
-    printf("  ✓ %d thread messages logged from %d threads (%d total lines)\n", 
-           thread_message_count, num_threads, line_count);
+    printf("  ✓ %d thread messages logged from 4 threads (%d total lines)\n", 
+           thread_message_count, line_count);
     printf("  ✓ No corrupted lines detected\n");
     
     unlink(TEST_LOG_FILE);

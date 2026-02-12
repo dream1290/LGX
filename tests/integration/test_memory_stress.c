@@ -32,19 +32,20 @@ static void test_sequential_allocation(void) {
     lgx_runtime_config_t* config = lgx_config_create();
     lgx_runtime_init(config);
     
-    const int count = 1000;
-    void* ptrs[count];
+    #define SEQ_ALLOC_COUNT 1000
+    void* ptrs[SEQ_ALLOC_COUNT];
     
     // Allocate sequentially
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < SEQ_ALLOC_COUNT; i++) {
         ptrs[i] = lgx_alloc(1024);
         TEST_ASSERT(ptrs[i] != NULL, "Sequential allocation succeeds");
     }
     
     // Free sequentially
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < SEQ_ALLOC_COUNT; i++) {
         lgx_free(ptrs[i]);
     }
+    #undef SEQ_ALLOC_COUNT
     
     TEST_ASSERT(true, "Sequential pattern completed");
     
@@ -61,22 +62,23 @@ static void test_random_allocation_sizes(void) {
     
     srand(time(NULL));
     
-    const int count = 500;
-    void* ptrs[count];
-    size_t sizes[count];
+    #define RANDOM_ALLOC_COUNT 500
+    void* ptrs[RANDOM_ALLOC_COUNT];
+    size_t sizes[RANDOM_ALLOC_COUNT];
     
     // Allocate random sizes
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < RANDOM_ALLOC_COUNT; i++) {
         sizes[i] = 16 + (rand() % (64 * 1024)); // 16B to 64KB
         ptrs[i] = lgx_alloc(sizes[i]);
         TEST_ASSERT(ptrs[i] != NULL, "Random size allocation succeeds");
     }
     
     // Verify and free
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < RANDOM_ALLOC_COUNT; i++) {
         memset(ptrs[i], 0xAA, sizes[i]);
         lgx_free(ptrs[i]);
     }
+    #undef RANDOM_ALLOC_COUNT
     
     TEST_ASSERT(true, "Random size pattern completed");
     
@@ -156,11 +158,11 @@ static void test_large_allocation_stress(void) {
     lgx_runtime_config_t* config = lgx_config_create();
     lgx_runtime_init(config);
     
-    const int count = 50;
-    void* ptrs[count];
+    #define LARGE_ALLOC_COUNT 50
+    void* ptrs[LARGE_ALLOC_COUNT];
     
     // Allocate large blocks
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < LARGE_ALLOC_COUNT; i++) {
         ptrs[i] = lgx_alloc(1024 * 1024); // 1MB each
         TEST_ASSERT(ptrs[i] != NULL, "Large allocation succeeds");
         
@@ -169,9 +171,10 @@ static void test_large_allocation_stress(void) {
     }
     
     // Free all
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < LARGE_ALLOC_COUNT; i++) {
         lgx_free(ptrs[i]);
     }
+    #undef LARGE_ALLOC_COUNT
     
     TEST_ASSERT(true, "Large allocation stress completed");
     

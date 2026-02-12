@@ -112,9 +112,13 @@ static void test_sigsegv_handler(void) {
         lgx_runtime_config_t* config = lgx_config_create();
         lgx_runtime_init(config);
         
-        // Trigger segfault
+        // Trigger segfault (intentional for testing signal handling)
+        // Suppress analyzer warning for intentional NULL dereference
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wanalyzer-null-dereference"
         int* null_ptr = NULL;
         *null_ptr = 42; // This will cause SIGSEGV
+        #pragma GCC diagnostic pop
         
         // Should not reach here
         exit(1);

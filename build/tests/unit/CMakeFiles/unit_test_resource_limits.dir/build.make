@@ -92,7 +92,7 @@ unit_test_resource_limits_EXTERNAL_OBJECTS =
 
 tests/unit/unit_test_resource_limits: tests/unit/CMakeFiles/unit_test_resource_limits.dir/test_resource_limits.c.o
 tests/unit/unit_test_resource_limits: tests/unit/CMakeFiles/unit_test_resource_limits.dir/build.make
-tests/unit/unit_test_resource_limits: liblgx_runtime.so.1.0.0
+tests/unit/unit_test_resource_limits: liblgx_runtime.so.1.0.1
 tests/unit/unit_test_resource_limits: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/unit/unit_test_resource_limits: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/unit/unit_test_resource_limits: tests/unit/CMakeFiles/unit_test_resource_limits.dir/link.txt

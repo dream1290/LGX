@@ -47,7 +47,6 @@
 /home/karl/Projects/LGX/build/CMakeFiles/run_unit_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_integration_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_performance_tests.dir
-/home/karl/Projects/LGX/build/CMakeFiles/run_benchmarks.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test.dir
 /home/karl/Projects/LGX/build/CMakeFiles/edit_cache.dir
 /home/karl/Projects/LGX/build/CMakeFiles/rebuild_cache.dir
@@ -107,3 +106,17 @@
 /home/karl/Projects/LGX/build/tests/failure_injection/CMakeFiles/install.dir
 /home/karl/Projects/LGX/build/tests/failure_injection/CMakeFiles/install/local.dir
 /home/karl/Projects/LGX/build/tests/failure_injection/CMakeFiles/install/strip.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/benchmark_framework.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/run_benchmarks.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/test.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/edit_cache.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/rebuild_cache.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/list_install_components.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/install.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/install/local.dir
+/home/karl/Projects/LGX/build/benchmarks/CMakeFiles/install/strip.dir

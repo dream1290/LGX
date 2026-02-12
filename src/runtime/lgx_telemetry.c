@@ -183,7 +183,8 @@ typedef struct {
         TEL_EVENT_MEMORY_USAGE,
         TEL_EVENT_ALLOCATION,
         TEL_EVENT_FRAME_SPIKE,
-        TEL_EVENT_ALLOCATION_FAILURE
+        TEL_EVENT_ALLOCATION_FAILURE,
+        TEL_EVENT_ARENA_OVERFLOW  // Task 3.4.5.3.2
     } type;
     union {
         struct { float frame_time_ms; } frame;
@@ -191,6 +192,14 @@ typedef struct {
         struct { size_t size; } allocation;
         struct { float spike_ms; const char* cause; } spike;
         struct { size_t requested_size; } failure;
+        struct {  // Task 3.4.5.3.2: Arena overflow context
+            uint32_t frame_number;
+            size_t requested_size;
+            size_t arena_capacity;
+            size_t arena_usage;
+            const char* file;
+            int line;
+        } overflow;
     } data;
 } telemetry_event_t;
 
@@ -664,6 +673,52 @@ lgx_result_t lgx_telemetry_record_allocation_failure(size_t requested_size) {
     pthread_mutex_unlock(&tel->mutex);
     return LGX_SUCCESS;
 }
+/**
+ * Record frame arena overflow event (Task 3.4.5.3.2)
+ *
+ * Records detailed context about arena overflow for analysis and debugging.
+ * Includes frame number, allocation size, arena state, and call site.
+ */
+lgx_result_t lgx_telemetry_record_arena_overflow(uint32_t frame_number,
+                                                  size_t requested_size,
+                                                  size_t arena_capacity,
+                                                  size_t arena_usage,
+                                                  const char* file,
+                                                  int line) {
+    lgx_runtime_state_t* runtime = lgx_runtime_get_state();
+    if (!runtime || !runtime->telemetry) {
+        return LGX_ERROR_NOT_INITIALIZED;
+    }
+
+    lgx_telemetry_t* tel = runtime->telemetry;
+
+    pthread_mutex_lock(&tel->mutex);
+
+    if (tel->enabled) {
+        // Add overflow event with full context
+        telemetry_event_t event = {
+            .timestamp_ns = lgx_time_now_ns(),
+            .type = TEL_EVENT_ARENA_OVERFLOW,
+            .data.overflow = {
+                .frame_number = frame_number,
+                .requested_size = requested_size,
+                .arena_capacity = arena_capacity,
+                .arena_usage = arena_usage,
+                .file = file,
+                .line = line
+            }
+        };
+        add_telemetry_event(tel, &event);
+
+        lgx_log_tagged(LGX_SUBSYSTEM_TELEMETRY, LGX_LOG_DEBUG,
+                      "Arena overflow recorded: frame=%u, requested=%zu, capacity=%zu, usage=%zu, site=%s:%d",
+                      frame_number, requested_size, arena_capacity, arena_usage,
+                      file ? file : "unknown", line);
+    }
+
+    pthread_mutex_unlock(&tel->mutex);
+    return LGX_SUCCESS;
+}
 
 /**
  * Export telemetry data
@@ -1012,3 +1067,10 @@ lgx_result_t lgx_telemetry_export_collected_data(const char* output_path) {
     pthread_mutex_unlock(&tel->mutex);
     return LGX_SUCCESS;
 }
+
+/**
+ * Record frame arena overflow event (Task 3.4.5.3.2)
+ * 
+ * Records detailed context about arena overflow for analysis and debugging.
+ * Includes frame number, allocation size, arena state, and call site.
+ */

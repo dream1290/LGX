@@ -92,7 +92,7 @@ test_gpu_capability_EXTERNAL_OBJECTS =
 
 test_gpu_capability: CMakeFiles/test_gpu_capability.dir/tests/phase0/test_gpu_capability.c.o
 test_gpu_capability: CMakeFiles/test_gpu_capability.dir/build.make
-test_gpu_capability: liblgx_runtime.so.1.0.0
+test_gpu_capability: liblgx_runtime.so.1.0.1
 test_gpu_capability: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_capability: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_capability: /usr/lib/x86_64-linux-gnu/libjemalloc.so

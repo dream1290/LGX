@@ -92,7 +92,7 @@ test_intent_allocator_EXTERNAL_OBJECTS =
 
 test_intent_allocator: CMakeFiles/test_intent_allocator.dir/tests/phase0/test_intent_allocator.c.o
 test_intent_allocator: CMakeFiles/test_intent_allocator.dir/build.make
-test_intent_allocator: liblgx_runtime.so.1.0.0
+test_intent_allocator: liblgx_runtime.so.1.0.1
 test_intent_allocator: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_intent_allocator: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_intent_allocator: CMakeFiles/test_intent_allocator.dir/link.txt

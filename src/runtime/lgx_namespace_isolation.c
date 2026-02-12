@@ -110,9 +110,15 @@ static void get_library_version(const char* lib_path, char* version_buf, size_t 
     void* handle = dlopen(lib_path, RTLD_LAZY | RTLD_NOLOAD);
     if (handle) {
         // Library is already loaded, try to get version
-        const char* (*version_func)(void) = dlsym(handle, "gnu_get_libc_version");
-        if (version_func) {
-            snprintf(version_buf, buf_size, "%s", version_func());
+        // Use union to avoid ISO C pedantic warning about function pointer conversion
+        union {
+            void* obj;
+            const char* (*func)(void);
+        } version_ptr;
+        
+        version_ptr.obj = dlsym(handle, "gnu_get_libc_version");
+        if (version_ptr.obj) {
+            snprintf(version_buf, buf_size, "%s", version_ptr.func());
         } else {
             snprintf(version_buf, buf_size, "unknown");
         }

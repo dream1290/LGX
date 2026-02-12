@@ -92,7 +92,7 @@ test_library_manifest_EXTERNAL_OBJECTS =
 
 test_library_manifest: CMakeFiles/test_library_manifest.dir/tests/phase0/test_library_manifest.c.o
 test_library_manifest: CMakeFiles/test_library_manifest.dir/build.make
-test_library_manifest: liblgx_runtime.so.1.0.0
+test_library_manifest: liblgx_runtime.so.1.0.1
 test_library_manifest: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_library_manifest: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_library_manifest: CMakeFiles/test_library_manifest.dir/link.txt

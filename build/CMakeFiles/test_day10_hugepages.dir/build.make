@@ -92,7 +92,7 @@ test_day10_hugepages_EXTERNAL_OBJECTS =
 
 test_day10_hugepages: CMakeFiles/test_day10_hugepages.dir/tests/phase0/test_day10_hugepages.c.o
 test_day10_hugepages: CMakeFiles/test_day10_hugepages.dir/build.make
-test_day10_hugepages: liblgx_runtime.so.1.0.0
+test_day10_hugepages: liblgx_runtime.so.1.0.1
 test_day10_hugepages: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_day10_hugepages: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_day10_hugepages: CMakeFiles/test_day10_hugepages.dir/link.txt

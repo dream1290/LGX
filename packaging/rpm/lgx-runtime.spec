@@ -1,5 +1,5 @@
 Name:           lgx-runtime
-Version:        1.0.0
+Version:        1.0.1
 Release:        1%{?dist}
 Summary:        High-performance deterministic runtime for Linux gaming
 
@@ -72,6 +72,25 @@ LGX Runtime Core.
 %{_libdir}/pkgconfig/lgx_runtime.pc
 
 %changelog
+* Thu Feb 12 2026 LGX Platform Team <team@lgx-platform.org> - 1.0.1-1
+- Bug fixes and improvements:
+  * Fixed ISO C pedantic compliance in namespace isolation
+  * Eliminated variable length arrays (VLA) in test code
+  * Added NULL safety checks in test code
+  * Fixed stack protector warnings across test suite
+- New features:
+  * Added comprehensive benchmark suite (5 benchmarks)
+  * Benchmark framework with statistical analysis
+  * Performance measurement tools
+- Security improvements:
+  * All code passes strict GCC static analysis with -fanalyzer
+  * Zero warnings with -Wpedantic -Werror
+  * Enhanced code quality and ISO C compliance
+- Build improvements:
+  * All 59 tests compile cleanly
+  * All 5 benchmarks compile cleanly
+  * Zero compilation warnings in release builds
+
 * Mon Feb 09 2026 LGX Platform Team <team@lgx-platform.org> - 1.0.0-1
 - Initial release of LGX Runtime Core
 - Features:

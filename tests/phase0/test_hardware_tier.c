@@ -131,6 +131,11 @@ void test_performance_impact(void) {
     
     // Verify performance impact estimation
     TEST_ASSERT(status.performance_impact_estimate != NULL, "Performance impact estimated");
+    if (status.performance_impact_estimate == NULL) {
+        printf("  Test completed (early exit due to NULL performance_impact_estimate)\n");
+        return;
+    }
+    
     TEST_ASSERT(strlen(status.performance_impact_estimate) > 0, "Performance impact non-empty");
     
     printf("  Performance Impact: %s\n", status.performance_impact_estimate);
@@ -152,6 +157,11 @@ void test_remediation_guidance(void) {
     
     // Verify remediation guidance
     TEST_ASSERT(status.remediation_steps != NULL, "Remediation steps provided");
+    if (status.remediation_steps == NULL) {
+        printf("  Test completed (early exit due to NULL remediation_steps)\n");
+        return;
+    }
+    
     TEST_ASSERT(strlen(status.remediation_steps) > 0, "Remediation steps non-empty");
     
     printf("  Remediation Steps:\n");

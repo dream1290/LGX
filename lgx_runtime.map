@@ -35,13 +35,24 @@ LGX_1.0 {
         # Frame arena allocator (Month 1 - Specialized Allocators)
         lgx_frame_arena_init;
         lgx_frame_arena_shutdown;
+        lgx_frame_arena_set_config_size;
+        lgx_frame_arena_set_config_max_size;
         lgx_frame_alloc;
+        lgx_frame_alloc_internal;
+        lgx_frame_alloc_tagged_internal;
         lgx_frame_reset;
         lgx_frame_get_stats;
         lgx_frame_arena_is_initialized;
         lgx_frame_get_current_frame;
         lgx_frame_get_current_usage;
         lgx_frame_get_peak_usage;
+        lgx_frame_is_frame_pointer;
+        lgx_frame_arena_dump_stats;
+        lgx_frame_arena_get_recommended_size;
+        lgx_frame_arena_dump;
+        lgx_frame_arena_enable_tracy;
+        lgx_frame_arena_enable_optick;
+        lgx_frame_arena_enable_chrome_trace;
         
         # GPU memory pool (Month 2 - Specialized Allocators)
         lgx_gpu_pool_init;

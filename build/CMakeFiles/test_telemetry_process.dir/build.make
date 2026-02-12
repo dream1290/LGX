@@ -92,7 +92,7 @@ test_telemetry_process_EXTERNAL_OBJECTS =
 
 test_telemetry_process: CMakeFiles/test_telemetry_process.dir/tests/phase0/test_telemetry_process.c.o
 test_telemetry_process: CMakeFiles/test_telemetry_process.dir/build.make
-test_telemetry_process: liblgx_runtime.so.1.0.0
+test_telemetry_process: liblgx_runtime.so.1.0.1
 test_telemetry_process: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_telemetry_process: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_telemetry_process: CMakeFiles/test_telemetry_process.dir/link.txt

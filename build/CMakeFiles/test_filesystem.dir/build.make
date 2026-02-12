@@ -92,7 +92,7 @@ test_filesystem_EXTERNAL_OBJECTS =
 
 test_filesystem: CMakeFiles/test_filesystem.dir/tests/phase0/test_filesystem.c.o
 test_filesystem: CMakeFiles/test_filesystem.dir/build.make
-test_filesystem: liblgx_runtime.so.1.0.0
+test_filesystem: liblgx_runtime.so.1.0.1
 test_filesystem: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_filesystem: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_filesystem: CMakeFiles/test_filesystem.dir/link.txt

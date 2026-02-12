@@ -178,14 +178,14 @@ static bool test_buddy_stress(void) {
     
     lgx_persistent_heap_init();
     
-    const int num_iterations = 20;
-    const int allocs_per_iteration = 50;
+    #define NUM_BUDDY_ITERATIONS 20
+    #define ALLOCS_PER_ITERATION 50
     
-    for (int iter = 0; iter < num_iterations; iter++) {
-        void* ptrs[allocs_per_iteration];
+    for (int iter = 0; iter < NUM_BUDDY_ITERATIONS; iter++) {
+        void* ptrs[ALLOCS_PER_ITERATION];
         
         // Allocate random large sizes
-        for (int i = 0; i < allocs_per_iteration; i++) {
+        for (int i = 0; i < ALLOCS_PER_ITERATION; i++) {
             size_t size = (8 + (rand() % 120)) * 1024;  // 8KB - 128KB
             ptrs[i] = lgx_heap_alloc(size);
             
@@ -196,8 +196,8 @@ static bool test_buddy_stress(void) {
         }
         
         // Free in random order
-        for (int i = 0; i < allocs_per_iteration; i++) {
-            int idx = rand() % allocs_per_iteration;
+        for (int i = 0; i < ALLOCS_PER_ITERATION; i++) {
+            int idx = rand() % ALLOCS_PER_ITERATION;
             if (ptrs[idx]) {
                 lgx_heap_free(ptrs[idx]);
                 ptrs[idx] = NULL;
@@ -205,17 +205,19 @@ static bool test_buddy_stress(void) {
         }
         
         // Free any remaining
-        for (int i = 0; i < allocs_per_iteration; i++) {
+        for (int i = 0; i < ALLOCS_PER_ITERATION; i++) {
             if (ptrs[i]) {
                 lgx_heap_free(ptrs[i]);
             }
         }
     }
+    #undef ALLOCS_PER_ITERATION
     
     lgx_heap_stats_t stats;
     lgx_heap_get_stats(&stats);
     
-    printf("  Completed %d iterations\n", num_iterations);
+    printf("  Completed %d iterations\n", NUM_BUDDY_ITERATIONS);
+    #undef NUM_BUDDY_ITERATIONS
     printf("  Total allocations: %llu\n", (unsigned long long)stats.total_allocations);
     printf("  Total frees: %llu\n", (unsigned long long)stats.total_frees);
     printf("  Peak bytes: %llu\n", (unsigned long long)stats.peak_bytes);

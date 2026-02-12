@@ -242,20 +242,21 @@ static void test_guard_pages(void) {
 static void test_multiple_allocations(void) {
     printf("Test 8: Multiple allocations and frees\n");
     
-    const int num_allocs = 100;
-    void* ptrs[num_allocs];
+    #define NUM_SAFETY_ALLOCS 100
+    void* ptrs[NUM_SAFETY_ALLOCS];
     
     // Allocate multiple blocks
-    for (int i = 0; i < num_allocs; i++) {
+    for (int i = 0; i < NUM_SAFETY_ALLOCS; i++) {
         ptrs[i] = lgx_memory_safety_alloc(64 + i * 16);
         assert(ptrs[i] != NULL);
         memset(ptrs[i], i & 0xFF, 64 + i * 16);
     }
     
     // Free all blocks
-    for (int i = 0; i < num_allocs; i++) {
+    for (int i = 0; i < NUM_SAFETY_ALLOCS; i++) {
         lgx_memory_safety_free(ptrs[i]);
     }
+    #undef NUM_SAFETY_ALLOCS
     
     // Advance frames to process delayed frees
     for (int i = 0; i < 4; i++) {

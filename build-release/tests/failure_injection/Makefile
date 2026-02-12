@@ -172,34 +172,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-tests/failure_injection/CMakeFiles/test_oom_injection.dir/rule:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/test_oom_injection.dir/rule
-.PHONY : tests/failure_injection/CMakeFiles/test_oom_injection.dir/rule
-
-# Convenience name for target.
-test_oom_injection: tests/failure_injection/CMakeFiles/test_oom_injection.dir/rule
-.PHONY : test_oom_injection
-
-# fast build rule for target.
-test_oom_injection/fast:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_oom_injection.dir/build.make tests/failure_injection/CMakeFiles/test_oom_injection.dir/build
-.PHONY : test_oom_injection/fast
-
-# Convenience name for target.
-tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/rule:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/rule
-.PHONY : tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/rule
-
-# Convenience name for target.
-test_gpu_timeout: tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/rule
-.PHONY : test_gpu_timeout
-
-# fast build rule for target.
-test_gpu_timeout/fast:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/build.make tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/build
-.PHONY : test_gpu_timeout/fast
-
-# Convenience name for target.
 tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/rule:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/rule
 .PHONY : tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/rule
@@ -214,48 +186,6 @@ test_library_version_mismatch/fast:
 .PHONY : test_library_version_mismatch/fast
 
 # Convenience name for target.
-tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/rule:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/rule
-.PHONY : tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/rule
-
-# Convenience name for target.
-test_telemetry_crash: tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/rule
-.PHONY : test_telemetry_crash
-
-# fast build rule for target.
-test_telemetry_crash/fast:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/build.make tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/build
-.PHONY : test_telemetry_crash/fast
-
-# Convenience name for target.
-tests/failure_injection/CMakeFiles/test_filesystem_full.dir/rule:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/test_filesystem_full.dir/rule
-.PHONY : tests/failure_injection/CMakeFiles/test_filesystem_full.dir/rule
-
-# Convenience name for target.
-test_filesystem_full: tests/failure_injection/CMakeFiles/test_filesystem_full.dir/rule
-.PHONY : test_filesystem_full
-
-# fast build rule for target.
-test_filesystem_full/fast:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_filesystem_full.dir/build.make tests/failure_injection/CMakeFiles/test_filesystem_full.dir/build
-.PHONY : test_filesystem_full/fast
-
-# Convenience name for target.
-tests/failure_injection/CMakeFiles/test_toctou_races.dir/rule:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/test_toctou_races.dir/rule
-.PHONY : tests/failure_injection/CMakeFiles/test_toctou_races.dir/rule
-
-# Convenience name for target.
-test_toctou_races: tests/failure_injection/CMakeFiles/test_toctou_races.dir/rule
-.PHONY : test_toctou_races
-
-# fast build rule for target.
-test_toctou_races/fast:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_toctou_races.dir/build.make tests/failure_injection/CMakeFiles/test_toctou_races.dir/build
-.PHONY : test_toctou_races/fast
-
-# Convenience name for target.
 tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/rule:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/rule
 .PHONY : tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/rule
@@ -268,54 +198,6 @@ run_failure_injection_tests: tests/failure_injection/CMakeFiles/run_failure_inje
 run_failure_injection_tests/fast:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build.make tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build
 .PHONY : run_failure_injection_tests/fast
-
-test_filesystem_full.o: test_filesystem_full.c.o
-.PHONY : test_filesystem_full.o
-
-# target to build an object file
-test_filesystem_full.c.o:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_filesystem_full.dir/build.make tests/failure_injection/CMakeFiles/test_filesystem_full.dir/test_filesystem_full.c.o
-.PHONY : test_filesystem_full.c.o
-
-test_filesystem_full.i: test_filesystem_full.c.i
-.PHONY : test_filesystem_full.i
-
-# target to preprocess a source file
-test_filesystem_full.c.i:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_filesystem_full.dir/build.make tests/failure_injection/CMakeFiles/test_filesystem_full.dir/test_filesystem_full.c.i
-.PHONY : test_filesystem_full.c.i
-
-test_filesystem_full.s: test_filesystem_full.c.s
-.PHONY : test_filesystem_full.s
-
-# target to generate assembly for a file
-test_filesystem_full.c.s:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_filesystem_full.dir/build.make tests/failure_injection/CMakeFiles/test_filesystem_full.dir/test_filesystem_full.c.s
-.PHONY : test_filesystem_full.c.s
-
-test_gpu_timeout.o: test_gpu_timeout.c.o
-.PHONY : test_gpu_timeout.o
-
-# target to build an object file
-test_gpu_timeout.c.o:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/build.make tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/test_gpu_timeout.c.o
-.PHONY : test_gpu_timeout.c.o
-
-test_gpu_timeout.i: test_gpu_timeout.c.i
-.PHONY : test_gpu_timeout.i
-
-# target to preprocess a source file
-test_gpu_timeout.c.i:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/build.make tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/test_gpu_timeout.c.i
-.PHONY : test_gpu_timeout.c.i
-
-test_gpu_timeout.s: test_gpu_timeout.c.s
-.PHONY : test_gpu_timeout.s
-
-# target to generate assembly for a file
-test_gpu_timeout.c.s:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/build.make tests/failure_injection/CMakeFiles/test_gpu_timeout.dir/test_gpu_timeout.c.s
-.PHONY : test_gpu_timeout.c.s
 
 test_library_version_mismatch.o: test_library_version_mismatch.c.o
 .PHONY : test_library_version_mismatch.o
@@ -341,78 +223,6 @@ test_library_version_mismatch.c.s:
 	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build.make tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/test_library_version_mismatch.c.s
 .PHONY : test_library_version_mismatch.c.s
 
-test_oom_injection.o: test_oom_injection.c.o
-.PHONY : test_oom_injection.o
-
-# target to build an object file
-test_oom_injection.c.o:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_oom_injection.dir/build.make tests/failure_injection/CMakeFiles/test_oom_injection.dir/test_oom_injection.c.o
-.PHONY : test_oom_injection.c.o
-
-test_oom_injection.i: test_oom_injection.c.i
-.PHONY : test_oom_injection.i
-
-# target to preprocess a source file
-test_oom_injection.c.i:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_oom_injection.dir/build.make tests/failure_injection/CMakeFiles/test_oom_injection.dir/test_oom_injection.c.i
-.PHONY : test_oom_injection.c.i
-
-test_oom_injection.s: test_oom_injection.c.s
-.PHONY : test_oom_injection.s
-
-# target to generate assembly for a file
-test_oom_injection.c.s:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_oom_injection.dir/build.make tests/failure_injection/CMakeFiles/test_oom_injection.dir/test_oom_injection.c.s
-.PHONY : test_oom_injection.c.s
-
-test_telemetry_crash.o: test_telemetry_crash.c.o
-.PHONY : test_telemetry_crash.o
-
-# target to build an object file
-test_telemetry_crash.c.o:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/build.make tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/test_telemetry_crash.c.o
-.PHONY : test_telemetry_crash.c.o
-
-test_telemetry_crash.i: test_telemetry_crash.c.i
-.PHONY : test_telemetry_crash.i
-
-# target to preprocess a source file
-test_telemetry_crash.c.i:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/build.make tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/test_telemetry_crash.c.i
-.PHONY : test_telemetry_crash.c.i
-
-test_telemetry_crash.s: test_telemetry_crash.c.s
-.PHONY : test_telemetry_crash.s
-
-# target to generate assembly for a file
-test_telemetry_crash.c.s:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/build.make tests/failure_injection/CMakeFiles/test_telemetry_crash.dir/test_telemetry_crash.c.s
-.PHONY : test_telemetry_crash.c.s
-
-test_toctou_races.o: test_toctou_races.c.o
-.PHONY : test_toctou_races.o
-
-# target to build an object file
-test_toctou_races.c.o:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_toctou_races.dir/build.make tests/failure_injection/CMakeFiles/test_toctou_races.dir/test_toctou_races.c.o
-.PHONY : test_toctou_races.c.o
-
-test_toctou_races.i: test_toctou_races.c.i
-.PHONY : test_toctou_races.i
-
-# target to preprocess a source file
-test_toctou_races.c.i:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_toctou_races.dir/build.make tests/failure_injection/CMakeFiles/test_toctou_races.dir/test_toctou_races.c.i
-.PHONY : test_toctou_races.c.i
-
-test_toctou_races.s: test_toctou_races.c.s
-.PHONY : test_toctou_races.s
-
-# target to generate assembly for a file
-test_toctou_races.c.s:
-	cd /home/karl/Projects/LGX/build-release && $(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_toctou_races.dir/build.make tests/failure_injection/CMakeFiles/test_toctou_races.dir/test_toctou_races.c.s
-.PHONY : test_toctou_races.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -427,30 +237,10 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... run_failure_injection_tests"
-	@echo "... test_filesystem_full"
-	@echo "... test_gpu_timeout"
 	@echo "... test_library_version_mismatch"
-	@echo "... test_oom_injection"
-	@echo "... test_telemetry_crash"
-	@echo "... test_toctou_races"
-	@echo "... test_filesystem_full.o"
-	@echo "... test_filesystem_full.i"
-	@echo "... test_filesystem_full.s"
-	@echo "... test_gpu_timeout.o"
-	@echo "... test_gpu_timeout.i"
-	@echo "... test_gpu_timeout.s"
 	@echo "... test_library_version_mismatch.o"
 	@echo "... test_library_version_mismatch.i"
 	@echo "... test_library_version_mismatch.s"
-	@echo "... test_oom_injection.o"
-	@echo "... test_oom_injection.i"
-	@echo "... test_oom_injection.s"
-	@echo "... test_telemetry_crash.o"
-	@echo "... test_telemetry_crash.i"
-	@echo "... test_telemetry_crash.s"
-	@echo "... test_toctou_races.o"
-	@echo "... test_toctou_races.i"
-	@echo "... test_toctou_races.s"
 .PHONY : help
 
 

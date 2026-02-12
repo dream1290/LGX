@@ -92,7 +92,7 @@ test_gpu_pool_EXTERNAL_OBJECTS =
 
 test_gpu_pool: CMakeFiles/test_gpu_pool.dir/tests/phase0/test_gpu_pool.c.o
 test_gpu_pool: CMakeFiles/test_gpu_pool.dir/build.make
-test_gpu_pool: liblgx_runtime.so.1.0.0
+test_gpu_pool: liblgx_runtime.so.1.0.1
 test_gpu_pool: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_pool: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_pool: /usr/lib/x86_64-linux-gnu/libjemalloc.so

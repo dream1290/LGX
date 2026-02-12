@@ -92,7 +92,7 @@ perf_test_frame_time_contribution_EXTERNAL_OBJECTS =
 
 tests/performance/perf_test_frame_time_contribution: tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/test_frame_time_contribution.c.o
 tests/performance/perf_test_frame_time_contribution: tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/build.make
-tests/performance/perf_test_frame_time_contribution: liblgx_runtime.so.1.0.0
+tests/performance/perf_test_frame_time_contribution: liblgx_runtime.so.1.0.1
 tests/performance/perf_test_frame_time_contribution: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/performance/perf_test_frame_time_contribution: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/performance/perf_test_frame_time_contribution: tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/link.txt

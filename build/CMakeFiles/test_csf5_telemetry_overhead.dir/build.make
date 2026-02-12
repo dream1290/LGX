@@ -92,7 +92,7 @@ test_csf5_telemetry_overhead_EXTERNAL_OBJECTS =
 
 test_csf5_telemetry_overhead: CMakeFiles/test_csf5_telemetry_overhead.dir/tests/phase0/test_csf5_telemetry_overhead.c.o
 test_csf5_telemetry_overhead: CMakeFiles/test_csf5_telemetry_overhead.dir/build.make
-test_csf5_telemetry_overhead: liblgx_runtime.so.1.0.0
+test_csf5_telemetry_overhead: liblgx_runtime.so.1.0.1
 test_csf5_telemetry_overhead: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_csf5_telemetry_overhead: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_csf5_telemetry_overhead: CMakeFiles/test_csf5_telemetry_overhead.dir/link.txt

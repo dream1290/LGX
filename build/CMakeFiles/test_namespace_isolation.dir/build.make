@@ -92,7 +92,7 @@ test_namespace_isolation_EXTERNAL_OBJECTS =
 
 test_namespace_isolation: CMakeFiles/test_namespace_isolation.dir/tests/phase0/test_namespace_isolation.c.o
 test_namespace_isolation: CMakeFiles/test_namespace_isolation.dir/build.make
-test_namespace_isolation: liblgx_runtime.so.1.0.0
+test_namespace_isolation: liblgx_runtime.so.1.0.1
 test_namespace_isolation: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_namespace_isolation: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_namespace_isolation: CMakeFiles/test_namespace_isolation.dir/link.txt

@@ -92,7 +92,7 @@ test_signal_handling_EXTERNAL_OBJECTS =
 
 test_signal_handling: CMakeFiles/test_signal_handling.dir/tests/phase0/test_signal_handling.c.o
 test_signal_handling: CMakeFiles/test_signal_handling.dir/build.make
-test_signal_handling: liblgx_runtime.so.1.0.0
+test_signal_handling: liblgx_runtime.so.1.0.1
 test_signal_handling: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_signal_handling: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_signal_handling: CMakeFiles/test_signal_handling.dir/link.txt

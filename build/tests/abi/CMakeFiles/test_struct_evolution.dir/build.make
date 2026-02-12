@@ -92,7 +92,7 @@ test_struct_evolution_EXTERNAL_OBJECTS =
 
 tests/abi/test_struct_evolution: tests/abi/CMakeFiles/test_struct_evolution.dir/test_struct_evolution.c.o
 tests/abi/test_struct_evolution: tests/abi/CMakeFiles/test_struct_evolution.dir/build.make
-tests/abi/test_struct_evolution: liblgx_runtime.so.1.0.0
+tests/abi/test_struct_evolution: liblgx_runtime.so.1.0.1
 tests/abi/test_struct_evolution: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/abi/test_struct_evolution: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/abi/test_struct_evolution: tests/abi/CMakeFiles/test_struct_evolution.dir/link.txt

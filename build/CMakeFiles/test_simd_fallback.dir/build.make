@@ -92,7 +92,7 @@ test_simd_fallback_EXTERNAL_OBJECTS =
 
 test_simd_fallback: CMakeFiles/test_simd_fallback.dir/tests/phase0/test_simd_fallback.c.o
 test_simd_fallback: CMakeFiles/test_simd_fallback.dir/build.make
-test_simd_fallback: liblgx_runtime.so.1.0.0
+test_simd_fallback: liblgx_runtime.so.1.0.1
 test_simd_fallback: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_simd_fallback: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_simd_fallback: CMakeFiles/test_simd_fallback.dir/link.txt

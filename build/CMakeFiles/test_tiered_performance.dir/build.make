@@ -92,7 +92,7 @@ test_tiered_performance_EXTERNAL_OBJECTS =
 
 test_tiered_performance: CMakeFiles/test_tiered_performance.dir/tests/phase0/test_tiered_performance.c.o
 test_tiered_performance: CMakeFiles/test_tiered_performance.dir/build.make
-test_tiered_performance: liblgx_runtime.so.1.0.0
+test_tiered_performance: liblgx_runtime.so.1.0.1
 test_tiered_performance: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_tiered_performance: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_tiered_performance: CMakeFiles/test_tiered_performance.dir/link.txt

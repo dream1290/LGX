@@ -11,12 +11,12 @@ int main() {
     printf("============================\n\n");
     
     // Test multiple initialization cycles to get statistical data
-    const int num_tests = 10;
-    uint64_t init_times[num_tests];
+    #define NUM_PERF_TESTS 10
+    uint64_t init_times[NUM_PERF_TESTS];
     
-    printf("Running %d initialization tests...\n", num_tests);
+    printf("Running %d initialization tests...\n", NUM_PERF_TESTS);
     
-    for (int i = 0; i < num_tests; i++) {
+    for (int i = 0; i < NUM_PERF_TESTS; i++) {
         lgx_runtime_config_t* config = lgx_config_create();
         assert(config != NULL);
         
@@ -45,13 +45,14 @@ int main() {
     uint64_t min_time = init_times[0];
     uint64_t max_time = init_times[0];
     
-    for (int i = 0; i < num_tests; i++) {
+    for (int i = 0; i < NUM_PERF_TESTS; i++) {
         total_time += init_times[i];
         if (init_times[i] < min_time) min_time = init_times[i];
         if (init_times[i] > max_time) max_time = init_times[i];
     }
     
-    uint64_t avg_time = total_time / num_tests;
+    uint64_t avg_time = total_time / NUM_PERF_TESTS;
+    #undef NUM_PERF_TESTS
     
     printf("\nInitialization Time Statistics:\n");
     printf("Average: %lu ns (%.2f ms)\n", avg_time, avg_time / 1000000.0);
@@ -104,20 +105,20 @@ int main() {
     
     // Test memory allocation performance
     printf("\nTesting Memory Allocation Performance:\n");
-    const int num_allocs = 1000;
+    #define NUM_ALLOC_TESTS 1000
     uint64_t alloc_start = lgx_time_now_ns();
     
-    void* ptrs[num_allocs];
-    for (int i = 0; i < num_allocs; i++) {
+    void* ptrs[NUM_ALLOC_TESTS];
+    for (int i = 0; i < NUM_ALLOC_TESTS; i++) {
         ptrs[i] = lgx_alloc(1024); // 1KB allocations
         assert(ptrs[i] != NULL);
     }
     
     uint64_t alloc_end = lgx_time_now_ns();
     uint64_t total_alloc_time = alloc_end - alloc_start;
-    uint64_t avg_alloc_time = total_alloc_time / num_allocs;
+    uint64_t avg_alloc_time = total_alloc_time / NUM_ALLOC_TESTS;
     
-    printf("Allocated %d blocks of 1KB each\n", num_allocs);
+    printf("Allocated %d blocks of 1KB each\n", NUM_ALLOC_TESTS);
     printf("Total time: %lu ns (%.2f ms)\n", total_alloc_time, total_alloc_time / 1000000.0);
     printf("Average per allocation: %lu ns (%.2f μs)\n", avg_alloc_time, avg_alloc_time / 1000.0);
     
@@ -136,9 +137,10 @@ int main() {
     }
     
     // Clean up allocations
-    for (int i = 0; i < num_allocs; i++) {
+    for (int i = 0; i < NUM_ALLOC_TESTS; i++) {
         lgx_free(ptrs[i]);
     }
+    #undef NUM_ALLOC_TESTS
     
     // Test memory statistics
     lgx_memory_stats_t mem_stats;

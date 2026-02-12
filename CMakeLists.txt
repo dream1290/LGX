@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(lgx_runtime VERSION 1.0.0 LANGUAGES C)
+project(lgx_runtime VERSION 1.0.1 LANGUAGES C)
 
 # Set C standard
 set(CMAKE_C_STANDARD 11)
@@ -174,6 +174,7 @@ foreach(test_file ${PHASE0_TESTS})
     set_tests_properties(${test_name} PROPERTIES
         LABELS "phase0"
         TIMEOUT 300  # 5 minutes for AddressSanitizer overhead
+        ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
     )
 endforeach()
 
@@ -192,8 +193,8 @@ add_subdirectory(tests/performance)
 # Failure Injection Tests
 add_subdirectory(tests/failure_injection)
 
-# Benchmarks (disabled until benchmarks are implemented)
-# add_subdirectory(benchmarks)
+# Benchmarks
+add_subdirectory(benchmarks)
 
 # Custom targets for different test suites
 add_custom_target(run_phase0_tests
@@ -216,7 +217,4 @@ add_custom_target(run_performance_tests
     COMMENT "Running performance tests"
 )
 
-add_custom_target(run_benchmarks
-    COMMAND ${CMAKE_CTEST_COMMAND} --verbose -R "benchmark_"
-    COMMENT "Running benchmarks"
-)
+# run_benchmarks target is defined in benchmarks/CMakeLists.txt

@@ -92,7 +92,7 @@ test_frame_arena_EXTERNAL_OBJECTS =
 
 test_frame_arena: CMakeFiles/test_frame_arena.dir/tests/phase0/test_frame_arena.c.o
 test_frame_arena: CMakeFiles/test_frame_arena.dir/build.make
-test_frame_arena: liblgx_runtime.so.1.0.0
+test_frame_arena: liblgx_runtime.so.1.0.1
 test_frame_arena: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_frame_arena: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_frame_arena: CMakeFiles/test_frame_arena.dir/link.txt

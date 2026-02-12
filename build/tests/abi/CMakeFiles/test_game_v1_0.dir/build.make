@@ -92,7 +92,7 @@ test_game_v1_0_EXTERNAL_OBJECTS =
 
 tests/abi/test_game_v1_0: tests/abi/CMakeFiles/test_game_v1_0.dir/test_game_v1_0.c.o
 tests/abi/test_game_v1_0: tests/abi/CMakeFiles/test_game_v1_0.dir/build.make
-tests/abi/test_game_v1_0: liblgx_runtime.so.1.0.0
+tests/abi/test_game_v1_0: liblgx_runtime.so.1.0.1
 tests/abi/test_game_v1_0: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/abi/test_game_v1_0: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/abi/test_game_v1_0: tests/abi/CMakeFiles/test_game_v1_0.dir/link.txt

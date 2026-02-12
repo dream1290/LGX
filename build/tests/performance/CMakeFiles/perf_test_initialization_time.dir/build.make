@@ -92,7 +92,7 @@ perf_test_initialization_time_EXTERNAL_OBJECTS =
 
 tests/performance/perf_test_initialization_time: tests/performance/CMakeFiles/perf_test_initialization_time.dir/test_initialization_time.c.o
 tests/performance/perf_test_initialization_time: tests/performance/CMakeFiles/perf_test_initialization_time.dir/build.make
-tests/performance/perf_test_initialization_time: liblgx_runtime.so.1.0.0
+tests/performance/perf_test_initialization_time: liblgx_runtime.so.1.0.1
 tests/performance/perf_test_initialization_time: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/performance/perf_test_initialization_time: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/performance/perf_test_initialization_time: tests/performance/CMakeFiles/perf_test_initialization_time.dir/link.txt

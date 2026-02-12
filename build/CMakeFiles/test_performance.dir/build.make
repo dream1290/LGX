@@ -92,7 +92,7 @@ test_performance_EXTERNAL_OBJECTS =
 
 test_performance: CMakeFiles/test_performance.dir/tests/phase0/test_performance.c.o
 test_performance: CMakeFiles/test_performance.dir/build.make
-test_performance: liblgx_runtime.so.1.0.0
+test_performance: liblgx_runtime.so.1.0.1
 test_performance: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_performance: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_performance: CMakeFiles/test_performance.dir/link.txt

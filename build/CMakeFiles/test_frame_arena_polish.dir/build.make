@@ -92,7 +92,7 @@ test_frame_arena_polish_EXTERNAL_OBJECTS =
 
 test_frame_arena_polish: CMakeFiles/test_frame_arena_polish.dir/tests/phase0/test_frame_arena_polish.c.o
 test_frame_arena_polish: CMakeFiles/test_frame_arena_polish.dir/build.make
-test_frame_arena_polish: liblgx_runtime.so.1.0.0
+test_frame_arena_polish: liblgx_runtime.so.1.0.1
 test_frame_arena_polish: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_frame_arena_polish: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_frame_arena_polish: CMakeFiles/test_frame_arena_polish.dir/link.txt

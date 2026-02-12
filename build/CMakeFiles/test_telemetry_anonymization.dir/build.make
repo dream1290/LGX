@@ -92,7 +92,7 @@ test_telemetry_anonymization_EXTERNAL_OBJECTS =
 
 test_telemetry_anonymization: CMakeFiles/test_telemetry_anonymization.dir/tests/phase0/test_telemetry_anonymization.c.o
 test_telemetry_anonymization: CMakeFiles/test_telemetry_anonymization.dir/build.make
-test_telemetry_anonymization: liblgx_runtime.so.1.0.0
+test_telemetry_anonymization: liblgx_runtime.so.1.0.1
 test_telemetry_anonymization: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_telemetry_anonymization: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_telemetry_anonymization: CMakeFiles/test_telemetry_anonymization.dir/link.txt

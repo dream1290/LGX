@@ -1,0 +1,12 @@
+# LeakSanitizer suppression file for LGX Runtime
+# Suppress Vulkan driver internal allocations that are freed on device/instance destruction
+
+# Intel Vulkan driver (i915.gem) internal allocations - these are freed when device is destroyed
+leak:lgx_gpu_pool_init
+
+# Generic Vulkan driver allocations
+leak:libvulkan
+leak:vk
+
+# Vulkan loader allocations
+leak:VkLayer

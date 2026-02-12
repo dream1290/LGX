@@ -92,7 +92,7 @@ test_timing_services_EXTERNAL_OBJECTS =
 
 test_timing_services: CMakeFiles/test_timing_services.dir/tests/phase0/test_timing_services.c.o
 test_timing_services: CMakeFiles/test_timing_services.dir/build.make
-test_timing_services: liblgx_runtime.so.1.0.0
+test_timing_services: liblgx_runtime.so.1.0.1
 test_timing_services: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_timing_services: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_timing_services: CMakeFiles/test_timing_services.dir/link.txt

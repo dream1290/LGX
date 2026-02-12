@@ -92,7 +92,7 @@ test_csf4_abi_stability_EXTERNAL_OBJECTS =
 
 test_csf4_abi_stability: CMakeFiles/test_csf4_abi_stability.dir/tests/phase0/test_csf4_abi_stability.c.o
 test_csf4_abi_stability: CMakeFiles/test_csf4_abi_stability.dir/build.make
-test_csf4_abi_stability: liblgx_runtime.so.1.0.0
+test_csf4_abi_stability: liblgx_runtime.so.1.0.1
 test_csf4_abi_stability: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_csf4_abi_stability: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_csf4_abi_stability: CMakeFiles/test_csf4_abi_stability.dir/link.txt

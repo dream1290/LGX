@@ -92,7 +92,7 @@ test_csf1_comparison_EXTERNAL_OBJECTS =
 
 test_csf1_comparison: CMakeFiles/test_csf1_comparison.dir/tests/phase0/test_csf1_comparison.c.o
 test_csf1_comparison: CMakeFiles/test_csf1_comparison.dir/build.make
-test_csf1_comparison: liblgx_runtime.so.1.0.0
+test_csf1_comparison: liblgx_runtime.so.1.0.1
 test_csf1_comparison: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_csf1_comparison: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_csf1_comparison: CMakeFiles/test_csf1_comparison.dir/link.txt

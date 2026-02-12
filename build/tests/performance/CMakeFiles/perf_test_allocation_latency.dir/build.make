@@ -92,7 +92,7 @@ perf_test_allocation_latency_EXTERNAL_OBJECTS =
 
 tests/performance/perf_test_allocation_latency: tests/performance/CMakeFiles/perf_test_allocation_latency.dir/test_allocation_latency.c.o
 tests/performance/perf_test_allocation_latency: tests/performance/CMakeFiles/perf_test_allocation_latency.dir/build.make
-tests/performance/perf_test_allocation_latency: liblgx_runtime.so.1.0.0
+tests/performance/perf_test_allocation_latency: liblgx_runtime.so.1.0.1
 tests/performance/perf_test_allocation_latency: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/performance/perf_test_allocation_latency: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/performance/perf_test_allocation_latency: tests/performance/CMakeFiles/perf_test_allocation_latency.dir/link.txt

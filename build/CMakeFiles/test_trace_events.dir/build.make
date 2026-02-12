@@ -92,7 +92,7 @@ test_trace_events_EXTERNAL_OBJECTS =
 
 test_trace_events: CMakeFiles/test_trace_events.dir/tests/phase0/test_trace_events.c.o
 test_trace_events: CMakeFiles/test_trace_events.dir/build.make
-test_trace_events: liblgx_runtime.so.1.0.0
+test_trace_events: liblgx_runtime.so.1.0.1
 test_trace_events: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_trace_events: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_trace_events: CMakeFiles/test_trace_events.dir/link.txt

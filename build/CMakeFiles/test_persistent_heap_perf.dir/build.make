@@ -92,7 +92,7 @@ test_persistent_heap_perf_EXTERNAL_OBJECTS =
 
 test_persistent_heap_perf: CMakeFiles/test_persistent_heap_perf.dir/tests/phase0/test_persistent_heap_perf.c.o
 test_persistent_heap_perf: CMakeFiles/test_persistent_heap_perf.dir/build.make
-test_persistent_heap_perf: liblgx_runtime.so.1.0.0
+test_persistent_heap_perf: liblgx_runtime.so.1.0.1
 test_persistent_heap_perf: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_persistent_heap_perf: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_persistent_heap_perf: CMakeFiles/test_persistent_heap_perf.dir/link.txt

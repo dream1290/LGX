@@ -303,37 +303,37 @@ Games don't need a faster general-purpose allocator. They need specialized alloc
 
 **Goal:** Diagnose and fix frame arena overflow issues, implement dynamic sizing and better monitoring
 
-- [ ] 3.4.5.1 Investigate frame arena overflow root cause
-  - [ ] 3.4.5.1.1 Add detailed logging to track allocation patterns causing overflow
-  - [ ] 3.4.5.1.2 Implement allocation histogram (size distribution per frame)
-  - [ ] 3.4.5.1.3 Track top allocation call sites (file, line, size)
-  - [ ] 3.4.5.1.4 Verify `lgx_frame_reset()` is being called at frame boundaries
-  - [ ] 3.4.5.1.5 Check for memory leaks (allocations not being reset)
+- [x] 3.4.5.1 Investigate frame arena overflow root cause
+  - [x] 3.4.5.1.1 Add detailed logging to track allocation patterns causing overflow
+  - [x] 3.4.5.1.2 Implement allocation histogram (size distribution per frame)
+  - [x] 3.4.5.1.3 Track top allocation call sites (file, line, size)
+  - [x] 3.4.5.1.4 Verify `lgx_frame_reset()` is being called at frame boundaries
+  - [x] 3.4.5.1.5 Check for memory leaks (allocations not being reset)
 
-- [ ] 3.4.5.2 Implement adaptive frame arena sizing
-  - [ ] 3.4.5.2.1 Add configurable arena size via `lgx_config_set_frame_arena_size()`
-  - [ ] 3.4.5.2.2 Implement dynamic arena growth (double size on overflow, max 256MB)
-  - [ ] 3.4.5.2.3 Add arena size recommendation based on observed peak usage
-  - [ ] 3.4.5.2.4 Implement per-frame usage tracking with rolling average
-  - [ ] 3.4.5.2.5 Add warning when usage exceeds 80% of capacity (early warning)
+- [x] 3.4.5.2 Implement adaptive frame arena sizing
+  - [x] 3.4.5.2.1 Add configurable arena size via `lgx_config_set_frame_arena_size()`
+  - [x] 3.4.5.2.2 Implement dynamic arena growth (double size on overflow, max 256MB)
+  - [x] 3.4.5.2.3 Add arena size recommendation based on observed peak usage
+  - [x] 3.4.5.2.4 Implement per-frame usage tracking with rolling average
+  - [x] 3.4.5.2.5 Add warning when usage exceeds 80% of capacity (early warning)
 
 - [ ] 3.4.5.3 Improve frame arena overflow handling
-  - [ ] 3.4.5.3.1 Add overflow counter and rate limiting for warnings (max 1 per second)
-  - [ ] 3.4.5.3.2 Implement overflow telemetry event with context (frame number, allocation size)
-  - [ ] 3.4.5.3.3 Add fallback pool statistics (track persistent heap usage from overflow)
-  - [ ] 3.4.5.3.4 Implement overflow recovery strategy (suggest arena size increase)
+  - [x] 3.4.5.3.1 Add overflow counter and rate limiting for warnings (max 1 per second)
+  - [x] 3.4.5.3.2 Implement overflow telemetry event with context (frame number, allocation size)
+  - [x] 3.4.5.3.3 Add fallback pool statistics (track persistent heap usage from overflow)
+  - [x] 3.4.5.3.4 Implement overflow recovery strategy (suggest arena size increase)
 
-- [ ] 3.4.5.4 Add frame arena debugging tools
-  - [ ] 3.4.5.4.1 Implement `lgx_frame_arena_dump()` to export allocation map
-  - [ ] 3.4.5.4.2 Add visualization tool for frame arena usage over time
-  - [ ] 3.4.5.4.3 Implement allocation tagging (label allocations by subsystem)
-  - [ ] 3.4.5.4.4 Add frame arena profiler integration (Tracy, Optick)
+- [x] 3.4.5.4 Add frame arena debugging tools
+  - [x] 3.4.5.4.1 Implement `lgx_frame_arena_dump()` to export allocation map
+  - [x] 3.4.5.4.2 Add visualization tool for frame arena usage over time
+  - [x] 3.4.5.4.3 Implement allocation tagging (label allocations by subsystem)
+  - [x] 3.4.5.4.4 Add frame arena profiler integration (Tracy, Optick)
 
-- [ ] 3.4.5.5 Validate frame arena fixes
-  - [ ] 3.4.5.5.1 Run stress test with high allocation rate (simulate AAA game)
-  - [ ] 3.4.5.5.2 Verify no overflows with adaptive sizing enabled
-  - [ ] 3.4.5.5.3 Measure performance impact of overflow handling (<1% overhead)
-  - [ ] 3.4.5.5.4 Document recommended arena sizes for different game types
+- [x] 3.4.5.5 Validate frame arena fixes
+  - [x] 3.4.5.5.1 Run stress test with high allocation rate (simulate AAA game)
+  - [x] 3.4.5.5.2 Verify no overflows with adaptive sizing enabled
+  - [x] 3.4.5.5.3 Measure performance impact of overflow handling (<1% overhead)
+  - [x] 3.4.5.5.4 Document recommended arena sizes for different game types
 
 ### 3.5 Phase 0 Infrastructure (Reuse and Adapt)
 

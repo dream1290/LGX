@@ -44,7 +44,7 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   foreach(file
-      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1.0.0"
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1.0.1"
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1"
       )
     if(EXISTS "${file}" AND
@@ -55,11 +55,11 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
     endif()
   endforeach()
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
-    "/home/karl/Projects/LGX/build/liblgx_runtime.so.1.0.0"
+    "/home/karl/Projects/LGX/build/liblgx_runtime.so.1.0.1"
     "/home/karl/Projects/LGX/build/liblgx_runtime.so.1"
     )
   foreach(file
-      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1.0.0"
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1.0.1"
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1"
       )
     if(EXISTS "${file}" AND
@@ -115,6 +115,11 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("/home/karl/Projects/LGX/build/tests/failure_injection/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/home/karl/Projects/LGX/build/benchmarks/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)

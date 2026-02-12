@@ -5,6 +5,47 @@ All notable changes to LGX Runtime Core will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-02-12
+
+### 🐛 Bug Fixes
+
+- **namespace-isolation**: Fixed ISO C pedantic compliance in function pointer conversion
+- **test-suite**: Eliminated variable length arrays (VLA) across all test files for better portability
+- **test-suite**: Added NULL safety checks with early returns in test code
+- **test-suite**: Fixed stack protector warnings in 10 test files
+- **signal-handling**: Suppressed intentional NULL dereference warnings in signal handling tests
+
+### ✨ New Features
+
+- **benchmarks**: Added comprehensive benchmark suite with 5 benchmarks
+- **benchmarks**: Benchmark framework with statistical analysis (min, max, mean, median, P95, P99, stddev)
+- **benchmarks**: CSV export functionality for benchmark results
+- **benchmarks**: Allocation throughput benchmark
+- **benchmarks**: Memory patterns benchmark
+- **benchmarks**: Hardware adaptation benchmark
+- **benchmarks**: Intent accuracy benchmark
+- **benchmarks**: Telemetry overhead benchmark
+
+### 🔒 Security Improvements
+
+- **static-analysis**: All code passes strict GCC static analysis with `-fanalyzer`
+- **compiler-warnings**: Zero warnings with `-Wpedantic -Werror`
+- **code-quality**: Enhanced ISO C compliance across codebase
+- **security-audit**: Comprehensive security audit completed successfully
+
+### 🔧 Build Improvements
+
+- **compilation**: All 59 tests compile cleanly with zero warnings
+- **compilation**: All 5 benchmarks compile cleanly with zero warnings
+- **release-builds**: Zero compilation warnings in optimized release builds
+- **portability**: Improved code portability by eliminating VLAs
+
+### 📝 Documentation
+
+- Added `SECURITY_AUDIT_FIXES_SUMMARY.md` documenting all fixes
+- Added `SECURITY_AUDIT_STATUS.md` with audit status and recommendations
+- Updated security documentation with audit results
+
 ## [1.0.0] - 2026-02-09
 
 ### ✨ Features

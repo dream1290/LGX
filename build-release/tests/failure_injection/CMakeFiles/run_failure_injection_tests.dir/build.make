@@ -66,12 +66,7 @@ include tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/compi
 # Include the progress variables for this target.
 include tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/progress.make
 
-tests/failure_injection/CMakeFiles/run_failure_injection_tests: /home/karl/Projects/LGX/tests/failure_injection/test_oom_injection.c
-tests/failure_injection/CMakeFiles/run_failure_injection_tests: /home/karl/Projects/LGX/tests/failure_injection/test_gpu_timeout.c
 tests/failure_injection/CMakeFiles/run_failure_injection_tests: /home/karl/Projects/LGX/tests/failure_injection/test_library_version_mismatch.c
-tests/failure_injection/CMakeFiles/run_failure_injection_tests: /home/karl/Projects/LGX/tests/failure_injection/test_telemetry_crash.c
-tests/failure_injection/CMakeFiles/run_failure_injection_tests: /home/karl/Projects/LGX/tests/failure_injection/test_filesystem_full.c
-tests/failure_injection/CMakeFiles/run_failure_injection_tests: /home/karl/Projects/LGX/tests/failure_injection/test_toctou_races.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/karl/Projects/LGX/build-release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running failure injection tests..."
 	/usr/bin/ctest --verbose -L failure_injection
 

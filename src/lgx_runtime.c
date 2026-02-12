@@ -11,11 +11,6 @@
 #include <pthread.h>
 #include <sys/sysinfo.h>
 
-// Version constants
-#define LGX_VERSION_MAJOR 1
-#define LGX_VERSION_MINOR 0
-#define LGX_VERSION_PATCH 0
-
 // Intent validation constants
 #define MAX_TRACKED_ALLOCATIONS 10000
 #define INTENT_VALIDATION_SAMPLE_THRESHOLD 100  // Validate after 100 accesses
@@ -39,6 +34,8 @@ struct lgx_runtime_config {
     char* log_path;
     size_t memory_pool_size;
     uint32_t flags;
+    size_t frame_arena_size;      // Task 3.4.5.2.1
+    size_t frame_arena_max_size;  // Task 3.4.5.2.2
 };
 
 // Global runtime state

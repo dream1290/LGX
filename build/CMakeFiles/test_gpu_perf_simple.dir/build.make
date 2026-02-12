@@ -92,7 +92,7 @@ test_gpu_perf_simple_EXTERNAL_OBJECTS =
 
 test_gpu_perf_simple: CMakeFiles/test_gpu_perf_simple.dir/tests/phase0/test_gpu_perf_simple.c.o
 test_gpu_perf_simple: CMakeFiles/test_gpu_perf_simple.dir/build.make
-test_gpu_perf_simple: liblgx_runtime.so.1.0.0
+test_gpu_perf_simple: liblgx_runtime.so.1.0.1
 test_gpu_perf_simple: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_perf_simple: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_gpu_perf_simple: /usr/lib/x86_64-linux-gnu/libjemalloc.so

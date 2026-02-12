@@ -126,11 +126,11 @@ static void test_timing_overhead(void) {
 static void test_measurement_consistency(void) {
     printf("Test 6: Measurement consistency\n");
     
-    const int iterations = 100;
-    uint64_t measurements[iterations];
+    #define NUM_TIMING_ITERATIONS 100
+    uint64_t measurements[NUM_TIMING_ITERATIONS];
     
     // Take multiple measurements
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < NUM_TIMING_ITERATIONS; i++) {
         uint64_t start = lgx_time_now_ns();
         uint64_t end = lgx_time_now_ns();
         measurements[i] = end - start;
@@ -141,13 +141,14 @@ static void test_measurement_consistency(void) {
     uint64_t max = measurements[0];
     uint64_t sum = 0;
     
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < NUM_TIMING_ITERATIONS; i++) {
         if (measurements[i] < min) min = measurements[i];
         if (measurements[i] > max) max = measurements[i];
         sum += measurements[i];
     }
     
-    uint64_t avg = sum / iterations;
+    uint64_t avg = sum / NUM_TIMING_ITERATIONS;
+    #undef NUM_TIMING_ITERATIONS
     
     printf("  Min: %lu ns\n", (unsigned long)min);
     printf("  Avg: %lu ns\n", (unsigned long)avg);

@@ -234,6 +234,7 @@ void test_memory_type_detection(void) {
     
     // Cleanup
     lgx_gpu_pool_shutdown();
+    vkDeviceWaitIdle(device);  // Wait for all operations to complete
     vkDestroyDevice(device, NULL);
     vkDestroyInstance(instance, NULL);
     printf("  Test completed\n");
@@ -287,6 +288,7 @@ void test_memory_budget_tracking(void) {
     
     // Cleanup
     lgx_gpu_pool_shutdown();
+    vkDeviceWaitIdle(device);  // Wait for all operations to complete
     vkDestroyDevice(device, NULL);
     vkDestroyInstance(instance, NULL);
     printf("  Test completed\n");

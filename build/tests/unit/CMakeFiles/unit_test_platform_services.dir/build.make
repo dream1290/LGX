@@ -92,7 +92,7 @@ unit_test_platform_services_EXTERNAL_OBJECTS =
 
 tests/unit/unit_test_platform_services: tests/unit/CMakeFiles/unit_test_platform_services.dir/test_platform_services.c.o
 tests/unit/unit_test_platform_services: tests/unit/CMakeFiles/unit_test_platform_services.dir/build.make
-tests/unit/unit_test_platform_services: liblgx_runtime.so.1.0.0
+tests/unit/unit_test_platform_services: liblgx_runtime.so.1.0.1
 tests/unit/unit_test_platform_services: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/unit/unit_test_platform_services: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/unit/unit_test_platform_services: tests/unit/CMakeFiles/unit_test_platform_services.dir/link.txt

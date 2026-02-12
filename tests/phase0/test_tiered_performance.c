@@ -16,9 +16,9 @@ int main() {
     (void)result;  // Suppress unused warning
     
     // Do some allocations to generate performance data
-    const int num_allocs = 100;
-    void* ptrs[num_allocs];
-    for (int i = 0; i < num_allocs; i++) {
+    #define NUM_TIERED_ALLOCS 100
+    void* ptrs[NUM_TIERED_ALLOCS];
+    for (int i = 0; i < NUM_TIERED_ALLOCS; i++) {
         ptrs[i] = lgx_alloc(1024);
         assert(ptrs[i] != NULL);
     }
@@ -67,9 +67,10 @@ int main() {
     printf("\n✅ All tiered performance tests passed!\n");
     
     // Cleanup
-    for (int i = 0; i < num_allocs; i++) {
+    for (int i = 0; i < NUM_TIERED_ALLOCS; i++) {
         lgx_free(ptrs[i]);
     }
+    #undef NUM_TIERED_ALLOCS
     
     lgx_config_destroy(config);
     lgx_runtime_shutdown();

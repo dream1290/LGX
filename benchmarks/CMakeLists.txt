@@ -1,4 +1,21 @@
 # Benchmarks for LGX Runtime Core
+# Production-grade performance benchmarking suite
+
+message(STATUS "Configuring LGX Runtime Core benchmarks")
+
+# Benchmark framework library
+add_library(benchmark_framework STATIC
+    benchmark_framework.c
+)
+
+target_include_directories(benchmark_framework PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/benchmarks
+)
+
+target_link_libraries(benchmark_framework PUBLIC
+    m
+)
 
 # Benchmark sources
 set(BENCHMARK_SOURCES
@@ -15,38 +32,47 @@ foreach(benchmark_source ${BENCHMARK_SOURCES})
     set(benchmark_target "benchmark_${benchmark_name}")
     
     add_executable(${benchmark_target} ${benchmark_source})
-    target_link_libraries(${benchmark_target} lgx_runtime m)
-    target_include_directories(${benchmark_target} PRIVATE 
-        ${CMAKE_SOURCE_DIR}/src/runtime
-        ${CMAKE_SOURCE_DIR}/tests/common
+    
+    target_link_libraries(${benchmark_target} 
+        lgx_runtime 
+        benchmark_framework
+        m
     )
     
-    # Benchmarks are not run as tests by default
-    # Use 'make run_benchmarks' to execute them
+    target_include_directories(${benchmark_target} PRIVATE 
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/benchmarks
+    )
+    
+    # Set optimization flags for benchmarks
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        target_compile_options(${benchmark_target} PRIVATE
+            -O3
+            -march=native
+            -mtune=native
+        )
+    endif()
+    
+    # Benchmarks are labeled for selective execution
+    # Run with: ctest -L benchmark
     add_test(NAME ${benchmark_target} COMMAND ${benchmark_target})
     set_tests_properties(${benchmark_target} PROPERTIES
         LABELS "benchmark"
         TIMEOUT 600
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
+    
+    message(STATUS "  Configured benchmark: ${benchmark_target}")
 endforeach()
 
-# Benchmark helper library
-add_library(benchmark_helpers STATIC
-    ../tests/common/test_helpers.c
-    ../tests/common/performance_helpers.c
-    ../tests/common/statistics.c
-    benchmark_framework.c
+# Custom target to run all benchmarks
+add_custom_target(run_benchmarks
+    COMMAND ${CMAKE_CTEST_COMMAND} -L benchmark --output-on-failure
+    DEPENDS ${BENCHMARK_SOURCES}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Running all benchmarks..."
 )
 
-target_include_directories(benchmark_helpers PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/tests/common
-    ${CMAKE_SOURCE_DIR}/benchmarks
-)
-
-# Link benchmarks with helpers
-foreach(benchmark_source ${BENCHMARK_SOURCES})
-    get_filename_component(benchmark_name ${benchmark_source} NAME_WE)
-    set(benchmark_target "benchmark_${benchmark_name}")
-    target_link_libraries(${benchmark_target} benchmark_helpers)
-endforeach()
+message(STATUS "Benchmarks configured successfully")
+message(STATUS "  Run benchmarks with: make run_benchmarks")
+message(STATUS "  Or: ctest -L benchmark")

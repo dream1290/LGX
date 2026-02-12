@@ -92,7 +92,7 @@ unit_test_health_monitor_EXTERNAL_OBJECTS =
 
 tests/unit/unit_test_health_monitor: tests/unit/CMakeFiles/unit_test_health_monitor.dir/test_health_monitor.c.o
 tests/unit/unit_test_health_monitor: tests/unit/CMakeFiles/unit_test_health_monitor.dir/build.make
-tests/unit/unit_test_health_monitor: liblgx_runtime.so.1.0.0
+tests/unit/unit_test_health_monitor: liblgx_runtime.so.1.0.1
 tests/unit/unit_test_health_monitor: /usr/lib/x86_64-linux-gnu/libvulkan.so
 tests/unit/unit_test_health_monitor: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 tests/unit/unit_test_health_monitor: tests/unit/CMakeFiles/unit_test_health_monitor.dir/link.txt

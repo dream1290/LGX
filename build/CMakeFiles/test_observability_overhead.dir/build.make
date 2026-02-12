@@ -92,7 +92,7 @@ test_observability_overhead_EXTERNAL_OBJECTS =
 
 test_observability_overhead: CMakeFiles/test_observability_overhead.dir/tests/phase0/test_observability_overhead.c.o
 test_observability_overhead: CMakeFiles/test_observability_overhead.dir/build.make
-test_observability_overhead: liblgx_runtime.so.1.0.0
+test_observability_overhead: liblgx_runtime.so.1.0.1
 test_observability_overhead: /usr/lib/x86_64-linux-gnu/libvulkan.so
 test_observability_overhead: /usr/lib/x86_64-linux-gnu/libjemalloc.so
 test_observability_overhead: CMakeFiles/test_observability_overhead.dir/link.txt

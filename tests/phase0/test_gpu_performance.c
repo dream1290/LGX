@@ -223,6 +223,7 @@ int main(void) {
     
     // Cleanup
     lgx_gpu_pool_shutdown();
+    vkDeviceWaitIdle(device);  // Wait for all operations to complete
     vkDestroyDevice(device, NULL);
     vkDestroyInstance(instance, NULL);
     
