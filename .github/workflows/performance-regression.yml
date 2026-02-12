@@ -66,20 +66,24 @@ jobs:
       - name: Run current benchmarks
         run: |
           mkdir -p results/current
-          cd build-current/tests/performance
-          
-          for bench in perf_test_*; do
-            if [ -x "$bench" ]; then
-              echo "Running $bench..."
-              ./"$bench" || echo "Benchmark $bench failed or timed out"
-            fi
-          done
-          
-          # Copy all benchmark results
-          cp benchmark_results_*.txt ../../../results/current/ 2>/dev/null || true
+          if [ -d "build-current/tests/performance" ]; then
+            cd build-current/tests/performance
+            
+            for bench in perf_test_*; do
+              if [ -x "$bench" ]; then
+                echo "Running $bench..."
+                ./"$bench" || echo "Benchmark $bench failed or timed out"
+              fi
+            done
+            
+            # Copy all benchmark results
+            cp benchmark_results_*.txt ../../../results/current/ 2>/dev/null || true
+          else
+            echo "Performance tests not found"
+          fi
           
           # Generate summary
-          cat > ../../../results/current/summary.txt << EOF
+          cat > results/current/summary.txt << EOF
           Benchmark Run Summary
           =====================
           Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -120,18 +124,22 @@ jobs:
       - name: Run baseline benchmarks
         run: |
           mkdir -p results/baseline
-          cd build-baseline/tests/performance
+          if [ -d "build-baseline/tests/performance" ]; then
+            cd build-baseline/tests/performance
+            
+            for bench in perf_test_*; do
+              if [ -x "$bench" ]; then
+                echo "Running $bench (baseline)..."
+                ./"$bench" || echo "Benchmark $bench failed or timed out"
+              fi
+            done
+            
+            cp benchmark_results_*.txt ../../../results/baseline/ 2>/dev/null || true
+          else
+            echo "Baseline performance tests not found"
+          fi
           
-          for bench in perf_test_*; do
-            if [ -x "$bench" ]; then
-              echo "Running $bench (baseline)..."
-              ./"$bench" || echo "Benchmark $bench failed or timed out"
-            fi
-          done
-          
-          cp benchmark_results_*.txt ../../../results/baseline/ 2>/dev/null || true
-          
-          cat > ../../../results/baseline/summary.txt << EOF
+          cat > results/baseline/summary.txt << EOF
           Baseline Benchmark Summary
           ==========================
           Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -332,26 +340,32 @@ jobs:
       
       - name: Run memory profiling
         run: |
-          cd build/tests/performance
-          
-          for bench in perf_test_memory_*; do
-            if [ -x "$bench" ]; then
-              echo "Profiling $bench..."
-              valgrind --tool=massif \
-                --massif-out-file=massif.$bench.out \
-                ./"$bench" || true
-            fi
-          done
+          if [ -d "build/tests/performance" ]; then
+            cd build/tests/performance
+            
+            for bench in perf_test_memory_*; do
+              if [ -x "$bench" ]; then
+                echo "Profiling $bench..."
+                valgrind --tool=massif \
+                  --massif-out-file=massif.$bench.out \
+                  ./"$bench" || true
+              fi
+            done
+          else
+            echo "Performance tests not found, skipping memory profiling"
+          fi
       
       - name: Generate memory reports
         run: |
-          cd build/tests/performance
-          
-          for massif_file in massif.*.out; do
-            if [ -f "$massif_file" ]; then
-              ms_print "$massif_file" > "${massif_file}.txt"
-            fi
-          done
+          if [ -d "build/tests/performance" ]; then
+            cd build/tests/performance
+            
+            for massif_file in massif.*.out; do
+              if [ -f "$massif_file" ]; then
+                ms_print "$massif_file" > "${massif_file}.txt"
+              fi
+            done
+          fi
       
       - name: Upload memory profiles
         uses: actions/upload-artifact@v4

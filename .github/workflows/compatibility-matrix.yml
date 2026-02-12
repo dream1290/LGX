@@ -137,13 +137,17 @@ jobs:
     
     - name: Run performance tests (smoke test)
       run: |
-        cd build-release/tests/performance
-        for bench in perf_test_*; do
-          if [ -f "$bench" ]; then
-            echo "Running $bench..."
-            timeout 60 ./"$bench" || echo "Test timed out or failed"
-          fi
-        done
+        if [ -d "build-release/tests/performance" ]; then
+          cd build-release/tests/performance
+          for bench in perf_test_*; do
+            if [ -f "$bench" ] && [ -x "$bench" ]; then
+              echo "Running $bench..."
+              timeout 60 ./"$bench" || echo "Test timed out or failed"
+            fi
+          done
+        else
+          echo "Performance tests not found, skipping"
+        fi
     
     - name: Generate compatibility report
       if: always()

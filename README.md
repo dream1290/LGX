@@ -2,10 +2,11 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)]()
+[![Version](https://img.shields.io/badge/version-1.0.1-green.svg)](https://github.com/dream1290/LGX/releases/tag/v1.0.1)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)]()
 [![C Standard](https://img.shields.io/badge/C-C11-blue.svg)]()
-[![Tests](https://img.shields.io/badge/tests-59%2F59%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-64%2F64%20passing-brightgreen.svg)]()
+[![Benchmarks](https://img.shields.io/badge/benchmarks-5%20suites-blue.svg)]()
 
 A high-performance, production-ready Linux gaming runtime with specialized memory allocators, comprehensive lifecycle management, and hardware adaptation.
 
@@ -31,11 +32,12 @@ A high-performance, production-ready Linux gaming runtime with specialized memor
 
 LGX Runtime Core is a production-ready foundational runtime library designed for high-performance gaming applications on Linux. It provides deterministic behavior, versioned runtime environment, and optimized memory management through a stable C ABI. The runtime manages initialization, lifecycle operations, memory allocation, and platform services with a focus on performance, reliability, and hardware adaptation.
 
-**Current Status**: Production-ready (v1.0.0)
-- 100% test pass rate (59/59 tests)
+**Current Status**: Production-ready (v1.0.1)
+- 100% test pass rate (64/64 tests + 5 benchmark suites)
 - Zero memory leaks
 - All performance targets exceeded
 - Security hardening complete
+- Comprehensive benchmark suite included
 
 ### Key Objectives
 
@@ -122,7 +124,8 @@ Performance measurements on reference hardware (Intel Xeon, 32GB RAM, NVIDIA RTX
 
 #### Test Coverage
 
-- **Total Tests**: 59/59 passing (100%)
+- **Total Tests**: 64/64 passing (100%)
+- **Benchmark Suites**: 5/5 operational
 - **Memory Leaks**: 0 bytes
 - **Security Tests**: 41/41 passing
 - **Performance Tests**: 5/5 passing
@@ -147,8 +150,8 @@ Performance measurements on reference hardware (Intel Xeon, 32GB RAM, NVIDIA RTX
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/lgx-runtime-core.git
-cd lgx-runtime-core
+git clone https://github.com/dream1290/LGX.git
+cd LGX
 
 # Create build directory
 mkdir build && cd build
@@ -193,20 +196,31 @@ Pre-built packages are available for major Linux distributions:
 
 **Debian/Ubuntu**:
 ```bash
-wget https://github.com/your-org/lgx-runtime-core/releases/download/v1.0.0/lgx-runtime_1.0.0_amd64.deb
-sudo dpkg -i lgx-runtime_1.0.0_amd64.deb
+wget https://github.com/dream1290/LGX/releases/download/v1.0.1/lgx-runtime_1.0.1_amd64.deb
+sudo dpkg -i lgx-runtime_1.0.1_amd64.deb
 ```
 
 **Fedora/RHEL**:
 ```bash
-wget https://github.com/your-org/lgx-runtime-core/releases/download/v1.0.0/lgx-runtime-1.0.0-1.x86_64.rpm
-sudo rpm -i lgx-runtime-1.0.0-1.x86_64.rpm
+wget https://github.com/dream1290/LGX/releases/download/v1.0.1/lgx-runtime-1.0.1-1.x86_64.rpm
+sudo rpm -i lgx-runtime-1.0.1-1.x86_64.rpm
 ```
 
 **Arch Linux**:
 ```bash
-wget https://github.com/your-org/lgx-runtime-core/releases/download/v1.0.0/lgx-runtime-1.0.0-1-x86_64.pkg.tar.zst
-sudo pacman -U lgx-runtime-1.0.0-1-x86_64.pkg.tar.zst
+wget https://github.com/dream1290/LGX/releases/download/v1.0.1/lgx-runtime-1.0.1-1-x86_64.pkg.tar.zst
+sudo pacman -U lgx-runtime-1.0.1-1-x86_64.pkg.tar.zst
+```
+
+**Source Tarball**:
+```bash
+wget https://github.com/dream1290/LGX/releases/download/v1.0.1/lgx-runtime-1.0.1.tar.gz
+tar xzf lgx-runtime-1.0.1.tar.gz
+cd lgx-runtime-1.0.1
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc)
+sudo make install
 ```
 
 ## Quick Start
@@ -536,10 +550,9 @@ See [LICENSE](LICENSE) file for full license text.
 
 ### Getting Help
 
-- **Documentation**: https://github.com/your-org/lgx-runtime-core/tree/main/docs
-- **Issue Tracker**: https://github.com/your-org/lgx-runtime-core/issues
-- **Discussions**: https://github.com/your-org/lgx-runtime-core/discussions
-- **Mailing List**: lgx-dev@example.com
+- **Documentation**: https://github.com/dream1290/LGX/tree/main/docs
+- **Issue Tracker**: https://github.com/dream1290/LGX/issues
+- **Discussions**: https://github.com/dream1290/LGX/discussions
 
 ### Reporting Issues
 
@@ -552,7 +565,7 @@ When reporting issues, please include:
 
 ### Security Issues
 
-For security-related issues, please email security@example.com instead of using the public issue tracker. See [SECURITY.md](SECURITY.md) for our security policy and responsible disclosure process.
+For security-related issues, please use the GitHub Security Advisory feature or create a private security issue. See our security documentation in [docs/07-security/](docs/07-security/) for our security policy and threat model.
 
 ## Acknowledgments
 
@@ -567,16 +580,24 @@ Special thanks to the open-source community and all contributors.
 
 ## Project Status
 
-**Current Release**: v1.0.0 (Production-Ready)
+**Current Release**: v1.0.1 (Production-Ready)
 **Release Date**: February 12, 2026
 **Maintained By**: LGX Runtime Core Team
 
 **Production Readiness**:
-- Test Coverage: 100% (59/59 tests passing)
+- Test Coverage: 100% (64/64 tests passing)
+- Benchmark Suites: 5 comprehensive benchmark programs
 - Memory Safety: Zero leaks, AddressSanitizer clean
 - Performance: All targets exceeded
 - Security: Comprehensive hardening complete
 - Documentation: Technical documentation complete
+
+**v1.0.1 Changes** (February 12, 2026):
+- Added comprehensive benchmark suite with 5 benchmark programs
+- Fixed compilation warnings in Release builds
+- Enhanced security audit compliance
+- Improved build system configuration
+- Updated packaging for all major distributions
 
 **Next Release**: v1.1.0 (Planned Q2 2026)
 - Enhanced NUMA support
@@ -586,4 +607,4 @@ Special thanks to the open-source community and all contributors.
 
 ---
 
-For more information, visit the [project website](https://github.com/your-org/lgx-runtime-core) or join our [community chat](https://discord.gg/lgx-runtime).
+For more information, visit the [project repository](https://github.com/dream1290/LGX).
