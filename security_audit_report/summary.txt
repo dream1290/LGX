@@ -1,2 +1,0 @@
-LGX Runtime Security Audit - Tue Feb 10 12:41:23 PM +01 2026
-gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0

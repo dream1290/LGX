@@ -1,5 +1,0 @@
-LGX Runtime Security Audit - Tue Feb 10 12:40:57 PM +01 2026
-========================================
-
-1. GCC Static Analysis
-   Status: RUNNING

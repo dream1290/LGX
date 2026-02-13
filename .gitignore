@@ -1,95 +1,74 @@
-# Build directories
-build/
-build-*/
-cmake-build-*/
-
 # Build artifacts
+/build/
+/build-*/
 *.o
-*.a
 *.so
-*.so.*
+*.a
 *.dylib
 *.dll
 *.exe
-
-# Test results
-test_results.txt
-tests/test_results.txt
-**/test_results.txt
 
 # CMake
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-CTestTestfile.cmake
-Testing/
+install_manifest.txt
 
-# IDE and Editor
+# Package artifacts
+*.deb
+*.rpm
+*.pkg.tar.zst
+*.tar.gz
+*.zip
+
+# Security audits (CRITICAL - keep private!)
+security_audit_*/
+security_audit_report/
+security_*.pdf
+audit_*.md
+vulnerability_*.txt
+
+# IDE files
 .vscode/
 .idea/
-.kiro/
 *.swp
 *.swo
 *~
 .DS_Store
 
-# Security audit results
-security_audit_*/
-security_audit_report/
-
-# Packaging output
-packaging/output/
-*.deb
-*.rpm
-*.pkg.tar.zst
-*.tar.gz
-*.tar.xz
-*.tar.bz2
-
-# Temporary and development files
-*.tmp
+# Test artifacts
 *.log
-*.bak
-*.orig
-*_SUMMARY.md
-*_STATUS.md
-*_FIXES*.md
-*_NOTES.md
-*_SUCCESS.md
-*_COMPLETE.md
-GIT_PUSH_SUCCESS.md
-BUILD_SUMMARY*.md
-
-# OS specific
-.DS_Store
-Thumbs.db
-
-# Coverage
-*.gcda
-*.gcno
-*.gcov
-coverage/
-htmlcov/
+*.tmp
+core.*
+vgcore.*
+test_results.txt
 
 # Profiling
-*.prof
-gmon.out
-perf.data*
+perf.data
+perf.data.old
+callgrind.out.*
+massif.out.*
 
-# Valgrind
-*.valgrind
-vgcore.*
+# Sanitizer output
+*.san
 
-# AddressSanitizer
-*.asan
+# Personal notes
+TODO.txt
+NOTES.md
+personal/
+lead-engineer-new-verdict/
 
-# Fuzzing
-findings/
-crashes/
-hangs/
-queue/
+# Customer data
+customers/
+contracts/
+nda/
 
-# Documentation build
+# Temporary files
+test_lgx_simple
+test_lgx_simple.c
+*.out
+
+# Documentation build artifacts
 docs/_build/
 docs/.doctrees/
 
@@ -98,21 +77,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 .Python
-*.egg-info/
-dist/
+venv/
+ENV/
 
-# Backup files
-*~
-*.backup
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# Keep these important files (exceptions)
-!README.md
-!CHANGELOG.md
-!LICENSE
-!VERSION_*.md
-!docs/**/*.md
-!benchmarks/README.md
-!benchmarks/BENCHMARKS_COMPLETE.md
-!packaging/README.md
-!packaging/QUICKSTART.md
-!tests/**/README.md
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
