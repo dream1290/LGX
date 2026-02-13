@@ -196,6 +196,9 @@ add_subdirectory(tests/failure_injection)
 # Benchmarks
 add_subdirectory(benchmarks)
 
+# Demo applications
+add_subdirectory(demo)
+
 # Custom targets for different test suites
 add_custom_target(run_phase0_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --verbose -R "test_csf|test_performance|test_tiered|test_intent|test_hardware"
