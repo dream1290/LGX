@@ -8,7 +8,7 @@
 [![Tests](https://img.shields.io/badge/tests-64%2F64%20passing-brightgreen.svg)]()
 
 LGX Runtime Core is a production-ready foundational runtime library for high-performance gaming applications on Linux. It provides specialized memory allocators, comprehensive lifecycle management, and hardware adaptation with a stable C ABI.
-
+--------------------------------------------------------------------
 ---
 
 ## Table of Contents
@@ -487,6 +487,7 @@ This project builds upon research and techniques from:
 - Hardware-aware optimization techniques
 
 Special thanks to the open-source community and all contributors.
+This program was created by Oualid Bahloul
 
 ---
 
