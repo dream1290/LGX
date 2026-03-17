@@ -1,0 +1,5 @@
+benchmark,iterations,min_ns,max_ns,mean_ns,median_ns,p95_ns,p99_ns,stddev_ns
+memory_stats,100000,315,4071,344.99,342.00,358.00,380.00,74.63
+get_counter,100000,45,2428,50.09,48.00,66.00,70.00,12.47
+health_check,10000,45,516,50.91,49.00,65.00,69.00,9.41
+alloc_with_stats,10000,7035,60089,7594.08,7709.00,7913.05,8913.05,831.25

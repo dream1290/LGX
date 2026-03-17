@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -Wno-unused-parameter -Wall -Wextra -Werror -fPIC     -Wredundant-decls     -Wshadow -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 -Wl,--version-script=/home/karl/Projects/LGX/lgx_threading.map -shared -Wl,-soname,liblgx_threading.so.1 -o liblgx_threading.so.1.1.0 CMakeFiles/lgx_threading.dir/src/threading/lgx_threading.c.o 

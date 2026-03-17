@@ -1,6 +1,7 @@
 /home/karl/Projects/LGX/build/CMakeFiles/lgx_runtime.dir
 /home/karl/Projects/LGX/build/CMakeFiles/lgx_graphics.dir
 /home/karl/Projects/LGX/build/CMakeFiles/lgx_input.dir
+/home/karl/Projects/LGX/build/CMakeFiles/lgx_audio.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_csf1_comparison.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_csf1_hybrid_allocator.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_csf2_numa_awareness.dir
@@ -47,6 +48,7 @@
 /home/karl/Projects/LGX/build/CMakeFiles/test_trace_events.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_graphics_basic.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test_input_basic.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_audio_basic.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_phase0_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_unit_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_integration_tests.dir

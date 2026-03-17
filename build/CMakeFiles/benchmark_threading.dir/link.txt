@@ -1,0 +1,1 @@
+/usr/bin/cc -Wno-unused-parameter -Wall -Wextra -Werror -fPIC     -Wredundant-decls     -Wshadow -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 CMakeFiles/benchmark_threading.dir/tests/threading/benchmark_threading.c.o -o benchmark_threading  -Wl,-rpath,/home/karl/Projects/LGX/build liblgx_threading.so.1.1.0 

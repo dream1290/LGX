@@ -126,6 +126,47 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   foreach(file
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_audio.so.1.4.0"
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_audio.so.1"
+      )
+    if(EXISTS "${file}" AND
+       NOT IS_SYMLINK "${file}")
+      file(RPATH_CHECK
+           FILE "${file}"
+           RPATH "")
+    endif()
+  endforeach()
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
+    "/home/karl/Projects/LGX/build/liblgx_audio.so.1.4.0"
+    "/home/karl/Projects/LGX/build/liblgx_audio.so.1"
+    )
+  foreach(file
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_audio.so.1.4.0"
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_audio.so.1"
+      )
+    if(EXISTS "${file}" AND
+       NOT IS_SYMLINK "${file}")
+      file(RPATH_CHANGE
+           FILE "${file}"
+           OLD_RPATH "/home/karl/Projects/LGX/build:"
+           NEW_RPATH "")
+      if(CMAKE_INSTALL_DO_STRIP)
+        execute_process(COMMAND "/usr/bin/strip" "${file}")
+      endif()
+    endif()
+  endforeach()
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/karl/Projects/LGX/build/liblgx_audio.so")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES "/home/karl/Projects/LGX/include/lgx_audio.h")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  foreach(file
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1.0.1"
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/liblgx_runtime.so.1"
       )

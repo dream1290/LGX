@@ -1,11 +1,11 @@
 benchmark=memory_overhead
 baseline_vm_bytes=21990311002112
-baseline_rss_bytes=11792384
+baseline_rss_bytes=11747328
 init_overhead_vm_bytes=2154463232
-init_overhead_rss_bytes=1261568
+init_overhead_rss_bytes=1249280
 init_overhead_data_bytes=2156036096
 alloc_overhead_vm_bytes=0
-alloc_overhead_rss_bytes=27127808
-alloc_overhead_percent=164.92
+alloc_overhead_rss_bytes=27131904
+alloc_overhead_percent=164.96
 peak_allocated_bytes=10000
 tier_passed=1

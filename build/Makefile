@@ -211,6 +211,19 @@ lgx_input/fast:
 .PHONY : lgx_input/fast
 
 #=============================================================================
+# Target rules for targets named lgx_audio
+
+# Build rule for target.
+lgx_audio: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lgx_audio
+.PHONY : lgx_audio
+
+# fast build rule for target.
+lgx_audio/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_audio.dir/build.make CMakeFiles/lgx_audio.dir/build
+.PHONY : lgx_audio/fast
+
+#=============================================================================
 # Target rules for targets named test_csf1_comparison
 
 # Build rule for target.
@@ -809,6 +822,19 @@ test_input_basic/fast:
 .PHONY : test_input_basic/fast
 
 #=============================================================================
+# Target rules for targets named test_audio_basic
+
+# Build rule for target.
+test_audio_basic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_audio_basic
+.PHONY : test_audio_basic
+
+# fast build rule for target.
+test_audio_basic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_audio_basic.dir/build.make CMakeFiles/test_audio_basic.dir/build
+.PHONY : test_audio_basic/fast
+
+#=============================================================================
 # Target rules for targets named run_phase0_tests
 
 # Build rule for target.
@@ -1262,6 +1288,30 @@ run_benchmarks: cmake_check_build_system
 run_benchmarks/fast:
 	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/run_benchmarks.dir/build.make benchmarks/CMakeFiles/run_benchmarks.dir/build
 .PHONY : run_benchmarks/fast
+
+src/audio/lgx_audio.o: src/audio/lgx_audio.c.o
+.PHONY : src/audio/lgx_audio.o
+
+# target to build an object file
+src/audio/lgx_audio.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_audio.dir/build.make CMakeFiles/lgx_audio.dir/src/audio/lgx_audio.c.o
+.PHONY : src/audio/lgx_audio.c.o
+
+src/audio/lgx_audio.i: src/audio/lgx_audio.c.i
+.PHONY : src/audio/lgx_audio.i
+
+# target to preprocess a source file
+src/audio/lgx_audio.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_audio.dir/build.make CMakeFiles/lgx_audio.dir/src/audio/lgx_audio.c.i
+.PHONY : src/audio/lgx_audio.c.i
+
+src/audio/lgx_audio.s: src/audio/lgx_audio.c.s
+.PHONY : src/audio/lgx_audio.s
+
+# target to generate assembly for a file
+src/audio/lgx_audio.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_audio.dir/build.make CMakeFiles/lgx_audio.dir/src/audio/lgx_audio.c.s
+.PHONY : src/audio/lgx_audio.c.s
 
 src/graphics/lgx_graphics.o: src/graphics/lgx_graphics.c.o
 .PHONY : src/graphics/lgx_graphics.o
@@ -2030,6 +2080,30 @@ src/threading/lgx_threading.s: src/threading/lgx_threading.c.s
 src/threading/lgx_threading.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/src/threading/lgx_threading.c.s
 .PHONY : src/threading/lgx_threading.c.s
+
+tests/audio/test_audio_basic.o: tests/audio/test_audio_basic.c.o
+.PHONY : tests/audio/test_audio_basic.o
+
+# target to build an object file
+tests/audio/test_audio_basic.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_audio_basic.dir/build.make CMakeFiles/test_audio_basic.dir/tests/audio/test_audio_basic.c.o
+.PHONY : tests/audio/test_audio_basic.c.o
+
+tests/audio/test_audio_basic.i: tests/audio/test_audio_basic.c.i
+.PHONY : tests/audio/test_audio_basic.i
+
+# target to preprocess a source file
+tests/audio/test_audio_basic.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_audio_basic.dir/build.make CMakeFiles/test_audio_basic.dir/tests/audio/test_audio_basic.c.i
+.PHONY : tests/audio/test_audio_basic.c.i
+
+tests/audio/test_audio_basic.s: tests/audio/test_audio_basic.c.s
+.PHONY : tests/audio/test_audio_basic.s
+
+# target to generate assembly for a file
+tests/audio/test_audio_basic.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_audio_basic.dir/build.make CMakeFiles/test_audio_basic.dir/tests/audio/test_audio_basic.c.s
+.PHONY : tests/audio/test_audio_basic.c.s
 
 tests/graphics/test_graphics_basic.o: tests/graphics/test_graphics_basic.c.o
 .PHONY : tests/graphics/test_graphics_basic.o
@@ -3284,6 +3358,7 @@ help:
 	@echo "... benchmark_framework"
 	@echo "... benchmark_threading"
 	@echo "... integration_test_memory_stress"
+	@echo "... lgx_audio"
 	@echo "... lgx_graphics"
 	@echo "... lgx_input"
 	@echo "... lgx_runtime"
@@ -3293,6 +3368,7 @@ help:
 	@echo "... perf_test_initialization_time"
 	@echo "... perf_test_memory_footprint"
 	@echo "... perf_test_memory_overhead"
+	@echo "... test_audio_basic"
 	@echo "... test_csf1_comparison"
 	@echo "... test_csf1_hybrid_allocator"
 	@echo "... test_csf2_numa_awareness"
@@ -3352,6 +3428,9 @@ help:
 	@echo "... unit_test_init_shutdown"
 	@echo "... unit_test_platform_services"
 	@echo "... unit_test_resource_limits"
+	@echo "... src/audio/lgx_audio.o"
+	@echo "... src/audio/lgx_audio.i"
+	@echo "... src/audio/lgx_audio.s"
 	@echo "... src/graphics/lgx_graphics.o"
 	@echo "... src/graphics/lgx_graphics.i"
 	@echo "... src/graphics/lgx_graphics.s"
@@ -3448,6 +3527,9 @@ help:
 	@echo "... src/threading/lgx_threading.o"
 	@echo "... src/threading/lgx_threading.i"
 	@echo "... src/threading/lgx_threading.s"
+	@echo "... tests/audio/test_audio_basic.o"
+	@echo "... tests/audio/test_audio_basic.i"
+	@echo "... tests/audio/test_audio_basic.s"
 	@echo "... tests/graphics/test_graphics_basic.o"
 	@echo "... tests/graphics/test_graphics_basic.i"
 	@echo "... tests/graphics/test_graphics_basic.s"

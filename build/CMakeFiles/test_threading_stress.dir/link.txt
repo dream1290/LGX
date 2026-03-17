@@ -1,0 +1,1 @@
+/usr/bin/cc -Wno-unused-parameter -Wall -Wextra -Werror -fPIC     -Wredundant-decls     -Wshadow -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 CMakeFiles/test_threading_stress.dir/tests/threading/test_threading_stress.c.o -o test_threading_stress  -Wl,-rpath,/home/karl/Projects/LGX/build liblgx_threading.so.1.1.0 
