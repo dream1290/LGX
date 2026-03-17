@@ -23,6 +23,10 @@ find_package(Threads REQUIRED)
 
 # Optional: Find Vulkan for GPU memory pool
 find_package(Vulkan QUIET)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(ALSA QUIET alsa)
+endif()
 if(Vulkan_FOUND)
     message(STATUS "Found Vulkan: ${Vulkan_LIBRARY}")
     add_definitions(-DHAVE_VULKAN=1)
@@ -157,6 +161,27 @@ install(TARGETS lgx_input LIBRARY DESTINATION lib)
 install(FILES include/lgx_input.h DESTINATION include)
 message(STATUS "LGX Input Module v1.3 enabled")
 
+# ═══════════════════════════════════════════════════════════════════════════
+# LGX Audio Module v1.4
+# ═══════════════════════════════════════════════════════════════════════════
+if(ALSA_FOUND)
+    add_library(lgx_audio SHARED src/audio/lgx_audio.c)
+    target_include_directories(lgx_audio PUBLIC include)
+    target_include_directories(lgx_audio PRIVATE ${ALSA_INCLUDE_DIRS})
+    target_link_libraries(lgx_audio lgx_runtime ${ALSA_LIBRARIES} m)
+    set_target_properties(lgx_audio PROPERTIES
+        VERSION 1.4.0
+        SOVERSION 1
+    )
+    target_compile_options(lgx_audio PRIVATE -Wno-missing-prototypes)
+
+    install(TARGETS lgx_audio LIBRARY DESTINATION lib)
+    install(FILES include/lgx_audio.h DESTINATION include)
+    message(STATUS "LGX Audio Module v1.4 enabled")
+else()
+    message(STATUS "LGX Audio Module v1.4 disabled (ALSA not found)")
+endif()
+
 # Add jemalloc if available
 if(JEMALLOC_LIB)
     target_link_libraries(lgx_runtime ${JEMALLOC_LIB})
@@ -263,6 +288,18 @@ set_tests_properties(input_test_basic PROPERTIES
     LABELS "input"
     TIMEOUT 30
 )
+
+# Audio Module Tests
+if(ALSA_FOUND)
+    add_executable(test_audio_basic tests/audio/test_audio_basic.c)
+    target_link_libraries(test_audio_basic lgx_audio lgx_runtime ${ALSA_LIBRARIES} m)
+    target_include_directories(test_audio_basic PRIVATE ${ALSA_INCLUDE_DIRS})
+    add_test(NAME audio_test_basic COMMAND test_audio_basic)
+    set_tests_properties(audio_test_basic PROPERTIES
+        LABELS "audio"
+        TIMEOUT 30
+    )
+endif()
 
 # Demo applications
 # add_subdirectory(demo)  # Commented out - demo directory removed

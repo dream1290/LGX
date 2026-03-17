@@ -67,7 +67,7 @@ The numbers tell the story:
 │  └──────────┴──────────┴──────────┴──────────┘      │
 │  ┌──────────┬──────────┬──────────────────────┐      │
 │  │  Audio   │ Network  │ Profiling & Tooling  │      │
-│  │  v1.4 🚧 │  v2.0 🚧 │  Built-in            │      │
+│  │  v1.4 ✅ │  v2.0 🚧 │  v2.1 🚧               │      │
 │  └──────────┴──────────┴──────────────────────┘      │
 ├─────────────────────────────────────────────────────┤
 │  Any Linux Distribution (kernel 5.10+)              │
@@ -131,7 +131,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 - **Observability**: Telemetry, counters, trace events (< 0.1% overhead)
 - **Security**: Guard pages, canaries, input validation, chaos testing
 
-**Test coverage**: 71/71 tests passing (100%)
+**Test coverage**: 72/72 tests passing (100%)
 
 ### v1.1 — Threading ✅ Production-Ready
 
@@ -155,7 +155,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 | v1.1 | Threading & Jobs | ✅ Complete | Production |
 | v1.2 | Graphics (Vulkan wrapper) | ✅ Complete | Production |
 | v1.3 | Input (gamepad, keyboard, mouse) | ✅ Complete | Production |
-| v1.4 | Audio (3D spatial, mixing) | Q4 2026 | Next |
+| v1.4 | Audio (3D spatial, mixing) | ✅ Complete | Production |
 
 ### Phase 2: Ecosystem (2027)
 
@@ -240,7 +240,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 
 1. **The gap exists.** No one else is building a complete, open-source gaming platform for Linux. Steam Runtime is minimal. SDL is input-only. The opportunity is wide open.
 
-2. **The foundation is solid.** v1.0, v1.1, v1.2, and v1.3 are production-tested, with 71 passing tests, comprehensive docs, and performance that exceeds targets by 10-200×.
+2. **The foundation is solid.** v1.0 through v1.4 are production-tested, with 72 passing tests, comprehensive docs, and performance that exceeds targets by 10-200×.
 
 3. **The timing is right.** Steam Deck normalized Linux gaming. Valve proved the market exists. But Proton is a compatibility layer — the market needs a native platform.
 
