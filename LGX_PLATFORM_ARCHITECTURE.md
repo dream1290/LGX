@@ -18,7 +18,7 @@ LGX Runtime Platform is a modular, stable-ABI gaming platform for Linux. Each mo
 │  LGX Platform Unified API                                       │
 │  ┌───────────┬───────────┬───────────┬───────────┬───────────┐ │
 │  │ lgx_memory│lgx_thread │lgx_gfx    │ lgx_input │ lgx_audio │ │
-│  │   v1.0 ✅ │  v1.1 ✅  │  v1.2 ✅  │  v1.3 🚧  │  v1.4 🚧  │ │
+│  │   v1.0 ✅ │  v1.1 ✅  │  v1.2 ✅  │  v1.3 ✅  │  v1.4 🚧  │ │
 │  │           │           │           │           │           │ │
 │  │ liblgx_   │ liblgx_   │ liblgx_   │ liblgx_   │ liblgx_   │ │
 │  │ runtime.so│threading.so│graphics.so│ input.so  │ audio.so  │ │

@@ -198,6 +198,19 @@ lgx_graphics/fast:
 .PHONY : lgx_graphics/fast
 
 #=============================================================================
+# Target rules for targets named lgx_input
+
+# Build rule for target.
+lgx_input: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lgx_input
+.PHONY : lgx_input
+
+# fast build rule for target.
+lgx_input/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_input.dir/build.make CMakeFiles/lgx_input.dir/build
+.PHONY : lgx_input/fast
+
+#=============================================================================
 # Target rules for targets named test_csf1_comparison
 
 # Build rule for target.
@@ -783,6 +796,19 @@ test_graphics_basic/fast:
 .PHONY : test_graphics_basic/fast
 
 #=============================================================================
+# Target rules for targets named test_input_basic
+
+# Build rule for target.
+test_input_basic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_input_basic
+.PHONY : test_input_basic
+
+# fast build rule for target.
+test_input_basic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_basic.dir/build.make CMakeFiles/test_input_basic.dir/build
+.PHONY : test_input_basic/fast
+
+#=============================================================================
 # Target rules for targets named run_phase0_tests
 
 # Build rule for target.
@@ -1260,6 +1286,30 @@ src/graphics/lgx_graphics.s: src/graphics/lgx_graphics.c.s
 src/graphics/lgx_graphics.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_graphics.dir/build.make CMakeFiles/lgx_graphics.dir/src/graphics/lgx_graphics.c.s
 .PHONY : src/graphics/lgx_graphics.c.s
+
+src/input/lgx_input.o: src/input/lgx_input.c.o
+.PHONY : src/input/lgx_input.o
+
+# target to build an object file
+src/input/lgx_input.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_input.dir/build.make CMakeFiles/lgx_input.dir/src/input/lgx_input.c.o
+.PHONY : src/input/lgx_input.c.o
+
+src/input/lgx_input.i: src/input/lgx_input.c.i
+.PHONY : src/input/lgx_input.i
+
+# target to preprocess a source file
+src/input/lgx_input.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_input.dir/build.make CMakeFiles/lgx_input.dir/src/input/lgx_input.c.i
+.PHONY : src/input/lgx_input.c.i
+
+src/input/lgx_input.s: src/input/lgx_input.c.s
+.PHONY : src/input/lgx_input.s
+
+# target to generate assembly for a file
+src/input/lgx_input.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_input.dir/build.make CMakeFiles/lgx_input.dir/src/input/lgx_input.c.s
+.PHONY : src/input/lgx_input.c.s
 
 src/lgx_allocator_prototype.o: src/lgx_allocator_prototype.c.o
 .PHONY : src/lgx_allocator_prototype.o
@@ -2004,6 +2054,30 @@ tests/graphics/test_graphics_basic.s: tests/graphics/test_graphics_basic.c.s
 tests/graphics/test_graphics_basic.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_graphics_basic.dir/build.make CMakeFiles/test_graphics_basic.dir/tests/graphics/test_graphics_basic.c.s
 .PHONY : tests/graphics/test_graphics_basic.c.s
+
+tests/input/test_input_basic.o: tests/input/test_input_basic.c.o
+.PHONY : tests/input/test_input_basic.o
+
+# target to build an object file
+tests/input/test_input_basic.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_basic.dir/build.make CMakeFiles/test_input_basic.dir/tests/input/test_input_basic.c.o
+.PHONY : tests/input/test_input_basic.c.o
+
+tests/input/test_input_basic.i: tests/input/test_input_basic.c.i
+.PHONY : tests/input/test_input_basic.i
+
+# target to preprocess a source file
+tests/input/test_input_basic.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_basic.dir/build.make CMakeFiles/test_input_basic.dir/tests/input/test_input_basic.c.i
+.PHONY : tests/input/test_input_basic.c.i
+
+tests/input/test_input_basic.s: tests/input/test_input_basic.c.s
+.PHONY : tests/input/test_input_basic.s
+
+# target to generate assembly for a file
+tests/input/test_input_basic.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_basic.dir/build.make CMakeFiles/test_input_basic.dir/tests/input/test_input_basic.c.s
+.PHONY : tests/input/test_input_basic.c.s
 
 tests/phase0/test_csf1_comparison.o: tests/phase0/test_csf1_comparison.c.o
 .PHONY : tests/phase0/test_csf1_comparison.o
@@ -3211,6 +3285,7 @@ help:
 	@echo "... benchmark_threading"
 	@echo "... integration_test_memory_stress"
 	@echo "... lgx_graphics"
+	@echo "... lgx_input"
 	@echo "... lgx_runtime"
 	@echo "... lgx_threading"
 	@echo "... perf_test_allocation_latency"
@@ -3239,6 +3314,7 @@ help:
 	@echo "... test_hardware_adaptation"
 	@echo "... test_hardware_tier"
 	@echo "... test_hierarchical_intents"
+	@echo "... test_input_basic"
 	@echo "... test_input_validation"
 	@echo "... test_intent_accuracy"
 	@echo "... test_intent_allocator"
@@ -3279,6 +3355,9 @@ help:
 	@echo "... src/graphics/lgx_graphics.o"
 	@echo "... src/graphics/lgx_graphics.i"
 	@echo "... src/graphics/lgx_graphics.s"
+	@echo "... src/input/lgx_input.o"
+	@echo "... src/input/lgx_input.i"
+	@echo "... src/input/lgx_input.s"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
 	@echo "... src/lgx_allocator_prototype.s"
@@ -3372,6 +3451,9 @@ help:
 	@echo "... tests/graphics/test_graphics_basic.o"
 	@echo "... tests/graphics/test_graphics_basic.i"
 	@echo "... tests/graphics/test_graphics_basic.s"
+	@echo "... tests/input/test_input_basic.o"
+	@echo "... tests/input/test_input_basic.i"
+	@echo "... tests/input/test_input_basic.s"
 	@echo "... tests/phase0/test_csf1_comparison.o"
 	@echo "... tests/phase0/test_csf1_comparison.i"
 	@echo "... tests/phase0/test_csf1_comparison.s"

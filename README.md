@@ -3,9 +3,9 @@
 ### The Standard ABI for Linux Gaming
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/platform-v1.2-green.svg)](https://github.com/dream1290/LGX/releases)
+[![Version](https://img.shields.io/badge/platform-v1.3-green.svg)](https://github.com/dream1290/LGX/releases)
 [![Platform](https://img.shields.io/badge/Linux-x86__64-lightgrey.svg)]()
-[![Tests](https://img.shields.io/badge/tests-70%2F70%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-71%2F71%20passing-brightgreen.svg)]()
 
 > **What DirectX is for Windows, LGX is for Linux.**
 >
@@ -29,8 +29,8 @@ Game developers don't target Linux because there's no stable platform to build a
 | **Memory** | v1.0 | ✅ Production | Frame arena (0.01 μs), GPU pool, persistent heap, intent routing |
 | **Threading** | v1.1 | ✅ Production | Job system, lock-free queues, fiber scheduler, MPMC/SPSC |
 | **Graphics** | v1.2 | ✅ Production | Vulkan wrapper, command recording, pipeline management, shader cache |
-| **Input** | v1.3 | 🚧 Next | Unified gamepad, keyboard, mouse, touch |
-| **Audio** | v1.4 | 📋 Planned | 3D spatialization, mixing, streaming |
+| **Input** | v1.3 | ✅ Production | Unified gamepad, keyboard, mouse via evdev |
+| **Audio** | v1.4 | 🚧 Next | 3D spatialization, mixing, streaming |
 | **Networking** | v2.0 | 📋 Planned | Multiplayer primitives, serialization |
 
 Use only what you need. Start with memory for a 200× speedup. Add modules as you grow.
@@ -51,6 +51,7 @@ sudo make install
 #include <lgx_runtime.h>
 #include <lgx_threading.h>
 #include <lgx_graphics.h>
+#include <lgx_input.h>
 
 int main(void) {
     // Initialize platform
@@ -59,11 +60,13 @@ int main(void) {
     lgx_runtime_init(cfg);
     lgx_config_destroy(cfg);
 
-    // Initialize GPU
+    // Initialize GPU + Input
     lgx_gfx_device_t* gpu = lgx_gfx_device_create(NULL);
+    lgx_in_system_t* input = lgx_in_create(NULL);
 
     // Game loop — frame allocations are FREE
     while (running) {
+        lgx_in_poll(input);  // Poll input devices
         void* particles = lgx_alloc_frame(sizeof(Particle) * 10000);  // < 0.01 μs
         void* vertices  = lgx_alloc_frame(sizeof(Vertex) * 50000);
 
@@ -72,13 +75,14 @@ int main(void) {
         // No lgx_free() needed — frame arena resets automatically
     }
 
+    lgx_in_destroy(input);
     lgx_gfx_device_destroy(gpu);
     lgx_runtime_shutdown();
 }
 ```
 
 ```bash
-gcc game.c -llgx_runtime -llgx_threading -llgx_graphics -lpthread -lvulkan -o game
+gcc game.c -llgx_runtime -llgx_threading -llgx_graphics -llgx_input -lpthread -lvulkan -o game
 ```
 
 ---
@@ -141,7 +145,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 - **Error Handling**: Recovery guidance with severity and actionable steps
 
 ### ABI Stability
-- **Symbol versioning**: ELF `LGX_RUNTIME_1.0`, `LGX_THREADING_1.1`, `LGX_GRAPHICS_1.2`
+- **Symbol versioning**: ELF `LGX_RUNTIME_1.0`, `LGX_THREADING_1.1`, `LGX_GRAPHICS_1.2`, `LGX_INPUT_1.3`
 - **Struct evolution**: `struct_size` first field, append-only
 - **Binary compatibility**: v1.0 binary runs on v1.x runtime forever
 
@@ -156,6 +160,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 | [Runtime API Reference](docs/lgx_runtime_api.md) | All 60+ functions documented |
 | [Threading API Reference](docs/lgx_threading_api.md) | Threading module API |
 | [Graphics API Reference](docs/lgx_graphics_api.md) | Graphics module API (50+ functions) |
+| [Input API Reference](docs/lgx_input_api.md) | Input module API (15 functions) |
 | [Integration Guide](docs/lgx_runtime_integration_guide.md) | Quick start, patterns, FAQ |
 | [Architecture Deep-Dive](docs/lgx_runtime_architecture.md) | Memory subsystem, security, internals |
 
@@ -174,7 +179,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
-ctest --output-on-failure   # 70/70 tests pass
+ctest --output-on-failure   # 71/71 tests pass
 ```
 
 ### Packages
@@ -204,16 +209,16 @@ target_link_libraries(my_game lgx_runtime::lgx_runtime lgx_threading::lgx_thread
 We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Key areas needing help:**
-- 🚧 **Input module** (v1.3) — evdev/libinput unified abstraction
-- 📋 **Audio module** (v1.4) — PipeWire/ALSA spatial audio
+- 🚧 **Audio module** (v1.4) — PipeWire/ALSA spatial audio
+- 📋 **Networking module** (v2.0) — Multiplayer primitives
 - 📋 **Game integrations** — Port indie games to LGX
-- 🧪 **Hardware testing** — Test on diverse GPU/CPU configs
+- 🧪 **Hardware testing** — Test on diverse GPU/CPU/gamepad configs
 
 ---
 
 ## Roadmap
 
-**2026**: Core platform (memory ✅, threading ✅, graphics ✅, input, audio)  
+**2026**: Core platform (memory ✅, threading ✅, graphics ✅, input ✅, audio)  
 **2027**: Ecosystem (networking, asset pipeline, tooling, engine integrations)  
 **2028**: Industry standard (studio adoption, distro defaults, "Powered by LGX")
 

@@ -141,6 +141,22 @@ else()
     message(STATUS "LGX Graphics Module v1.2 disabled (Vulkan not found)")
 endif()
 
+# ═══════════════════════════════════════════════════════════════════════════
+# LGX Input Module v1.3
+# ═══════════════════════════════════════════════════════════════════════════
+add_library(lgx_input SHARED src/input/lgx_input.c)
+target_include_directories(lgx_input PUBLIC include)
+target_link_libraries(lgx_input lgx_runtime)
+set_target_properties(lgx_input PROPERTIES
+    VERSION 1.3.0
+    SOVERSION 1
+)
+target_compile_options(lgx_input PRIVATE -Wno-missing-prototypes)
+
+install(TARGETS lgx_input LIBRARY DESTINATION lib)
+install(FILES include/lgx_input.h DESTINATION include)
+message(STATUS "LGX Input Module v1.3 enabled")
+
 # Add jemalloc if available
 if(JEMALLOC_LIB)
     target_link_libraries(lgx_runtime ${JEMALLOC_LIB})
@@ -238,6 +254,15 @@ if(Vulkan_FOUND)
         TIMEOUT 30
     )
 endif()
+
+# Input Module Tests
+add_executable(test_input_basic tests/input/test_input_basic.c)
+target_link_libraries(test_input_basic lgx_input lgx_runtime)
+add_test(NAME input_test_basic COMMAND test_input_basic)
+set_tests_properties(input_test_basic PROPERTIES
+    LABELS "input"
+    TIMEOUT 30
+)
 
 # Demo applications
 # add_subdirectory(demo)  # Commented out - demo directory removed
