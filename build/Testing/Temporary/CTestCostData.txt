@@ -82,4 +82,5 @@ test_threading_advanced 13 0.0012414
 graphics_test_basic 11 0.00606737
 input_test_basic 9 0.00492162
 audio_test_basic 3 0.33807
+profile_test_basic 1 0.0139386
 ---

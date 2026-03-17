@@ -224,6 +224,19 @@ lgx_audio/fast:
 .PHONY : lgx_audio/fast
 
 #=============================================================================
+# Target rules for targets named lgx_profile
+
+# Build rule for target.
+lgx_profile: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lgx_profile
+.PHONY : lgx_profile
+
+# fast build rule for target.
+lgx_profile/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_profile.dir/build.make CMakeFiles/lgx_profile.dir/build
+.PHONY : lgx_profile/fast
+
+#=============================================================================
 # Target rules for targets named test_csf1_comparison
 
 # Build rule for target.
@@ -835,6 +848,19 @@ test_audio_basic/fast:
 .PHONY : test_audio_basic/fast
 
 #=============================================================================
+# Target rules for targets named test_profile_basic
+
+# Build rule for target.
+test_profile_basic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_profile_basic
+.PHONY : test_profile_basic
+
+# fast build rule for target.
+test_profile_basic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_profile_basic.dir/build.make CMakeFiles/test_profile_basic.dir/build
+.PHONY : test_profile_basic/fast
+
+#=============================================================================
 # Target rules for targets named run_phase0_tests
 
 # Build rule for target.
@@ -1384,6 +1410,30 @@ src/lgx_allocator_prototype.s: src/lgx_allocator_prototype.c.s
 src/lgx_allocator_prototype.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.s
 .PHONY : src/lgx_allocator_prototype.c.s
+
+src/profile/lgx_profile.o: src/profile/lgx_profile.c.o
+.PHONY : src/profile/lgx_profile.o
+
+# target to build an object file
+src/profile/lgx_profile.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_profile.dir/build.make CMakeFiles/lgx_profile.dir/src/profile/lgx_profile.c.o
+.PHONY : src/profile/lgx_profile.c.o
+
+src/profile/lgx_profile.i: src/profile/lgx_profile.c.i
+.PHONY : src/profile/lgx_profile.i
+
+# target to preprocess a source file
+src/profile/lgx_profile.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_profile.dir/build.make CMakeFiles/lgx_profile.dir/src/profile/lgx_profile.c.i
+.PHONY : src/profile/lgx_profile.c.i
+
+src/profile/lgx_profile.s: src/profile/lgx_profile.c.s
+.PHONY : src/profile/lgx_profile.s
+
+# target to generate assembly for a file
+src/profile/lgx_profile.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_profile.dir/build.make CMakeFiles/lgx_profile.dir/src/profile/lgx_profile.c.s
+.PHONY : src/profile/lgx_profile.c.s
 
 src/runtime/lgx_capability_detector.o: src/runtime/lgx_capability_detector.c.o
 .PHONY : src/runtime/lgx_capability_detector.o
@@ -3209,6 +3259,30 @@ tests/phase0/test_trace_events.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/tests/phase0/test_trace_events.c.s
 .PHONY : tests/phase0/test_trace_events.c.s
 
+tests/profile/test_profile_basic.o: tests/profile/test_profile_basic.c.o
+.PHONY : tests/profile/test_profile_basic.o
+
+# target to build an object file
+tests/profile/test_profile_basic.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_profile_basic.dir/build.make CMakeFiles/test_profile_basic.dir/tests/profile/test_profile_basic.c.o
+.PHONY : tests/profile/test_profile_basic.c.o
+
+tests/profile/test_profile_basic.i: tests/profile/test_profile_basic.c.i
+.PHONY : tests/profile/test_profile_basic.i
+
+# target to preprocess a source file
+tests/profile/test_profile_basic.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_profile_basic.dir/build.make CMakeFiles/test_profile_basic.dir/tests/profile/test_profile_basic.c.i
+.PHONY : tests/profile/test_profile_basic.c.i
+
+tests/profile/test_profile_basic.s: tests/profile/test_profile_basic.c.s
+.PHONY : tests/profile/test_profile_basic.s
+
+# target to generate assembly for a file
+tests/profile/test_profile_basic.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_profile_basic.dir/build.make CMakeFiles/test_profile_basic.dir/tests/profile/test_profile_basic.c.s
+.PHONY : tests/profile/test_profile_basic.c.s
+
 tests/threading/benchmark_threading.o: tests/threading/benchmark_threading.c.o
 .PHONY : tests/threading/benchmark_threading.o
 
@@ -3361,6 +3435,7 @@ help:
 	@echo "... lgx_audio"
 	@echo "... lgx_graphics"
 	@echo "... lgx_input"
+	@echo "... lgx_profile"
 	@echo "... lgx_runtime"
 	@echo "... lgx_threading"
 	@echo "... perf_test_allocation_latency"
@@ -3407,6 +3482,7 @@ help:
 	@echo "... test_persistent_heap"
 	@echo "... test_persistent_heap_buddy"
 	@echo "... test_persistent_heap_perf"
+	@echo "... test_profile_basic"
 	@echo "... test_signal_handling"
 	@echo "... test_simd_fallback"
 	@echo "... test_struct_evolution"
@@ -3440,6 +3516,9 @@ help:
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
 	@echo "... src/lgx_allocator_prototype.s"
+	@echo "... src/profile/lgx_profile.o"
+	@echo "... src/profile/lgx_profile.i"
+	@echo "... src/profile/lgx_profile.s"
 	@echo "... src/runtime/lgx_capability_detector.o"
 	@echo "... src/runtime/lgx_capability_detector.i"
 	@echo "... src/runtime/lgx_capability_detector.s"
@@ -3668,6 +3747,9 @@ help:
 	@echo "... tests/phase0/test_trace_events.o"
 	@echo "... tests/phase0/test_trace_events.i"
 	@echo "... tests/phase0/test_trace_events.s"
+	@echo "... tests/profile/test_profile_basic.o"
+	@echo "... tests/profile/test_profile_basic.i"
+	@echo "... tests/profile/test_profile_basic.s"
 	@echo "... tests/threading/benchmark_threading.o"
 	@echo "... tests/threading/benchmark_threading.i"
 	@echo "... tests/threading/benchmark_threading.s"

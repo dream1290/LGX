@@ -182,6 +182,22 @@ else()
     message(STATUS "LGX Audio Module v1.4 disabled (ALSA not found)")
 endif()
 
+# ═══════════════════════════════════════════════════════════════════════════
+# LGX Profiling Module v1.5
+# ═══════════════════════════════════════════════════════════════════════════
+add_library(lgx_profile SHARED src/profile/lgx_profile.c)
+target_include_directories(lgx_profile PUBLIC include)
+target_link_libraries(lgx_profile lgx_runtime)
+set_target_properties(lgx_profile PROPERTIES
+    VERSION 1.5.0
+    SOVERSION 1
+)
+target_compile_options(lgx_profile PRIVATE -Wno-missing-prototypes)
+
+install(TARGETS lgx_profile LIBRARY DESTINATION lib)
+install(FILES include/lgx_profile.h DESTINATION include)
+message(STATUS "LGX Profiling Module v1.5 enabled")
+
 # Add jemalloc if available
 if(JEMALLOC_LIB)
     target_link_libraries(lgx_runtime ${JEMALLOC_LIB})
@@ -300,6 +316,15 @@ if(ALSA_FOUND)
         TIMEOUT 30
     )
 endif()
+
+# Profiling Module Tests
+add_executable(test_profile_basic tests/profile/test_profile_basic.c)
+target_link_libraries(test_profile_basic lgx_profile lgx_runtime)
+add_test(NAME profile_test_basic COMMAND test_profile_basic)
+set_tests_properties(profile_test_basic PROPERTIES
+    LABELS "profile"
+    TIMEOUT 30
+)
 
 # Demo applications
 # add_subdirectory(demo)  # Commented out - demo directory removed

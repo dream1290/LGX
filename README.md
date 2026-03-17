@@ -3,9 +3,9 @@
 ### The Standard ABI for Linux Gaming
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/platform-v1.4-green.svg)](https://github.com/dream1290/LGX/releases)
+[![Version](https://img.shields.io/badge/platform-v1.5-green.svg)](https://github.com/dream1290/LGX/releases)
 [![Platform](https://img.shields.io/badge/Linux-x86__64-lightgrey.svg)]()
-[![Tests](https://img.shields.io/badge/tests-72%2F72%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-73%2F73%20passing-brightgreen.svg)]()
 
 > **What DirectX is for Windows, LGX is for Linux.**
 >
@@ -31,6 +31,7 @@ Game developers don't target Linux because there's no stable platform to build a
 | **Graphics** | v1.2 | ✅ Production | Vulkan wrapper, command recording, pipeline management, shader cache |
 | **Input** | v1.3 | ✅ Production | Unified gamepad, keyboard, mouse via evdev |
 | **Audio** | v1.4 | ✅ Production | 3D spatialization, mixing, ALSA output |
+| **Profiling** | v1.5 | ✅ Production | Frame profiler, zones, counters, FPS tracking |
 | **Networking** | v2.0 | 🚧 Next | Multiplayer primitives, serialization |
 
 Use only what you need. Start with memory for a 200× speedup. Add modules as you grow.
@@ -53,6 +54,7 @@ sudo make install
 #include <lgx_graphics.h>
 #include <lgx_input.h>
 #include <lgx_audio.h>
+#include <lgx_profile.h>
 
 int main(void) {
     // Initialize platform
@@ -65,9 +67,11 @@ int main(void) {
     lgx_gfx_device_t* gpu = lgx_gfx_device_create(NULL);
     lgx_in_system_t* input = lgx_in_create(NULL);
     lgx_aud_system_t* audio = lgx_aud_create(NULL);
+    lgx_prof_context_t* prof = lgx_prof_create(NULL);
 
     // Game loop — frame allocations are FREE
     while (running) {
+        lgx_prof_frame_begin(prof);
         lgx_in_poll(input);  // Poll input devices
         void* particles = lgx_alloc_frame(sizeof(Particle) * 10000);  // < 0.01 μs
         void* vertices  = lgx_alloc_frame(sizeof(Vertex) * 50000);
@@ -75,9 +79,11 @@ int main(void) {
         update(particles);
         render(gpu, vertices);
         lgx_aud_update(audio);  // Mix and output audio
+        lgx_prof_frame_end(prof);
         // No lgx_free() needed — frame arena resets automatically
     }
 
+    lgx_prof_destroy(prof);
     lgx_aud_destroy(audio);
     lgx_in_destroy(input);
     lgx_gfx_device_destroy(gpu);
@@ -86,7 +92,7 @@ int main(void) {
 ```
 
 ```bash
-gcc game.c -llgx_runtime -llgx_threading -llgx_graphics -llgx_input -llgx_audio -lpthread -lvulkan -lasound -o game
+gcc game.c -llgx_runtime -llgx_threading -llgx_graphics -llgx_input -llgx_audio -llgx_profile -lpthread -lvulkan -lasound -o game
 ```
 
 ---
@@ -149,7 +155,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 - **Error Handling**: Recovery guidance with severity and actionable steps
 
 ### ABI Stability
-- **Symbol versioning**: ELF `LGX_RUNTIME_1.0`, `LGX_THREADING_1.1`, `LGX_GRAPHICS_1.2`, `LGX_INPUT_1.3`, `LGX_AUDIO_1.4`
+- **Symbol versioning**: ELF `LGX_RUNTIME_1.0`, `LGX_THREADING_1.1`, `LGX_GRAPHICS_1.2`, `LGX_INPUT_1.3`, `LGX_AUDIO_1.4`, `LGX_PROFILE_1.5`
 - **Struct evolution**: `struct_size` first field, append-only
 - **Binary compatibility**: v1.0 binary runs on v1.x runtime forever
 
@@ -166,6 +172,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 | [Graphics API Reference](docs/lgx_graphics_api.md) | Graphics module API (50+ functions) |
 | [Input API Reference](docs/lgx_input_api.md) | Input module API (15 functions) |
 | [Audio API Reference](docs/lgx_audio_api.md) | Audio module API (20 functions) |
+| [Profiling API Reference](docs/lgx_profile_api.md) | Profiling module API (15 functions) |
 | [Integration Guide](docs/lgx_runtime_integration_guide.md) | Quick start, patterns, FAQ |
 | [Architecture Deep-Dive](docs/lgx_runtime_architecture.md) | Memory subsystem, security, internals |
 
@@ -184,7 +191,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
-ctest --output-on-failure   # 72/72 tests pass
+ctest --output-on-failure   # 73/73 tests pass
 ```
 
 ### Packages
@@ -215,7 +222,7 @@ We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Key areas needing help:**
 - 🚧 **Networking module** (v2.0) — Multiplayer primitives, serialization
-- 📋 **Profiling module** (v1.5) — Built-in profiler, debug visualization
+- 📋 **Asset Pipeline** (v2.1) — Asset loading, hot reloading, compression
 - 📋 **Game integrations** — Port indie games to LGX
 - 🧪 **Hardware testing** — Test on diverse GPU/CPU/gamepad configs
 
@@ -223,7 +230,7 @@ We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Roadmap
 
-**2026**: Core platform (memory ✅, threading ✅, graphics ✅, input ✅, audio ✅)  
+**2026**: Core platform (memory ✅, threading ✅, graphics ✅, input ✅, audio ✅, profiling ✅)  
 **2027**: Ecosystem (networking, asset pipeline, tooling, engine integrations)  
 **2028**: Industry standard (studio adoption, distro defaults, "Powered by LGX")
 
