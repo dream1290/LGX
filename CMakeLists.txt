@@ -119,6 +119,28 @@ if(Vulkan_FOUND)
     target_include_directories(lgx_runtime PRIVATE ${Vulkan_INCLUDE_DIRS})
 endif()
 
+# ═══════════════════════════════════════════════════════════════════════════
+# LGX Graphics Module v1.2
+# ═══════════════════════════════════════════════════════════════════════════
+if(Vulkan_FOUND)
+    add_library(lgx_graphics SHARED src/graphics/lgx_graphics.c)
+    target_include_directories(lgx_graphics PUBLIC include)
+    target_include_directories(lgx_graphics PRIVATE ${Vulkan_INCLUDE_DIRS})
+    target_link_libraries(lgx_graphics lgx_runtime ${Vulkan_LIBRARY} Threads::Threads)
+    set_target_properties(lgx_graphics PROPERTIES
+        VERSION 1.2.0
+        SOVERSION 1
+    )
+    # Suppress strict-prototype warnings for graphics module (uses designated inits heavily)
+    target_compile_options(lgx_graphics PRIVATE -Wno-missing-prototypes)
+
+    install(TARGETS lgx_graphics LIBRARY DESTINATION lib)
+    install(FILES include/lgx_graphics.h DESTINATION include)
+    message(STATUS "LGX Graphics Module v1.2 enabled")
+else()
+    message(STATUS "LGX Graphics Module v1.2 disabled (Vulkan not found)")
+endif()
+
 # Add jemalloc if available
 if(JEMALLOC_LIB)
     target_link_libraries(lgx_runtime ${JEMALLOC_LIB})
@@ -204,6 +226,18 @@ add_subdirectory(tests/failure_injection)
 
 # Benchmarks
 add_subdirectory(benchmarks)
+
+# Graphics Module Tests
+if(Vulkan_FOUND)
+    add_executable(test_graphics_basic tests/graphics/test_graphics_basic.c)
+    target_link_libraries(test_graphics_basic lgx_graphics lgx_runtime ${Vulkan_LIBRARY} m)
+    target_include_directories(test_graphics_basic PRIVATE ${Vulkan_INCLUDE_DIRS})
+    add_test(NAME graphics_test_basic COMMAND test_graphics_basic)
+    set_tests_properties(graphics_test_basic PROPERTIES
+        LABELS "graphics"
+        TIMEOUT 30
+    )
+endif()
 
 # Demo applications
 # add_subdirectory(demo)  # Commented out - demo directory removed

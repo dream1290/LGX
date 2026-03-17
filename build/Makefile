@@ -185,6 +185,19 @@ lgx_runtime/fast:
 .PHONY : lgx_runtime/fast
 
 #=============================================================================
+# Target rules for targets named lgx_graphics
+
+# Build rule for target.
+lgx_graphics: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lgx_graphics
+.PHONY : lgx_graphics
+
+# fast build rule for target.
+lgx_graphics/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_graphics.dir/build.make CMakeFiles/lgx_graphics.dir/build
+.PHONY : lgx_graphics/fast
+
+#=============================================================================
 # Target rules for targets named test_csf1_comparison
 
 # Build rule for target.
@@ -757,6 +770,19 @@ test_trace_events/fast:
 .PHONY : test_trace_events/fast
 
 #=============================================================================
+# Target rules for targets named test_graphics_basic
+
+# Build rule for target.
+test_graphics_basic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_graphics_basic
+.PHONY : test_graphics_basic
+
+# fast build rule for target.
+test_graphics_basic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_graphics_basic.dir/build.make CMakeFiles/test_graphics_basic.dir/build
+.PHONY : test_graphics_basic/fast
+
+#=============================================================================
 # Target rules for targets named run_phase0_tests
 
 # Build rule for target.
@@ -1210,6 +1236,30 @@ run_benchmarks: cmake_check_build_system
 run_benchmarks/fast:
 	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/run_benchmarks.dir/build.make benchmarks/CMakeFiles/run_benchmarks.dir/build
 .PHONY : run_benchmarks/fast
+
+src/graphics/lgx_graphics.o: src/graphics/lgx_graphics.c.o
+.PHONY : src/graphics/lgx_graphics.o
+
+# target to build an object file
+src/graphics/lgx_graphics.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_graphics.dir/build.make CMakeFiles/lgx_graphics.dir/src/graphics/lgx_graphics.c.o
+.PHONY : src/graphics/lgx_graphics.c.o
+
+src/graphics/lgx_graphics.i: src/graphics/lgx_graphics.c.i
+.PHONY : src/graphics/lgx_graphics.i
+
+# target to preprocess a source file
+src/graphics/lgx_graphics.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_graphics.dir/build.make CMakeFiles/lgx_graphics.dir/src/graphics/lgx_graphics.c.i
+.PHONY : src/graphics/lgx_graphics.c.i
+
+src/graphics/lgx_graphics.s: src/graphics/lgx_graphics.c.s
+.PHONY : src/graphics/lgx_graphics.s
+
+# target to generate assembly for a file
+src/graphics/lgx_graphics.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_graphics.dir/build.make CMakeFiles/lgx_graphics.dir/src/graphics/lgx_graphics.c.s
+.PHONY : src/graphics/lgx_graphics.c.s
 
 src/lgx_allocator_prototype.o: src/lgx_allocator_prototype.c.o
 .PHONY : src/lgx_allocator_prototype.o
@@ -1930,6 +1980,30 @@ src/threading/lgx_threading.s: src/threading/lgx_threading.c.s
 src/threading/lgx_threading.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/src/threading/lgx_threading.c.s
 .PHONY : src/threading/lgx_threading.c.s
+
+tests/graphics/test_graphics_basic.o: tests/graphics/test_graphics_basic.c.o
+.PHONY : tests/graphics/test_graphics_basic.o
+
+# target to build an object file
+tests/graphics/test_graphics_basic.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_graphics_basic.dir/build.make CMakeFiles/test_graphics_basic.dir/tests/graphics/test_graphics_basic.c.o
+.PHONY : tests/graphics/test_graphics_basic.c.o
+
+tests/graphics/test_graphics_basic.i: tests/graphics/test_graphics_basic.c.i
+.PHONY : tests/graphics/test_graphics_basic.i
+
+# target to preprocess a source file
+tests/graphics/test_graphics_basic.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_graphics_basic.dir/build.make CMakeFiles/test_graphics_basic.dir/tests/graphics/test_graphics_basic.c.i
+.PHONY : tests/graphics/test_graphics_basic.c.i
+
+tests/graphics/test_graphics_basic.s: tests/graphics/test_graphics_basic.c.s
+.PHONY : tests/graphics/test_graphics_basic.s
+
+# target to generate assembly for a file
+tests/graphics/test_graphics_basic.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_graphics_basic.dir/build.make CMakeFiles/test_graphics_basic.dir/tests/graphics/test_graphics_basic.c.s
+.PHONY : tests/graphics/test_graphics_basic.c.s
 
 tests/phase0/test_csf1_comparison.o: tests/phase0/test_csf1_comparison.c.o
 .PHONY : tests/phase0/test_csf1_comparison.o
@@ -3136,6 +3210,7 @@ help:
 	@echo "... benchmark_framework"
 	@echo "... benchmark_threading"
 	@echo "... integration_test_memory_stress"
+	@echo "... lgx_graphics"
 	@echo "... lgx_runtime"
 	@echo "... lgx_threading"
 	@echo "... perf_test_allocation_latency"
@@ -3160,6 +3235,7 @@ help:
 	@echo "... test_gpu_perf_simple"
 	@echo "... test_gpu_performance"
 	@echo "... test_gpu_pool"
+	@echo "... test_graphics_basic"
 	@echo "... test_hardware_adaptation"
 	@echo "... test_hardware_tier"
 	@echo "... test_hierarchical_intents"
@@ -3200,6 +3276,9 @@ help:
 	@echo "... unit_test_init_shutdown"
 	@echo "... unit_test_platform_services"
 	@echo "... unit_test_resource_limits"
+	@echo "... src/graphics/lgx_graphics.o"
+	@echo "... src/graphics/lgx_graphics.i"
+	@echo "... src/graphics/lgx_graphics.s"
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
 	@echo "... src/lgx_allocator_prototype.s"
@@ -3290,6 +3369,9 @@ help:
 	@echo "... src/threading/lgx_threading.o"
 	@echo "... src/threading/lgx_threading.i"
 	@echo "... src/threading/lgx_threading.s"
+	@echo "... tests/graphics/test_graphics_basic.o"
+	@echo "... tests/graphics/test_graphics_basic.i"
+	@echo "... tests/graphics/test_graphics_basic.s"
 	@echo "... tests/phase0/test_csf1_comparison.o"
 	@echo "... tests/phase0/test_csf1_comparison.i"
 	@echo "... tests/phase0/test_csf1_comparison.s"

@@ -64,6 +64,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/lgx_runtime.dir/DependInfo.cmake"
+  "CMakeFiles/lgx_graphics.dir/DependInfo.cmake"
   "CMakeFiles/test_csf1_comparison.dir/DependInfo.cmake"
   "CMakeFiles/test_csf1_hybrid_allocator.dir/DependInfo.cmake"
   "CMakeFiles/test_csf2_numa_awareness.dir/DependInfo.cmake"
@@ -108,6 +109,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/test_tiered_performance.dir/DependInfo.cmake"
   "CMakeFiles/test_timing_services.dir/DependInfo.cmake"
   "CMakeFiles/test_trace_events.dir/DependInfo.cmake"
+  "CMakeFiles/test_graphics_basic.dir/DependInfo.cmake"
   "CMakeFiles/run_phase0_tests.dir/DependInfo.cmake"
   "CMakeFiles/run_unit_tests.dir/DependInfo.cmake"
   "CMakeFiles/run_integration_tests.dir/DependInfo.cmake"
