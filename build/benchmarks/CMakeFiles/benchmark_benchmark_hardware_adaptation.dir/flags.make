@@ -6,5 +6,5 @@ C_DEFINES = -DHAVE_JEMALLOC=1 -DHAVE_VULKAN=1
 
 C_INCLUDES = -I/home/karl/Projects/LGX/include -I/home/karl/Projects/LGX/include/lgx -I/home/karl/Projects/LGX/benchmarks
 
-C_FLAGS =  -Wall -Wextra -Werror -fPIC -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 -std=gnu11
+C_FLAGS =  -Wall -Wextra -Werror -fPIC     -Wredundant-decls     -Wshadow -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 -std=gnu11
 

@@ -1,0 +1,9 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: lgx_threading
+Description: LGX Threading Module - Lock-free job system with work-stealing, fibers, and NUMA awareness
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -llgx_threading -lpthread
+Cflags: -I${includedir}

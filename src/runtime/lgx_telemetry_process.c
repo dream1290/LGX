@@ -256,8 +256,8 @@ lgx_result_t lgx_telemetry_process_shutdown(lgx_telemetry_process_t* process) {
 /**
  * Write event to shared memory (lock-free)
  */
-lgx_result_t lgx_telemetry_process_write_event(lgx_telemetry_process_t* process,
-                                               const telemetry_shm_event_t* event) {
+static lgx_result_t lgx_telemetry_process_write_event(lgx_telemetry_process_t* process,
+                                                      const telemetry_shm_event_t* event) {
     if (!process || !event) {
         return LGX_ERROR_INVALID_PARAM;
     }

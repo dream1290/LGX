@@ -6,5 +6,5 @@ C_DEFINES = -DHAVE_JEMALLOC=1 -DHAVE_VULKAN=1 -DLGX_BUILD_TYPE=\"Debug\" -DLGX_V
 
 C_INCLUDES = -I/home/karl/Projects/LGX/include -I/home/karl/Projects/LGX/include/lgx
 
-C_FLAGS =  -Wall -Wextra -Werror -fPIC -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 -std=gnu11 -fPIC
+C_FLAGS =  -Wall -Wextra -Werror -fPIC     -Wredundant-decls     -Wshadow -g -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2 -std=gnu11 -fPIC -Wstrict-prototypes -Wmissing-prototypes
 

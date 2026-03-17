@@ -70,6 +70,7 @@ int main(void) {
     size_t num_sizes = sizeof(sizes) / sizeof(sizes[0]);
     
     benchmark_result_t results[100];
+    char names[100][256];
     size_t result_count = 0;
     
     for (size_t i = 0; i < num_sizes; i++) {
@@ -79,28 +80,30 @@ int main(void) {
             .ptrs = NULL
         };
         
-        char name[256];
-        
         // Benchmark malloc
-        snprintf(name, sizeof(name), "malloc_%s", size_names[i]);
-        results[result_count++] = benchmark_run(name, bench_malloc, &ctx, 10000, 1000);
-        benchmark_print_result(&results[result_count - 1]);
+        snprintf(names[result_count], 256, "malloc_%s", size_names[i]);
+        results[result_count] = benchmark_run(names[result_count], bench_malloc, &ctx, 10000, 1000);
+        benchmark_print_result(&results[result_count]);
+        result_count++;
         
         // Benchmark lgx_alloc
-        snprintf(name, sizeof(name), "lgx_alloc_%s", size_names[i]);
-        results[result_count++] = benchmark_run(name, bench_lgx_alloc, &ctx, 10000, 1000);
-        benchmark_print_result(&results[result_count - 1]);
+        snprintf(names[result_count], 256, "lgx_alloc_%s", size_names[i]);
+        results[result_count] = benchmark_run(names[result_count], bench_lgx_alloc, &ctx, 10000, 1000);
+        benchmark_print_result(&results[result_count]);
+        result_count++;
         
         // Benchmark lgx_alloc_frame
-        snprintf(name, sizeof(name), "lgx_frame_%s", size_names[i]);
-        results[result_count++] = benchmark_run(name, bench_lgx_frame, &ctx, 10000, 1000);
-        benchmark_print_result(&results[result_count - 1]);
+        snprintf(names[result_count], 256, "lgx_frame_%s", size_names[i]);
+        results[result_count] = benchmark_run(names[result_count], bench_lgx_frame, &ctx, 10000, 1000);
+        benchmark_print_result(&results[result_count]);
+        result_count++;
         // Note: Frame allocations are not reset in benchmarks
         
         // Benchmark lgx_alloc_persistent
-        snprintf(name, sizeof(name), "lgx_persistent_%s", size_names[i]);
-        results[result_count++] = benchmark_run(name, bench_lgx_persistent, &ctx, 10000, 1000);
-        benchmark_print_result(&results[result_count - 1]);
+        snprintf(names[result_count], 256, "lgx_persistent_%s", size_names[i]);
+        results[result_count] = benchmark_run(names[result_count], bench_lgx_persistent, &ctx, 10000, 1000);
+        benchmark_print_result(&results[result_count]);
+        result_count++;
     }
     
     // Save results

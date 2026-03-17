@@ -47,6 +47,13 @@
 /home/karl/Projects/LGX/build/CMakeFiles/run_unit_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_integration_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/run_performance_tests.dir
+/home/karl/Projects/LGX/build/CMakeFiles/lgx_threading.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_threading_basic.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_threading_stress.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_threading_fiber.dir
+/home/karl/Projects/LGX/build/CMakeFiles/benchmark_threading.dir
+/home/karl/Projects/LGX/build/CMakeFiles/test_threading_advanced.dir
+/home/karl/Projects/LGX/build/CMakeFiles/run_threading_tests.dir
 /home/karl/Projects/LGX/build/CMakeFiles/test.dir
 /home/karl/Projects/LGX/build/CMakeFiles/edit_cache.dir
 /home/karl/Projects/LGX/build/CMakeFiles/rebuild_cache.dir

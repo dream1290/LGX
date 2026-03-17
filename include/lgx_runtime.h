@@ -37,10 +37,7 @@ lgx_result_t lgx_memory_stats(lgx_memory_stats_t* stats);
 // Frame arena size recommendation (Task 3.4.5.2.3)
 size_t lgx_frame_arena_get_recommended_size(void);
 void* lgx_alloc_aligned(size_t size, size_t alignment);
-void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent);
 void* lgx_alloc_with_intent_ex(const void* intent, size_t intent_type_id);
-void lgx_free(void* ptr);
-lgx_result_t lgx_memory_stats(lgx_memory_stats_t* stats);
 
 // Intent validation and learning
 lgx_result_t lgx_alloc_get_usage_stats(void* ptr, lgx_allocation_usage_t* usage);
@@ -50,6 +47,53 @@ lgx_result_t lgx_alloc_validate_intent(void* ptr);  // Manually trigger validati
 // These make intent-based allocation easier to use
 
 // Convenience allocation functions (inline for performance)
+// Note: These are outside extern "C" for C++ compatibility
+#ifdef __cplusplus
+static inline void* lgx_alloc_frame(size_t size) {
+    lgx_allocation_intent_base_t intent;
+    intent.struct_size = sizeof(lgx_allocation_intent_base_t);
+    intent.size = size;
+    intent.access_pattern = LGX_ACCESS_SEQUENTIAL;
+    intent.lifetime = LGX_LIFETIME_FRAME;
+    intent.hint = LGX_HINT_CRITICAL_PATH;
+    intent.validation_policy = LGX_INTENT_TRUST;
+    return lgx_alloc_with_intent(&intent);
+}
+
+static inline void* lgx_alloc_level(size_t size) {
+    lgx_allocation_intent_base_t intent;
+    intent.struct_size = sizeof(lgx_allocation_intent_base_t);
+    intent.size = size;
+    intent.access_pattern = LGX_ACCESS_RANDOM;
+    intent.lifetime = LGX_LIFETIME_LEVEL;
+    intent.hint = LGX_HINT_BACKGROUND;
+    intent.validation_policy = LGX_INTENT_TRUST;
+    return lgx_alloc_with_intent(&intent);
+}
+
+static inline void* lgx_alloc_persistent(size_t size) {
+    lgx_allocation_intent_base_t intent;
+    intent.struct_size = sizeof(lgx_allocation_intent_base_t);
+    intent.size = size;
+    intent.access_pattern = LGX_ACCESS_RANDOM;
+    intent.lifetime = LGX_LIFETIME_SESSION;
+    intent.hint = LGX_HINT_BACKGROUND;
+    intent.validation_policy = LGX_INTENT_TRUST;
+    return lgx_alloc_with_intent(&intent);
+}
+
+static inline void* lgx_alloc_gpu_shared(size_t size) {
+    lgx_allocation_intent_base_t intent;
+    intent.struct_size = sizeof(lgx_allocation_intent_base_t);
+    intent.size = size;
+    intent.access_pattern = LGX_ACCESS_WRITE_ONCE;
+    intent.lifetime = LGX_LIFETIME_FRAME;
+    intent.hint = LGX_HINT_GPU_SHARED;
+    intent.validation_policy = LGX_INTENT_TRUST;
+    return lgx_alloc_with_intent(&intent);
+}
+#else
+// C version with designated initializers
 static inline void* lgx_alloc_frame(size_t size) {
     lgx_allocation_intent_base_t intent = {
         .struct_size = sizeof(lgx_allocation_intent_base_t),
@@ -97,6 +141,7 @@ static inline void* lgx_alloc_gpu_shared(size_t size) {
     };
     return lgx_alloc_with_intent(&intent);
 }
+#endif
 
 // Performance measurement and assessment
 lgx_result_t lgx_runtime_get_performance_characteristics(

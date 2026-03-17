@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1] - 2026-02-12
 
-### 🐛 Bug Fixes
+### Bug Fixes
 
 - **namespace-isolation**: Fixed ISO C pedantic compliance in function pointer conversion
 - **test-suite**: Eliminated variable length arrays (VLA) across all test files for better portability
@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **test-suite**: Fixed stack protector warnings in 10 test files
 - **signal-handling**: Suppressed intentional NULL dereference warnings in signal handling tests
 
-### ✨ New Features
+### New Features
 
 - **benchmarks**: Added comprehensive benchmark suite with 5 benchmarks
 - **benchmarks**: Benchmark framework with statistical analysis (min, max, mean, median, P95, P99, stddev)
@@ -26,21 +26,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **benchmarks**: Intent accuracy benchmark
 - **benchmarks**: Telemetry overhead benchmark
 
-### 🔒 Security Improvements
+### Security Improvements
 
 - **static-analysis**: All code passes strict GCC static analysis with `-fanalyzer`
 - **compiler-warnings**: Zero warnings with `-Wpedantic -Werror`
 - **code-quality**: Enhanced ISO C compliance across codebase
 - **security-audit**: Comprehensive security audit completed successfully
 
-### 🔧 Build Improvements
+### Build Improvements
 
 - **compilation**: All 59 tests compile cleanly with zero warnings
 - **compilation**: All 5 benchmarks compile cleanly with zero warnings
 - **release-builds**: Zero compilation warnings in optimized release builds
 - **portability**: Improved code portability by eliminating VLAs
 
-### 📝 Documentation
+### Documentation
 
 - Added `SECURITY_AUDIT_FIXES_SUMMARY.md` documenting all fixes
 - Added `SECURITY_AUDIT_STATUS.md` with audit status and recommendations
@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2026-02-09
 
-### ✨ Features
+### Features
 
 - **frame-arena**: Ultra-fast bump pointer allocation (P99 < 100ns)
 - **gpu-pool**: GPU memory pool with Vulkan integration
@@ -61,14 +61,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **testing**: Complete test suite (unit, integration, performance, ABI, fuzzing)
 - **packaging**: Distribution packages for Debian, RPM, and Arch Linux
 
-### ⚡ Performance
+### Performance
 
 - **allocation**: Frame arena P99 = 84ns (Tier 2 target: <1μs)
 - **memory**: Runtime overhead = 1.03 MB (199x under target)
 - **initialization**: Init time = 2.70 ms (185x faster than target)
 - **optimization**: Lock-free techniques, huge pages, SIMD acceleration
 
-### 📚 Documentation
+### Documentation
 
 - API reference documentation
 - Integration guide
@@ -77,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security threat model
 - Testing documentation
 
-### 🔧 Build System
+### Build System
 
 - CMake build system with symbol versioning
 - GitHub Actions CI/CD pipeline
@@ -85,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Performance regression detection
 - ABI compatibility testing
 
-### 📦 Packaging
+### Packaging
 
 - Debian/Ubuntu packages (.deb)
 - Fedora/RHEL packages (.rpm)
@@ -93,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Universal installation scripts
 - Automated build scripts
 
-### ✅ Tests
+### Tests
 
 - Unit tests for all components
 - Integration tests for end-to-end workflows
@@ -103,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Failure injection tests
 - Chaos testing framework
 
-### 🔒 Security
+### Security
 
 - Input validation on all API functions
 - Memory safety features (guard pages, canaries, delayed reclamation)

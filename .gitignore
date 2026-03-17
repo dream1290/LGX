@@ -43,6 +43,17 @@ core.*
 vgcore.*
 test_results.txt
 
+# Root-level test/bench binaries (built outputs that should not be committed)
+/test_lgx
+/test_adaptive
+/test_frame_debug
+/test_frame_debug_full
+/test_frame_stress
+/tests/test_adaptive
+/tests/test_frame_debug
+/tests/test_frame_debug_full
+/tests/test_frame_stress
+
 # Profiling
 perf.data
 perf.data.old

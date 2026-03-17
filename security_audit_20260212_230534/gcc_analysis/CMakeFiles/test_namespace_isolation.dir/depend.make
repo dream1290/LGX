@@ -1,2 +1,0 @@
-# Empty dependencies file for test_namespace_isolation.
-# This may be replaced when dependencies are built.

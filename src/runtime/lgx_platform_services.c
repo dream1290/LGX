@@ -312,8 +312,8 @@ static bool check_rate_limit(lgx_platform_services_t* services) {
     return false;  // Drop log
 }
 
-void lgx_log_impl(lgx_platform_services_t* services, lgx_log_level_t level, 
-                  const char* format, va_list args) {
+static void lgx_log_impl(lgx_platform_services_t* services, lgx_log_level_t level, 
+                         const char* format, va_list args) {
     if (!services || level < services->min_log_level) {
         return;
     }

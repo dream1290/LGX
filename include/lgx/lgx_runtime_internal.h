@@ -108,10 +108,8 @@ bool lgx_hugepages_available(void);
 double lgx_hugepages_estimate_tlb_improvement(size_t memory_size);
 lgx_hardware_status_t lgx_hardware_adapter_get_status(lgx_hardware_adapter_t* adapter);
 
-// Intent allocator API functions (Task 3.4)
-lgx_result_t lgx_intent_allocator_init(void);
-lgx_result_t lgx_intent_allocator_shutdown(void);
-// lgx_intent_stats_t and lgx_intent_get_stats are now in lgx_runtime.h
+// Note: lgx_intent_allocator_init/shutdown are now in lgx_runtime.h
+
 
 // Capability detector API functions
 bool lgx_capability_detector_has_capability(lgx_capability_detector_t* detector, 
@@ -254,8 +252,8 @@ size_t lgx_frame_get_current_usage(void);
 size_t lgx_frame_get_peak_usage(void);
 bool lgx_frame_is_frame_pointer(void* ptr);
 void lgx_frame_arena_dump_stats(FILE* output);  // Task 3.4.5.1 - dump detailed stats
-size_t lgx_frame_arena_get_recommended_size(void);  // Task 3.4.5.2.3 - size recommendation
 lgx_result_t lgx_frame_arena_dump(const char* output_path);  // Task 3.4.5.4.1 - export allocation map
+
 
 // Profiler integration (Task 3.4.5.4.4)
 lgx_result_t lgx_frame_arena_enable_tracy(bool enabled);
@@ -352,8 +350,8 @@ int lgx_heap_health_check(void);
 void lgx_heap_get_error_stats(uint64_t* oom_errors, uint64_t* rate_limit_errors, 
                                uint64_t* validation_errors);
 
-// Utility functions
-uint64_t lgx_time_now_ns(void);
+// Note: lgx_time_now_ns is declared in lgx_runtime.h
+
 
 lgx_result_t lgx_hardware_adapter_init(lgx_hardware_adapter_t** adapter);
 lgx_result_t lgx_hardware_adapter_shutdown(lgx_hardware_adapter_t* adapter);
@@ -408,9 +406,8 @@ bool lgx_chaos_should_hang_gpu(void);
 bool lgx_chaos_should_fail_io(void);
 void lgx_chaos_get_stats(uint64_t* total_ops, uint64_t* failures, uint64_t* latency_spikes);
 
-// Trace event system internal API functions (Section 4.5)
-lgx_result_t lgx_trace_init(void);
-lgx_result_t lgx_trace_shutdown(void);
+// Note: lgx_trace_init/shutdown are declared in lgx_runtime.h
+
 
 // Namespace isolation API functions (Section 8.1)
 lgx_result_t lgx_namespace_create_isolated(void);
@@ -470,12 +467,6 @@ void* lgx_memory_safety_alloc(size_t size);
 void lgx_memory_safety_free(void* ptr);
 void lgx_memory_safety_advance_frame(void);
 void lgx_memory_safety_get_stats(lgx_memory_safety_stats_t* stats);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // LGX_RUNTIME_INTERNAL_H
 
 // ============================================================================
 // Resource Limits (Task 14.1)
@@ -561,4 +552,10 @@ void lgx_memory_safety_secure_wipe(void* ptr, size_t size);
 void lgx_memory_safety_set_secure_wiping(bool enabled);
 void lgx_memory_safety_get_config(lgx_memory_safety_config_t* config);
 void lgx_memory_safety_set_config(const lgx_memory_safety_config_t* config);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // LGX_RUNTIME_INTERNAL_H
 

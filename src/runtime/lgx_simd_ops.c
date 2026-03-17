@@ -59,7 +59,7 @@ bool lgx_simd_has_avx2(void) {
  * 
  * Returns: index of first non-NULL slot, or -1 if all NULL
  */
-int lgx_simd_find_nonempty_slot_avx2(void** slots, int count) {
+static int lgx_simd_find_nonempty_slot_avx2(void** slots, int count) {
     __m256i zero = _mm256_setzero_si256();
     
     // Process 4 pointers at a time (4 x 64-bit = 256 bits)
@@ -98,7 +98,7 @@ int lgx_simd_find_nonempty_slot_avx2(void** slots, int count) {
 /**
  * SIMD-accelerated cache slot search (scalar fallback)
  */
-int lgx_simd_find_nonempty_slot_scalar(void** slots, int count) {
+static int lgx_simd_find_nonempty_slot_scalar(void** slots, int count) {
     for (int i = 0; i < count; i++) {
         if (slots[i] != NULL) {
             return i;
@@ -124,7 +124,7 @@ int lgx_simd_find_nonempty_slot(void** slots, int count) {
  * Checks if all slots in a range are NULL.
  * Returns: true if all NULL, false otherwise
  */
-bool lgx_simd_all_null_avx2(void** slots, int count) {
+static bool lgx_simd_all_null_avx2(void** slots, int count) {
     __m256i zero = _mm256_setzero_si256();
     
     // Process 4 pointers at a time
@@ -153,7 +153,7 @@ bool lgx_simd_all_null_avx2(void** slots, int count) {
 /**
  * SIMD-accelerated zero check (scalar fallback)
  */
-bool lgx_simd_all_null_scalar(void** slots, int count) {
+static bool lgx_simd_all_null_scalar(void** slots, int count) {
     for (int i = 0; i < count; i++) {
         if (slots[i] != NULL) {
             return false;
@@ -176,7 +176,7 @@ bool lgx_simd_all_null(void** slots, int count) {
 /**
  * SIMD-accelerated count non-NULL slots (AVX2)
  */
-int lgx_simd_count_nonempty_avx2(void** slots, int count) {
+static int lgx_simd_count_nonempty_avx2(void** slots, int count) {
     __m256i zero = _mm256_setzero_si256();
     int total = 0;
     
@@ -204,7 +204,7 @@ int lgx_simd_count_nonempty_avx2(void** slots, int count) {
 /**
  * SIMD-accelerated count non-NULL slots (scalar fallback)
  */
-int lgx_simd_count_nonempty_scalar(void** slots, int count) {
+static int lgx_simd_count_nonempty_scalar(void** slots, int count) {
     int total = 0;
     for (int i = 0; i < count; i++) {
         if (slots[i] != NULL) {

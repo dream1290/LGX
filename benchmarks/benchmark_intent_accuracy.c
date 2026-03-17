@@ -90,6 +90,7 @@ int main(void) {
     size_t num_sizes = sizeof(sizes) / sizeof(sizes[0]);
     
     benchmark_result_t results[50];
+    char names[50][256];
     size_t result_count = 0;
     
     for (size_t i = 0; i < num_sizes; i++) {
@@ -97,24 +98,26 @@ int main(void) {
             .size = sizes[i]
         };
         
-        char name[256];
-        
         // Frame intent
-        snprintf(name, sizeof(name), "frame_intent_%s", size_names[i]);
-        results[result_count++] = benchmark_run(name, bench_frame_intent, &ctx, 10000, 1000);
-        benchmark_print_result(&results[result_count - 1]);
+        snprintf(names[result_count], 256, "frame_intent_%s", size_names[i]);
+        results[result_count] = benchmark_run(names[result_count], bench_frame_intent, &ctx, 10000, 1000);
+        benchmark_print_result(&results[result_count]);
+        result_count++;
         // Note: Frame allocations are not reset in benchmarks
         
         // Persistent intent
-        snprintf(name, sizeof(name), "persistent_intent_%s", size_names[i]);
-        results[result_count++] = benchmark_run(name, bench_persistent_intent, &ctx, 10000, 1000);
-        benchmark_print_result(&results[result_count - 1]);
+        snprintf(names[result_count], 256, "persistent_intent_%s", size_names[i]);
+        results[result_count] = benchmark_run(names[result_count], bench_persistent_intent, &ctx, 10000, 1000);
+        benchmark_print_result(&results[result_count]);
+        result_count++;
         
         // Level intent
-        snprintf(name, sizeof(name), "level_intent_%s", size_names[i]);
-        results[result_count++] = benchmark_run(name, bench_level_intent, &ctx, 10000, 1000);
-        benchmark_print_result(&results[result_count - 1]);
+        snprintf(names[result_count], 256, "level_intent_%s", size_names[i]);
+        results[result_count] = benchmark_run(names[result_count], bench_level_intent, &ctx, 10000, 1000);
+        benchmark_print_result(&results[result_count]);
+        result_count++;
     }
+
     
     // Save results
     benchmark_save_results("benchmark_intent_accuracy.csv", results, result_count);

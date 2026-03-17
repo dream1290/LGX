@@ -11,7 +11,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Compiler flags for Phase 1 production build
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -fPIC \
+    -Wredundant-decls \
+    -Wshadow")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG -march=native")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g -DNDEBUG -march=native")
@@ -133,6 +135,13 @@ target_compile_definitions(lgx_runtime PRIVATE
     LGX_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
 )
 
+# Phase 3 hardening: strict prototype checks on the library only
+# (tests use old-style declarations so these flags would break them)
+target_compile_options(lgx_runtime PRIVATE
+    -Wstrict-prototypes
+    -Wmissing-prototypes
+)
+
 # Installation configuration
 install(TARGETS lgx_runtime
     LIBRARY DESTINATION lib
@@ -197,7 +206,7 @@ add_subdirectory(tests/failure_injection)
 add_subdirectory(benchmarks)
 
 # Demo applications
-add_subdirectory(demo)
+# add_subdirectory(demo)  # Commented out - demo directory removed
 
 # Custom targets for different test suites
 add_custom_target(run_phase0_tests
@@ -221,3 +230,88 @@ add_custom_target(run_performance_tests
 )
 
 # run_benchmarks target is defined in benchmarks/CMakeLists.txt
+
+# ──────────────────── LGX Threading Module (v1.1) ────────────────────
+
+set(LGX_THREADING_SOURCES
+    src/threading/lgx_threading.c
+)
+
+add_library(lgx_threading SHARED ${LGX_THREADING_SOURCES})
+
+set_target_properties(lgx_threading PROPERTIES
+    VERSION 1.1.0
+    SOVERSION 1
+    LINK_FLAGS "-Wl,--version-script=${CMAKE_SOURCE_DIR}/lgx_threading.map"
+)
+
+target_include_directories(lgx_threading
+    PUBLIC ${CMAKE_SOURCE_DIR}/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/src/threading
+)
+
+target_link_libraries(lgx_threading
+    Threads::Threads
+)
+
+target_compile_options(lgx_threading PRIVATE
+    -Wstrict-prototypes
+    -Wmissing-prototypes
+)
+
+# Threading tests
+add_executable(test_threading_basic tests/threading/test_threading_basic.c)
+target_include_directories(test_threading_basic PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_threading_basic lgx_threading Threads::Threads)
+add_test(NAME test_threading_basic COMMAND test_threading_basic)
+set_tests_properties(test_threading_basic PROPERTIES
+    LABELS "threading"
+    TIMEOUT 30
+    ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
+)
+
+add_executable(test_threading_stress tests/threading/test_threading_stress.c)
+target_include_directories(test_threading_stress PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_threading_stress lgx_threading Threads::Threads)
+add_test(NAME test_threading_stress COMMAND test_threading_stress)
+set_tests_properties(test_threading_stress PROPERTIES
+    LABELS "threading"
+    TIMEOUT 60
+    ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
+)
+
+add_executable(test_threading_fiber tests/threading/test_threading_fiber.c)
+target_include_directories(test_threading_fiber PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_threading_fiber lgx_threading Threads::Threads)
+add_test(NAME test_threading_fiber COMMAND test_threading_fiber)
+set_tests_properties(test_threading_fiber PROPERTIES
+    LABELS "threading"
+    TIMEOUT 30
+    ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
+)
+
+add_executable(benchmark_threading tests/threading/benchmark_threading.c)
+target_include_directories(benchmark_threading PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(benchmark_threading lgx_threading Threads::Threads)
+add_test(NAME benchmark_threading COMMAND benchmark_threading)
+set_tests_properties(benchmark_threading PROPERTIES
+    LABELS "threading;benchmark"
+    TIMEOUT 60
+    ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
+)
+
+add_executable(test_threading_advanced tests/threading/test_threading_advanced.c)
+target_include_directories(test_threading_advanced PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_threading_advanced lgx_threading Threads::Threads)
+add_test(NAME test_threading_advanced COMMAND test_threading_advanced)
+set_tests_properties(test_threading_advanced PROPERTIES
+    LABELS "threading"
+    TIMEOUT 30
+    ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
+)
+
+
+add_custom_target(run_threading_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} --verbose -R "threading"
+    COMMENT "Running threading module tests"
+)

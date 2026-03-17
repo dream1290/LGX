@@ -22,7 +22,7 @@ if [ ! -f "$PROJECT_ROOT/CMakeLists.txt" ]; then
 fi
 
 # Check for required tools
-for tool in dpkg-buildpackage debhelper cmake; do
+for tool in dpkg-buildpackage dh cmake; do
     if ! command -v $tool &> /dev/null; then
         echo -e "${RED}Error: $tool is not installed${NC}"
         echo "Install with: sudo apt-get install build-essential debhelper cmake pkg-config"

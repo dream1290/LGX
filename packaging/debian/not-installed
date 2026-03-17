@@ -1,0 +1,4 @@
+# Files intentionally not installed in binary packages
+usr/bin/lgx-abi-test-matrix
+usr/bin/lgx-demos/demo_game_simulation
+usr/share/doc/lgx-runtime/demos/README.md

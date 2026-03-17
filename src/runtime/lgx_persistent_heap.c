@@ -1178,6 +1178,35 @@ void* lgx_heap_alloc(size_t size) {
                     allocator->slabs = new_slab;
                     allocator->num_slabs++;
                     ptr = slab_alloc(new_slab);
+                    
+                    // Task 3.5.1.2: Batch refill strategy (Day 3-4 optimization)
+                    // Pre-populate the free list with a batch of nodes from the new slab
+                    // so subsequent allocations use the fast CAS path instead of slab scan.
+                    // Use pattern hotness to scale batch size for hot size classes.
+                    {
+                        size_t batch_size = 32;  // Default batch
+                        if (size_class >= 0 && size_class < NUM_SIZE_CLASSES &&
+                            g_heap.size_class_hotness[size_class] > 0.2f) {
+                            batch_size = 64;  // Larger batch for hot size classes
+                        }
+                        if (batch_size > new_slab->capacity / 2) {
+                            batch_size = new_slab->capacity / 2;
+                        }
+                        
+                        for (size_t b = 0; b < batch_size; b++) {
+                            void* refill_ptr = slab_alloc(new_slab);
+                            if (!refill_ptr) break;
+                            
+                            // Push onto the lock-free free list for fast future allocs
+                            free_node_t* node = (free_node_t*)refill_ptr;
+                            free_node_t* refill_head = atomic_load(&allocator->free_list);
+                            do {
+                                node->next = refill_head;
+                                node->generation = atomic_fetch_add(&allocator->generation, 1);
+                            } while (!atomic_compare_exchange_weak(&allocator->free_list,
+                                                                     &refill_head, node));
+                        }
+                    }
                 } else {
                     fprintf(stderr, "[LGX ERROR] Failed to allocate new slab for size class %d\n",
                             size_class);

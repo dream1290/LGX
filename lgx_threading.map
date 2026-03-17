@@ -1,0 +1,94 @@
+LGX_THREADING_1.1 {
+    global:
+        /* Module lifecycle */
+        lgx_threading_init;
+        lgx_threading_shutdown;
+        lgx_threading_version;
+
+        /* Error handling */
+        lgx_threading_error_string;
+        lgx_threading_get_last_error_detail;
+
+        /* Thread pool */
+        lgx_threading_get_pool;
+        lgx_thread_pool_get_stats;
+
+        /* Job system */
+        lgx_job_submit;
+        lgx_job_submit_batch;
+        lgx_job_wait;
+        lgx_job_is_complete;
+
+        /* MPMC queue */
+        lgx_mpmc_queue_create;
+        lgx_mpmc_queue_destroy;
+        lgx_mpmc_queue_push;
+        lgx_mpmc_queue_pop;
+        lgx_mpmc_queue_size;
+
+        /* SPSC queue */
+        lgx_spsc_queue_create;
+        lgx_spsc_queue_destroy;
+        lgx_spsc_queue_push;
+        lgx_spsc_queue_pop;
+
+        /* Synchronization primitives */
+        lgx_mutex_init;
+        lgx_mutex_lock;
+        lgx_mutex_try_lock;
+        lgx_mutex_unlock;
+
+        lgx_rwlock_init;
+        lgx_rwlock_read_lock;
+        lgx_rwlock_write_lock;
+        lgx_rwlock_read_unlock;
+        lgx_rwlock_write_unlock;
+
+        lgx_spinlock_lock;
+        lgx_spinlock_try_lock;
+        lgx_spinlock_unlock;
+
+        lgx_barrier_create;
+        lgx_barrier_wait;
+        lgx_barrier_destroy;
+
+        lgx_semaphore_init;
+        lgx_semaphore_wait;
+        lgx_semaphore_try_wait;
+        lgx_semaphore_post;
+
+        /* Fiber system */
+        lgx_fiber_create;
+        lgx_fiber_destroy;
+        lgx_fiber_yield;
+        lgx_fiber_resume;
+        lgx_fiber_wait_job;
+        lgx_fiber_get_state;
+
+        /* Fiber pool */
+        lgx_fiber_pool_init;
+        lgx_fiber_pool_acquire;
+        lgx_fiber_pool_release;
+        lgx_fiber_pool_shutdown;
+
+        /* Lock-free stack */
+        lgx_lfstack_create;
+        lgx_lfstack_destroy;
+        lgx_lfstack_push;
+        lgx_lfstack_pop;
+        lgx_lfstack_size;
+
+        /* Concurrent hash map */
+        lgx_concurrent_map_create;
+        lgx_concurrent_map_destroy;
+        lgx_concurrent_map_insert;
+        lgx_concurrent_map_lookup;
+        lgx_concurrent_map_remove;
+        lgx_concurrent_map_size;
+
+        /* Diagnostics */
+        lgx_threading_dump_state;
+
+    local:
+        *;
+};

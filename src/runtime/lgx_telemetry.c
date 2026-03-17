@@ -819,7 +819,7 @@ lgx_observability_level_t lgx_get_observability_level(void) {
 /**
  * Check if observability level allows operation
  */
-bool lgx_observability_allows(lgx_observability_level_t required_level) {
+static bool __attribute__((unused)) lgx_observability_allows(lgx_observability_level_t required_level) {
     lgx_observability_level_t current = lgx_get_observability_level();
     return current >= required_level;
 }

@@ -108,6 +108,12 @@ all: CMakeFiles/test_telemetry_simple.dir/all
 all: CMakeFiles/test_tiered_performance.dir/all
 all: CMakeFiles/test_timing_services.dir/all
 all: CMakeFiles/test_trace_events.dir/all
+all: CMakeFiles/lgx_threading.dir/all
+all: CMakeFiles/test_threading_basic.dir/all
+all: CMakeFiles/test_threading_stress.dir/all
+all: CMakeFiles/test_threading_fiber.dir/all
+all: CMakeFiles/benchmark_threading.dir/all
+all: CMakeFiles/test_threading_advanced.dir/all
 all: tests/unit/all
 all: tests/integration/all
 all: tests/abi/all
@@ -175,6 +181,13 @@ clean: CMakeFiles/run_phase0_tests.dir/clean
 clean: CMakeFiles/run_unit_tests.dir/clean
 clean: CMakeFiles/run_integration_tests.dir/clean
 clean: CMakeFiles/run_performance_tests.dir/clean
+clean: CMakeFiles/lgx_threading.dir/clean
+clean: CMakeFiles/test_threading_basic.dir/clean
+clean: CMakeFiles/test_threading_stress.dir/clean
+clean: CMakeFiles/test_threading_fiber.dir/clean
+clean: CMakeFiles/benchmark_threading.dir/clean
+clean: CMakeFiles/test_threading_advanced.dir/clean
+clean: CMakeFiles/run_threading_tests.dir/clean
 clean: tests/unit/clean
 clean: tests/integration/clean
 clean: tests/abi/clean
@@ -313,12 +326,12 @@ tests/unit/clean: tests/unit/CMakeFiles/unit_test_resource_limits.dir/clean
 CMakeFiles/lgx_runtime.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26 "Built target lgx_runtime"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25 "Built target lgx_runtime"
 .PHONY : CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lgx_runtime.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 17
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lgx_runtime.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/lgx_runtime.dir/rule
@@ -344,7 +357,7 @@ CMakeFiles/test_csf1_comparison.dir/all: CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_csf1_comparison.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_csf1_comparison.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_csf1_comparison.dir/rule
@@ -370,7 +383,7 @@ CMakeFiles/test_csf1_hybrid_allocator.dir/all: CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_csf1_hybrid_allocator.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_csf1_hybrid_allocator.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_csf1_hybrid_allocator.dir/rule
@@ -396,7 +409,7 @@ CMakeFiles/test_csf2_numa_awareness.dir/all: CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_csf2_numa_awareness.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_csf2_numa_awareness.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_csf2_numa_awareness.dir/rule
@@ -422,7 +435,7 @@ CMakeFiles/test_csf3_namespace_isolation.dir/all: CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_csf3_namespace_isolation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_csf3_namespace_isolation.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_csf3_namespace_isolation.dir/rule
@@ -448,7 +461,7 @@ CMakeFiles/test_csf4_abi_stability.dir/all: CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_csf4_abi_stability.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_csf4_abi_stability.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_csf4_abi_stability.dir/rule
@@ -474,7 +487,7 @@ CMakeFiles/test_csf5_telemetry_overhead.dir/all: CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_csf5_telemetry_overhead.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_csf5_telemetry_overhead.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_csf5_telemetry_overhead.dir/rule
@@ -500,7 +513,7 @@ CMakeFiles/test_day10_hugepages.dir/all: CMakeFiles/lgx_runtime.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_day10_hugepages.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_day10_hugepages.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_day10_hugepages.dir/rule
@@ -521,12 +534,12 @@ CMakeFiles/test_day10_hugepages.dir/clean:
 CMakeFiles/test_filesystem.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_filesystem.dir/build.make CMakeFiles/test_filesystem.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_filesystem.dir/build.make CMakeFiles/test_filesystem.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=45,46 "Built target test_filesystem"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=45 "Built target test_filesystem"
 .PHONY : CMakeFiles/test_filesystem.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_filesystem.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_filesystem.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_filesystem.dir/rule
@@ -547,12 +560,12 @@ CMakeFiles/test_filesystem.dir/clean:
 CMakeFiles/test_frame_arena.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena.dir/build.make CMakeFiles/test_frame_arena.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena.dir/build.make CMakeFiles/test_frame_arena.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=47 "Built target test_frame_arena"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=46 "Built target test_frame_arena"
 .PHONY : CMakeFiles/test_frame_arena.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_frame_arena.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_frame_arena.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_frame_arena.dir/rule
@@ -573,12 +586,12 @@ CMakeFiles/test_frame_arena.dir/clean:
 CMakeFiles/test_frame_arena_polish.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena_polish.dir/build.make CMakeFiles/test_frame_arena_polish.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_frame_arena_polish.dir/build.make CMakeFiles/test_frame_arena_polish.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=48 "Built target test_frame_arena_polish"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=47 "Built target test_frame_arena_polish"
 .PHONY : CMakeFiles/test_frame_arena_polish.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_frame_arena_polish.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_frame_arena_polish.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_frame_arena_polish.dir/rule
@@ -599,7 +612,7 @@ CMakeFiles/test_frame_arena_polish.dir/clean:
 CMakeFiles/test_gpu_buddy_allocator.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_buddy_allocator.dir/build.make CMakeFiles/test_gpu_buddy_allocator.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_buddy_allocator.dir/build.make CMakeFiles/test_gpu_buddy_allocator.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=50 "Built target test_gpu_buddy_allocator"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=49,50 "Built target test_gpu_buddy_allocator"
 .PHONY : CMakeFiles/test_gpu_buddy_allocator.dir/all
 
 # Build rule for subdir invocation for target.
@@ -625,12 +638,12 @@ CMakeFiles/test_gpu_buddy_allocator.dir/clean:
 CMakeFiles/test_gpu_capability.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_capability.dir/build.make CMakeFiles/test_gpu_capability.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_capability.dir/build.make CMakeFiles/test_gpu_capability.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=51,52 "Built target test_gpu_capability"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=51 "Built target test_gpu_capability"
 .PHONY : CMakeFiles/test_gpu_capability.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_gpu_capability.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_gpu_capability.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_gpu_capability.dir/rule
@@ -651,12 +664,12 @@ CMakeFiles/test_gpu_capability.dir/clean:
 CMakeFiles/test_gpu_detection.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_detection.dir/build.make CMakeFiles/test_gpu_detection.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_detection.dir/build.make CMakeFiles/test_gpu_detection.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=53 "Built target test_gpu_detection"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=52 "Built target test_gpu_detection"
 .PHONY : CMakeFiles/test_gpu_detection.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_gpu_detection.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_gpu_detection.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_gpu_detection.dir/rule
@@ -677,12 +690,12 @@ CMakeFiles/test_gpu_detection.dir/clean:
 CMakeFiles/test_gpu_perf_simple.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_perf_simple.dir/build.make CMakeFiles/test_gpu_perf_simple.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_perf_simple.dir/build.make CMakeFiles/test_gpu_perf_simple.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=54 "Built target test_gpu_perf_simple"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=53 "Built target test_gpu_perf_simple"
 .PHONY : CMakeFiles/test_gpu_perf_simple.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_gpu_perf_simple.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_gpu_perf_simple.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_gpu_perf_simple.dir/rule
@@ -703,12 +716,12 @@ CMakeFiles/test_gpu_perf_simple.dir/clean:
 CMakeFiles/test_gpu_performance.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_performance.dir/build.make CMakeFiles/test_gpu_performance.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_performance.dir/build.make CMakeFiles/test_gpu_performance.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=55 "Built target test_gpu_performance"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=54 "Built target test_gpu_performance"
 .PHONY : CMakeFiles/test_gpu_performance.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_gpu_performance.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_gpu_performance.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_gpu_performance.dir/rule
@@ -729,12 +742,12 @@ CMakeFiles/test_gpu_performance.dir/clean:
 CMakeFiles/test_gpu_pool.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_pool.dir/build.make CMakeFiles/test_gpu_pool.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gpu_pool.dir/build.make CMakeFiles/test_gpu_pool.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=56 "Built target test_gpu_pool"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=55 "Built target test_gpu_pool"
 .PHONY : CMakeFiles/test_gpu_pool.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_gpu_pool.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_gpu_pool.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_gpu_pool.dir/rule
@@ -755,12 +768,12 @@ CMakeFiles/test_gpu_pool.dir/clean:
 CMakeFiles/test_hardware_adaptation.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_adaptation.dir/build.make CMakeFiles/test_hardware_adaptation.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_adaptation.dir/build.make CMakeFiles/test_hardware_adaptation.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=57,58 "Built target test_hardware_adaptation"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=56 "Built target test_hardware_adaptation"
 .PHONY : CMakeFiles/test_hardware_adaptation.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_hardware_adaptation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_hardware_adaptation.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_hardware_adaptation.dir/rule
@@ -781,12 +794,12 @@ CMakeFiles/test_hardware_adaptation.dir/clean:
 CMakeFiles/test_hardware_tier.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_tier.dir/build.make CMakeFiles/test_hardware_tier.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hardware_tier.dir/build.make CMakeFiles/test_hardware_tier.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=59 "Built target test_hardware_tier"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=57 "Built target test_hardware_tier"
 .PHONY : CMakeFiles/test_hardware_tier.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_hardware_tier.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_hardware_tier.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_hardware_tier.dir/rule
@@ -807,12 +820,12 @@ CMakeFiles/test_hardware_tier.dir/clean:
 CMakeFiles/test_hierarchical_intents.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hierarchical_intents.dir/build.make CMakeFiles/test_hierarchical_intents.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_hierarchical_intents.dir/build.make CMakeFiles/test_hierarchical_intents.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=60 "Built target test_hierarchical_intents"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=58 "Built target test_hierarchical_intents"
 .PHONY : CMakeFiles/test_hierarchical_intents.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_hierarchical_intents.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_hierarchical_intents.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_hierarchical_intents.dir/rule
@@ -833,7 +846,7 @@ CMakeFiles/test_hierarchical_intents.dir/clean:
 CMakeFiles/test_input_validation.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_validation.dir/build.make CMakeFiles/test_input_validation.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_validation.dir/build.make CMakeFiles/test_input_validation.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=61 "Built target test_input_validation"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=59,60 "Built target test_input_validation"
 .PHONY : CMakeFiles/test_input_validation.dir/all
 
 # Build rule for subdir invocation for target.
@@ -859,12 +872,12 @@ CMakeFiles/test_input_validation.dir/clean:
 CMakeFiles/test_intent_accuracy.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_accuracy.dir/build.make CMakeFiles/test_intent_accuracy.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_accuracy.dir/build.make CMakeFiles/test_intent_accuracy.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=62 "Built target test_intent_accuracy"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=61 "Built target test_intent_accuracy"
 .PHONY : CMakeFiles/test_intent_accuracy.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_intent_accuracy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_intent_accuracy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_intent_accuracy.dir/rule
@@ -885,12 +898,12 @@ CMakeFiles/test_intent_accuracy.dir/clean:
 CMakeFiles/test_intent_allocator.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_allocator.dir/build.make CMakeFiles/test_intent_allocator.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_allocator.dir/build.make CMakeFiles/test_intent_allocator.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=63,64 "Built target test_intent_allocator"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=62 "Built target test_intent_allocator"
 .PHONY : CMakeFiles/test_intent_allocator.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_intent_allocator.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_intent_allocator.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_intent_allocator.dir/rule
@@ -911,12 +924,12 @@ CMakeFiles/test_intent_allocator.dir/clean:
 CMakeFiles/test_intent_mismatch_rates.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_mismatch_rates.dir/build.make CMakeFiles/test_intent_mismatch_rates.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_mismatch_rates.dir/build.make CMakeFiles/test_intent_mismatch_rates.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=65 "Built target test_intent_mismatch_rates"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=63 "Built target test_intent_mismatch_rates"
 .PHONY : CMakeFiles/test_intent_mismatch_rates.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_intent_mismatch_rates.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_intent_mismatch_rates.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_intent_mismatch_rates.dir/rule
@@ -937,12 +950,12 @@ CMakeFiles/test_intent_mismatch_rates.dir/clean:
 CMakeFiles/test_intent_validation.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_validation.dir/build.make CMakeFiles/test_intent_validation.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_intent_validation.dir/build.make CMakeFiles/test_intent_validation.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=66 "Built target test_intent_validation"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=64 "Built target test_intent_validation"
 .PHONY : CMakeFiles/test_intent_validation.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_intent_validation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_intent_validation.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_intent_validation.dir/rule
@@ -963,12 +976,12 @@ CMakeFiles/test_intent_validation.dir/clean:
 CMakeFiles/test_library_manifest.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_library_manifest.dir/build.make CMakeFiles/test_library_manifest.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_library_manifest.dir/build.make CMakeFiles/test_library_manifest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=67 "Built target test_library_manifest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=65 "Built target test_library_manifest"
 .PHONY : CMakeFiles/test_library_manifest.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_library_manifest.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_library_manifest.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_library_manifest.dir/rule
@@ -989,12 +1002,12 @@ CMakeFiles/test_library_manifest.dir/clean:
 CMakeFiles/test_logging.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging.dir/build.make CMakeFiles/test_logging.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging.dir/build.make CMakeFiles/test_logging.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=69,70 "Built target test_logging"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=67 "Built target test_logging"
 .PHONY : CMakeFiles/test_logging.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_logging.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_logging.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_logging.dir/rule
@@ -1015,12 +1028,12 @@ CMakeFiles/test_logging.dir/clean:
 CMakeFiles/test_logging_simple.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging_simple.dir/build.make CMakeFiles/test_logging_simple.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_logging_simple.dir/build.make CMakeFiles/test_logging_simple.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=71 "Built target test_logging_simple"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=68 "Built target test_logging_simple"
 .PHONY : CMakeFiles/test_logging_simple.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_logging_simple.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_logging_simple.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_logging_simple.dir/rule
@@ -1041,7 +1054,7 @@ CMakeFiles/test_logging_simple.dir/clean:
 CMakeFiles/test_memory_safety.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_memory_safety.dir/build.make CMakeFiles/test_memory_safety.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_memory_safety.dir/build.make CMakeFiles/test_memory_safety.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=72 "Built target test_memory_safety"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=69,70 "Built target test_memory_safety"
 .PHONY : CMakeFiles/test_memory_safety.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1067,12 +1080,12 @@ CMakeFiles/test_memory_safety.dir/clean:
 CMakeFiles/test_namespace_isolation.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_namespace_isolation.dir/build.make CMakeFiles/test_namespace_isolation.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_namespace_isolation.dir/build.make CMakeFiles/test_namespace_isolation.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=73 "Built target test_namespace_isolation"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=71 "Built target test_namespace_isolation"
 .PHONY : CMakeFiles/test_namespace_isolation.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_namespace_isolation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_namespace_isolation.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_namespace_isolation.dir/rule
@@ -1093,12 +1106,12 @@ CMakeFiles/test_namespace_isolation.dir/clean:
 CMakeFiles/test_observability_overhead.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_observability_overhead.dir/build.make CMakeFiles/test_observability_overhead.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_observability_overhead.dir/build.make CMakeFiles/test_observability_overhead.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=74 "Built target test_observability_overhead"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=72 "Built target test_observability_overhead"
 .PHONY : CMakeFiles/test_observability_overhead.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_observability_overhead.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_observability_overhead.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_observability_overhead.dir/rule
@@ -1119,12 +1132,12 @@ CMakeFiles/test_observability_overhead.dir/clean:
 CMakeFiles/test_performance.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_performance.dir/build.make CMakeFiles/test_performance.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_performance.dir/build.make CMakeFiles/test_performance.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=75,76 "Built target test_performance"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=73 "Built target test_performance"
 .PHONY : CMakeFiles/test_performance.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_performance.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_performance.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_performance.dir/rule
@@ -1145,12 +1158,12 @@ CMakeFiles/test_performance.dir/clean:
 CMakeFiles/test_persistent_heap.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap.dir/build.make CMakeFiles/test_persistent_heap.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap.dir/build.make CMakeFiles/test_persistent_heap.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=77 "Built target test_persistent_heap"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=74 "Built target test_persistent_heap"
 .PHONY : CMakeFiles/test_persistent_heap.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_persistent_heap.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_persistent_heap.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_persistent_heap.dir/rule
@@ -1171,12 +1184,12 @@ CMakeFiles/test_persistent_heap.dir/clean:
 CMakeFiles/test_persistent_heap_buddy.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_buddy.dir/build.make CMakeFiles/test_persistent_heap_buddy.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_buddy.dir/build.make CMakeFiles/test_persistent_heap_buddy.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=78 "Built target test_persistent_heap_buddy"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=75 "Built target test_persistent_heap_buddy"
 .PHONY : CMakeFiles/test_persistent_heap_buddy.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_persistent_heap_buddy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_persistent_heap_buddy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_persistent_heap_buddy.dir/rule
@@ -1197,12 +1210,12 @@ CMakeFiles/test_persistent_heap_buddy.dir/clean:
 CMakeFiles/test_persistent_heap_perf.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_persistent_heap_perf.dir/build.make CMakeFiles/test_persistent_heap_perf.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=79 "Built target test_persistent_heap_perf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=76 "Built target test_persistent_heap_perf"
 .PHONY : CMakeFiles/test_persistent_heap_perf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_persistent_heap_perf.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_persistent_heap_perf.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_persistent_heap_perf.dir/rule
@@ -1223,12 +1236,12 @@ CMakeFiles/test_persistent_heap_perf.dir/clean:
 CMakeFiles/test_signal_handling.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_signal_handling.dir/build.make CMakeFiles/test_signal_handling.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_signal_handling.dir/build.make CMakeFiles/test_signal_handling.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=80 "Built target test_signal_handling"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=77 "Built target test_signal_handling"
 .PHONY : CMakeFiles/test_signal_handling.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_signal_handling.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_signal_handling.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_signal_handling.dir/rule
@@ -1249,12 +1262,12 @@ CMakeFiles/test_signal_handling.dir/clean:
 CMakeFiles/test_simd_fallback.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_simd_fallback.dir/build.make CMakeFiles/test_simd_fallback.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_simd_fallback.dir/build.make CMakeFiles/test_simd_fallback.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=81,82 "Built target test_simd_fallback"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=78 "Built target test_simd_fallback"
 .PHONY : CMakeFiles/test_simd_fallback.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_simd_fallback.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_simd_fallback.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_simd_fallback.dir/rule
@@ -1275,12 +1288,12 @@ CMakeFiles/test_simd_fallback.dir/clean:
 CMakeFiles/test_structured_logging.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_structured_logging.dir/build.make CMakeFiles/test_structured_logging.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_structured_logging.dir/build.make CMakeFiles/test_structured_logging.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=84 "Built target test_structured_logging"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=81 "Built target test_structured_logging"
 .PHONY : CMakeFiles/test_structured_logging.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_structured_logging.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_structured_logging.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_structured_logging.dir/rule
@@ -1301,12 +1314,12 @@ CMakeFiles/test_structured_logging.dir/clean:
 CMakeFiles/test_suspend_resume.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_suspend_resume.dir/build.make CMakeFiles/test_suspend_resume.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_suspend_resume.dir/build.make CMakeFiles/test_suspend_resume.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=85 "Built target test_suspend_resume"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=82 "Built target test_suspend_resume"
 .PHONY : CMakeFiles/test_suspend_resume.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_suspend_resume.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_suspend_resume.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_suspend_resume.dir/rule
@@ -1327,12 +1340,12 @@ CMakeFiles/test_suspend_resume.dir/clean:
 CMakeFiles/test_telemetry_anonymization.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_anonymization.dir/build.make CMakeFiles/test_telemetry_anonymization.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_anonymization.dir/build.make CMakeFiles/test_telemetry_anonymization.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=87,88 "Built target test_telemetry_anonymization"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=84 "Built target test_telemetry_anonymization"
 .PHONY : CMakeFiles/test_telemetry_anonymization.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_telemetry_anonymization.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_telemetry_anonymization.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_telemetry_anonymization.dir/rule
@@ -1353,12 +1366,12 @@ CMakeFiles/test_telemetry_anonymization.dir/clean:
 CMakeFiles/test_telemetry_process.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_process.dir/build.make CMakeFiles/test_telemetry_process.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_process.dir/build.make CMakeFiles/test_telemetry_process.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=89 "Built target test_telemetry_process"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=85 "Built target test_telemetry_process"
 .PHONY : CMakeFiles/test_telemetry_process.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_telemetry_process.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_telemetry_process.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_telemetry_process.dir/rule
@@ -1379,12 +1392,12 @@ CMakeFiles/test_telemetry_process.dir/clean:
 CMakeFiles/test_telemetry_simple.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_simple.dir/build.make CMakeFiles/test_telemetry_simple.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_telemetry_simple.dir/build.make CMakeFiles/test_telemetry_simple.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=90 "Built target test_telemetry_simple"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=86 "Built target test_telemetry_simple"
 .PHONY : CMakeFiles/test_telemetry_simple.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_telemetry_simple.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_telemetry_simple.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_telemetry_simple.dir/rule
@@ -1405,12 +1418,12 @@ CMakeFiles/test_telemetry_simple.dir/clean:
 CMakeFiles/test_tiered_performance.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tiered_performance.dir/build.make CMakeFiles/test_tiered_performance.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tiered_performance.dir/build.make CMakeFiles/test_tiered_performance.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=91 "Built target test_tiered_performance"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=92 "Built target test_tiered_performance"
 .PHONY : CMakeFiles/test_tiered_performance.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_tiered_performance.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_tiered_performance.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_tiered_performance.dir/rule
@@ -1431,12 +1444,12 @@ CMakeFiles/test_tiered_performance.dir/clean:
 CMakeFiles/test_timing_services.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timing_services.dir/build.make CMakeFiles/test_timing_services.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_timing_services.dir/build.make CMakeFiles/test_timing_services.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=92 "Built target test_timing_services"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=93 "Built target test_timing_services"
 .PHONY : CMakeFiles/test_timing_services.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_timing_services.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_timing_services.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_timing_services.dir/rule
@@ -1457,12 +1470,12 @@ CMakeFiles/test_timing_services.dir/clean:
 CMakeFiles/test_trace_events.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=93,94 "Built target test_trace_events"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=94 "Built target test_trace_events"
 .PHONY : CMakeFiles/test_trace_events.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_trace_events.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_trace_events.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_trace_events.dir/rule
@@ -1509,12 +1522,12 @@ CMakeFiles/run_phase0_tests.dir/clean:
 CMakeFiles/run_unit_tests.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_unit_tests.dir/build.make CMakeFiles/run_unit_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_unit_tests.dir/build.make CMakeFiles/run_unit_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=36 "Built target run_unit_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num= "Built target run_unit_tests"
 .PHONY : CMakeFiles/run_unit_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/run_unit_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/run_unit_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/run_unit_tests.dir/rule
@@ -1535,12 +1548,12 @@ CMakeFiles/run_unit_tests.dir/clean:
 CMakeFiles/run_integration_tests.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_integration_tests.dir/build.make CMakeFiles/run_integration_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_integration_tests.dir/build.make CMakeFiles/run_integration_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num= "Built target run_integration_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=34 "Built target run_integration_tests"
 .PHONY : CMakeFiles/run_integration_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/run_integration_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/run_integration_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : CMakeFiles/run_integration_tests.dir/rule
@@ -1581,6 +1594,188 @@ CMakeFiles/run_performance_tests.dir/clean:
 .PHONY : CMakeFiles/run_performance_tests.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/lgx_threading.dir
+
+# All Build rule for target.
+CMakeFiles/lgx_threading.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=26 "Built target lgx_threading"
+.PHONY : CMakeFiles/lgx_threading.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/lgx_threading.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 1
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lgx_threading.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+.PHONY : CMakeFiles/lgx_threading.dir/rule
+
+# Convenience name for target.
+lgx_threading: CMakeFiles/lgx_threading.dir/rule
+.PHONY : lgx_threading
+
+# clean rule for target.
+CMakeFiles/lgx_threading.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/clean
+.PHONY : CMakeFiles/lgx_threading.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/test_threading_basic.dir
+
+# All Build rule for target.
+CMakeFiles/test_threading_basic.dir/all: CMakeFiles/lgx_threading.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_basic.dir/build.make CMakeFiles/test_threading_basic.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_basic.dir/build.make CMakeFiles/test_threading_basic.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=88 "Built target test_threading_basic"
+.PHONY : CMakeFiles/test_threading_basic.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/test_threading_basic.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_threading_basic.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+.PHONY : CMakeFiles/test_threading_basic.dir/rule
+
+# Convenience name for target.
+test_threading_basic: CMakeFiles/test_threading_basic.dir/rule
+.PHONY : test_threading_basic
+
+# clean rule for target.
+CMakeFiles/test_threading_basic.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_basic.dir/build.make CMakeFiles/test_threading_basic.dir/clean
+.PHONY : CMakeFiles/test_threading_basic.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/test_threading_stress.dir
+
+# All Build rule for target.
+CMakeFiles/test_threading_stress.dir/all: CMakeFiles/lgx_threading.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=91 "Built target test_threading_stress"
+.PHONY : CMakeFiles/test_threading_stress.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/test_threading_stress.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_threading_stress.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+.PHONY : CMakeFiles/test_threading_stress.dir/rule
+
+# Convenience name for target.
+test_threading_stress: CMakeFiles/test_threading_stress.dir/rule
+.PHONY : test_threading_stress
+
+# clean rule for target.
+CMakeFiles/test_threading_stress.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/clean
+.PHONY : CMakeFiles/test_threading_stress.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/test_threading_fiber.dir
+
+# All Build rule for target.
+CMakeFiles/test_threading_fiber.dir/all: CMakeFiles/lgx_threading.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_fiber.dir/build.make CMakeFiles/test_threading_fiber.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_fiber.dir/build.make CMakeFiles/test_threading_fiber.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=89,90 "Built target test_threading_fiber"
+.PHONY : CMakeFiles/test_threading_fiber.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/test_threading_fiber.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_threading_fiber.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+.PHONY : CMakeFiles/test_threading_fiber.dir/rule
+
+# Convenience name for target.
+test_threading_fiber: CMakeFiles/test_threading_fiber.dir/rule
+.PHONY : test_threading_fiber
+
+# clean rule for target.
+CMakeFiles/test_threading_fiber.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_fiber.dir/build.make CMakeFiles/test_threading_fiber.dir/clean
+.PHONY : CMakeFiles/test_threading_fiber.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/benchmark_threading.dir
+
+# All Build rule for target.
+CMakeFiles/benchmark_threading.dir/all: CMakeFiles/lgx_threading.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_threading.dir/build.make CMakeFiles/benchmark_threading.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_threading.dir/build.make CMakeFiles/benchmark_threading.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=7 "Built target benchmark_threading"
+.PHONY : CMakeFiles/benchmark_threading.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/benchmark_threading.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/benchmark_threading.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+.PHONY : CMakeFiles/benchmark_threading.dir/rule
+
+# Convenience name for target.
+benchmark_threading: CMakeFiles/benchmark_threading.dir/rule
+.PHONY : benchmark_threading
+
+# clean rule for target.
+CMakeFiles/benchmark_threading.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_threading.dir/build.make CMakeFiles/benchmark_threading.dir/clean
+.PHONY : CMakeFiles/benchmark_threading.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/test_threading_advanced.dir
+
+# All Build rule for target.
+CMakeFiles/test_threading_advanced.dir/all: CMakeFiles/lgx_threading.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_advanced.dir/build.make CMakeFiles/test_threading_advanced.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_advanced.dir/build.make CMakeFiles/test_threading_advanced.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=87 "Built target test_threading_advanced"
+.PHONY : CMakeFiles/test_threading_advanced.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/test_threading_advanced.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_threading_advanced.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+.PHONY : CMakeFiles/test_threading_advanced.dir/rule
+
+# Convenience name for target.
+test_threading_advanced: CMakeFiles/test_threading_advanced.dir/rule
+.PHONY : test_threading_advanced
+
+# clean rule for target.
+CMakeFiles/test_threading_advanced.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_advanced.dir/build.make CMakeFiles/test_threading_advanced.dir/clean
+.PHONY : CMakeFiles/test_threading_advanced.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/run_threading_tests.dir
+
+# All Build rule for target.
+CMakeFiles/run_threading_tests.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_threading_tests.dir/build.make CMakeFiles/run_threading_tests.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_threading_tests.dir/build.make CMakeFiles/run_threading_tests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=36 "Built target run_threading_tests"
+.PHONY : CMakeFiles/run_threading_tests.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/run_threading_tests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 1
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/run_threading_tests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
+.PHONY : CMakeFiles/run_threading_tests.dir/rule
+
+# Convenience name for target.
+run_threading_tests: CMakeFiles/run_threading_tests.dir/rule
+.PHONY : run_threading_tests
+
+# clean rule for target.
+CMakeFiles/run_threading_tests.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_threading_tests.dir/build.make CMakeFiles/run_threading_tests.dir/clean
+.PHONY : CMakeFiles/run_threading_tests.dir/clean
+
+#=============================================================================
 # Target rules for target tests/unit/CMakeFiles/unit_test_init_shutdown.dir
 
 # All Build rule for target.
@@ -1592,7 +1787,7 @@ tests/unit/CMakeFiles/unit_test_init_shutdown.dir/all: CMakeFiles/lgx_runtime.di
 
 # Build rule for subdir invocation for target.
 tests/unit/CMakeFiles/unit_test_init_shutdown.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_init_shutdown.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/unit/CMakeFiles/unit_test_init_shutdown.dir/rule
@@ -1618,7 +1813,7 @@ tests/unit/CMakeFiles/unit_test_platform_services.dir/all: CMakeFiles/lgx_runtim
 
 # Build rule for subdir invocation for target.
 tests/unit/CMakeFiles/unit_test_platform_services.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_platform_services.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/unit/CMakeFiles/unit_test_platform_services.dir/rule
@@ -1644,7 +1839,7 @@ tests/unit/CMakeFiles/unit_test_error_handler.dir/all: CMakeFiles/lgx_runtime.di
 
 # Build rule for subdir invocation for target.
 tests/unit/CMakeFiles/unit_test_error_handler.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_error_handler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/unit/CMakeFiles/unit_test_error_handler.dir/rule
@@ -1670,7 +1865,7 @@ tests/unit/CMakeFiles/unit_test_health_monitor.dir/all: CMakeFiles/lgx_runtime.d
 
 # Build rule for subdir invocation for target.
 tests/unit/CMakeFiles/unit_test_health_monitor.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_health_monitor.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/unit/CMakeFiles/unit_test_health_monitor.dir/rule
@@ -1696,7 +1891,7 @@ tests/unit/CMakeFiles/unit_test_resource_limits.dir/all: CMakeFiles/lgx_runtime.
 
 # Build rule for subdir invocation for target.
 tests/unit/CMakeFiles/unit_test_resource_limits.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/CMakeFiles/unit_test_resource_limits.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/unit/CMakeFiles/unit_test_resource_limits.dir/rule
@@ -1722,7 +1917,7 @@ tests/integration/CMakeFiles/integration_test_memory_stress.dir/all: CMakeFiles/
 
 # Build rule for subdir invocation for target.
 tests/integration/CMakeFiles/integration_test_memory_stress.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/integration/CMakeFiles/integration_test_memory_stress.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/integration/CMakeFiles/integration_test_memory_stress.dir/rule
@@ -1743,12 +1938,12 @@ tests/integration/CMakeFiles/integration_test_memory_stress.dir/clean:
 tests/abi/CMakeFiles/test_game_v1_0.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_game_v1_0.dir/build.make tests/abi/CMakeFiles/test_game_v1_0.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_game_v1_0.dir/build.make tests/abi/CMakeFiles/test_game_v1_0.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=49 "Built target test_game_v1_0"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=48 "Built target test_game_v1_0"
 .PHONY : tests/abi/CMakeFiles/test_game_v1_0.dir/all
 
 # Build rule for subdir invocation for target.
 tests/abi/CMakeFiles/test_game_v1_0.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/abi/CMakeFiles/test_game_v1_0.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/abi/CMakeFiles/test_game_v1_0.dir/rule
@@ -1769,7 +1964,7 @@ tests/abi/CMakeFiles/test_game_v1_0.dir/clean:
 tests/abi/CMakeFiles/test_struct_evolution.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_struct_evolution.dir/build.make tests/abi/CMakeFiles/test_struct_evolution.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_struct_evolution.dir/build.make tests/abi/CMakeFiles/test_struct_evolution.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=83 "Built target test_struct_evolution"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=79,80 "Built target test_struct_evolution"
 .PHONY : tests/abi/CMakeFiles/test_struct_evolution.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1795,12 +1990,12 @@ tests/abi/CMakeFiles/test_struct_evolution.dir/clean:
 tests/abi/CMakeFiles/test_symbol_versioning.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_symbol_versioning.dir/build.make tests/abi/CMakeFiles/test_symbol_versioning.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/abi/CMakeFiles/test_symbol_versioning.dir/build.make tests/abi/CMakeFiles/test_symbol_versioning.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=86 "Built target test_symbol_versioning"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=83 "Built target test_symbol_versioning"
 .PHONY : tests/abi/CMakeFiles/test_symbol_versioning.dir/all
 
 # Build rule for subdir invocation for target.
 tests/abi/CMakeFiles/test_symbol_versioning.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/abi/CMakeFiles/test_symbol_versioning.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/abi/CMakeFiles/test_symbol_versioning.dir/rule
@@ -1847,7 +2042,7 @@ tests/abi/CMakeFiles/run_abi_tests.dir/clean:
 tests/performance/CMakeFiles/perf_test_initialization_time.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_initialization_time.dir/build.make tests/performance/CMakeFiles/perf_test_initialization_time.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_initialization_time.dir/build.make tests/performance/CMakeFiles/perf_test_initialization_time.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=29 "Built target perf_test_initialization_time"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=29,30 "Built target perf_test_initialization_time"
 .PHONY : tests/performance/CMakeFiles/perf_test_initialization_time.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1878,7 +2073,7 @@ tests/performance/CMakeFiles/perf_test_allocation_latency.dir/all: CMakeFiles/lg
 
 # Build rule for subdir invocation for target.
 tests/performance/CMakeFiles/perf_test_allocation_latency.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/performance/CMakeFiles/perf_test_allocation_latency.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/performance/CMakeFiles/perf_test_allocation_latency.dir/rule
@@ -1904,7 +2099,7 @@ tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/all: CMakeFil
 
 # Build rule for subdir invocation for target.
 tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/performance/CMakeFiles/perf_test_frame_time_contribution.dir/rule
@@ -1930,7 +2125,7 @@ tests/performance/CMakeFiles/perf_test_memory_overhead.dir/all: CMakeFiles/lgx_r
 
 # Build rule for subdir invocation for target.
 tests/performance/CMakeFiles/perf_test_memory_overhead.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/performance/CMakeFiles/perf_test_memory_overhead.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/performance/CMakeFiles/perf_test_memory_overhead.dir/rule
@@ -1951,12 +2146,12 @@ tests/performance/CMakeFiles/perf_test_memory_overhead.dir/clean:
 tests/performance/CMakeFiles/perf_test_memory_footprint.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build.make tests/performance/CMakeFiles/perf_test_memory_footprint.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=30,31 "Built target perf_test_memory_footprint"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=31 "Built target perf_test_memory_footprint"
 .PHONY : tests/performance/CMakeFiles/perf_test_memory_footprint.dir/all
 
 # Build rule for subdir invocation for target.
 tests/performance/CMakeFiles/perf_test_memory_footprint.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/performance/CMakeFiles/perf_test_memory_footprint.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/performance/CMakeFiles/perf_test_memory_footprint.dir/rule
@@ -1977,12 +2172,12 @@ tests/performance/CMakeFiles/perf_test_memory_footprint.dir/clean:
 tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/all: CMakeFiles/lgx_runtime.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build.make tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build.make tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=68 "Built target test_library_version_mismatch"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=66 "Built target test_library_version_mismatch"
 .PHONY : tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/all
 
 # Build rule for subdir invocation for target.
 tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/rule
@@ -2003,12 +2198,12 @@ tests/failure_injection/CMakeFiles/test_library_version_mismatch.dir/clean:
 tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build.make tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build.make tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=34 "Built target run_failure_injection_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num= "Built target run_failure_injection_tests"
 .PHONY : tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/all
 
 # Build rule for subdir invocation for target.
 tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/rule
@@ -2029,12 +2224,12 @@ tests/failure_injection/CMakeFiles/run_failure_injection_tests.dir/clean:
 benchmarks/CMakeFiles/benchmark_framework.dir/all:
 	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_framework.dir/build.make benchmarks/CMakeFiles/benchmark_framework.dir/depend
 	$(MAKE) $(MAKESILENT) -f benchmarks/CMakeFiles/benchmark_framework.dir/build.make benchmarks/CMakeFiles/benchmark_framework.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=6,7 "Built target benchmark_framework"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/Projects/LGX/build/CMakeFiles --progress-num=6 "Built target benchmark_framework"
 .PHONY : benchmarks/CMakeFiles/benchmark_framework.dir/all
 
 # Build rule for subdir invocation for target.
 benchmarks/CMakeFiles/benchmark_framework.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmarks/CMakeFiles/benchmark_framework.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : benchmarks/CMakeFiles/benchmark_framework.dir/rule
@@ -2061,7 +2256,7 @@ benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir/all: benchma
 
 # Build rule for subdir invocation for target.
 benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : benchmarks/CMakeFiles/benchmark_benchmark_allocation_throughput.dir/rule
@@ -2088,7 +2283,7 @@ benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir/all: benchmarks/CM
 
 # Build rule for subdir invocation for target.
 benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : benchmarks/CMakeFiles/benchmark_benchmark_memory_patterns.dir/rule
@@ -2115,7 +2310,7 @@ benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir/all: benchmark
 
 # Build rule for subdir invocation for target.
 benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : benchmarks/CMakeFiles/benchmark_benchmark_hardware_adaptation.dir/rule
@@ -2142,7 +2337,7 @@ benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir/all: benchmarks/CM
 
 # Build rule for subdir invocation for target.
 benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : benchmarks/CMakeFiles/benchmark_benchmark_intent_accuracy.dir/rule
@@ -2169,7 +2364,7 @@ benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir/all: benchmarks
 
 # Build rule for subdir invocation for target.
 benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/Projects/LGX/build/CMakeFiles 0
 .PHONY : benchmarks/CMakeFiles/benchmark_benchmark_telemetry_overhead.dir/rule

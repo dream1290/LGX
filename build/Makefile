@@ -809,6 +809,97 @@ run_performance_tests/fast:
 .PHONY : run_performance_tests/fast
 
 #=============================================================================
+# Target rules for targets named lgx_threading
+
+# Build rule for target.
+lgx_threading: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lgx_threading
+.PHONY : lgx_threading
+
+# fast build rule for target.
+lgx_threading/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/build
+.PHONY : lgx_threading/fast
+
+#=============================================================================
+# Target rules for targets named test_threading_basic
+
+# Build rule for target.
+test_threading_basic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_threading_basic
+.PHONY : test_threading_basic
+
+# fast build rule for target.
+test_threading_basic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_basic.dir/build.make CMakeFiles/test_threading_basic.dir/build
+.PHONY : test_threading_basic/fast
+
+#=============================================================================
+# Target rules for targets named test_threading_stress
+
+# Build rule for target.
+test_threading_stress: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_threading_stress
+.PHONY : test_threading_stress
+
+# fast build rule for target.
+test_threading_stress/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/build
+.PHONY : test_threading_stress/fast
+
+#=============================================================================
+# Target rules for targets named test_threading_fiber
+
+# Build rule for target.
+test_threading_fiber: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_threading_fiber
+.PHONY : test_threading_fiber
+
+# fast build rule for target.
+test_threading_fiber/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_fiber.dir/build.make CMakeFiles/test_threading_fiber.dir/build
+.PHONY : test_threading_fiber/fast
+
+#=============================================================================
+# Target rules for targets named benchmark_threading
+
+# Build rule for target.
+benchmark_threading: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark_threading
+.PHONY : benchmark_threading
+
+# fast build rule for target.
+benchmark_threading/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_threading.dir/build.make CMakeFiles/benchmark_threading.dir/build
+.PHONY : benchmark_threading/fast
+
+#=============================================================================
+# Target rules for targets named test_threading_advanced
+
+# Build rule for target.
+test_threading_advanced: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_threading_advanced
+.PHONY : test_threading_advanced
+
+# fast build rule for target.
+test_threading_advanced/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_advanced.dir/build.make CMakeFiles/test_threading_advanced.dir/build
+.PHONY : test_threading_advanced/fast
+
+#=============================================================================
+# Target rules for targets named run_threading_tests
+
+# Build rule for target.
+run_threading_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_threading_tests
+.PHONY : run_threading_tests
+
+# fast build rule for target.
+run_threading_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_threading_tests.dir/build.make CMakeFiles/run_threading_tests.dir/build
+.PHONY : run_threading_tests/fast
+
+#=============================================================================
 # Target rules for targets named unit_test_init_shutdown
 
 # Build rule for target.
@@ -1815,6 +1906,30 @@ src/runtime/lgx_trace_events.s: src/runtime/lgx_trace_events.c.s
 src/runtime/lgx_trace_events.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/runtime/lgx_trace_events.c.s
 .PHONY : src/runtime/lgx_trace_events.c.s
+
+src/threading/lgx_threading.o: src/threading/lgx_threading.c.o
+.PHONY : src/threading/lgx_threading.o
+
+# target to build an object file
+src/threading/lgx_threading.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/src/threading/lgx_threading.c.o
+.PHONY : src/threading/lgx_threading.c.o
+
+src/threading/lgx_threading.i: src/threading/lgx_threading.c.i
+.PHONY : src/threading/lgx_threading.i
+
+# target to preprocess a source file
+src/threading/lgx_threading.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/src/threading/lgx_threading.c.i
+.PHONY : src/threading/lgx_threading.c.i
+
+src/threading/lgx_threading.s: src/threading/lgx_threading.c.s
+.PHONY : src/threading/lgx_threading.s
+
+# target to generate assembly for a file
+src/threading/lgx_threading.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/src/threading/lgx_threading.c.s
+.PHONY : src/threading/lgx_threading.c.s
 
 tests/phase0/test_csf1_comparison.o: tests/phase0/test_csf1_comparison.c.o
 .PHONY : tests/phase0/test_csf1_comparison.o
@@ -2872,6 +2987,126 @@ tests/phase0/test_trace_events.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_trace_events.dir/build.make CMakeFiles/test_trace_events.dir/tests/phase0/test_trace_events.c.s
 .PHONY : tests/phase0/test_trace_events.c.s
 
+tests/threading/benchmark_threading.o: tests/threading/benchmark_threading.c.o
+.PHONY : tests/threading/benchmark_threading.o
+
+# target to build an object file
+tests/threading/benchmark_threading.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_threading.dir/build.make CMakeFiles/benchmark_threading.dir/tests/threading/benchmark_threading.c.o
+.PHONY : tests/threading/benchmark_threading.c.o
+
+tests/threading/benchmark_threading.i: tests/threading/benchmark_threading.c.i
+.PHONY : tests/threading/benchmark_threading.i
+
+# target to preprocess a source file
+tests/threading/benchmark_threading.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_threading.dir/build.make CMakeFiles/benchmark_threading.dir/tests/threading/benchmark_threading.c.i
+.PHONY : tests/threading/benchmark_threading.c.i
+
+tests/threading/benchmark_threading.s: tests/threading/benchmark_threading.c.s
+.PHONY : tests/threading/benchmark_threading.s
+
+# target to generate assembly for a file
+tests/threading/benchmark_threading.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_threading.dir/build.make CMakeFiles/benchmark_threading.dir/tests/threading/benchmark_threading.c.s
+.PHONY : tests/threading/benchmark_threading.c.s
+
+tests/threading/test_threading_advanced.o: tests/threading/test_threading_advanced.c.o
+.PHONY : tests/threading/test_threading_advanced.o
+
+# target to build an object file
+tests/threading/test_threading_advanced.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_advanced.dir/build.make CMakeFiles/test_threading_advanced.dir/tests/threading/test_threading_advanced.c.o
+.PHONY : tests/threading/test_threading_advanced.c.o
+
+tests/threading/test_threading_advanced.i: tests/threading/test_threading_advanced.c.i
+.PHONY : tests/threading/test_threading_advanced.i
+
+# target to preprocess a source file
+tests/threading/test_threading_advanced.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_advanced.dir/build.make CMakeFiles/test_threading_advanced.dir/tests/threading/test_threading_advanced.c.i
+.PHONY : tests/threading/test_threading_advanced.c.i
+
+tests/threading/test_threading_advanced.s: tests/threading/test_threading_advanced.c.s
+.PHONY : tests/threading/test_threading_advanced.s
+
+# target to generate assembly for a file
+tests/threading/test_threading_advanced.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_advanced.dir/build.make CMakeFiles/test_threading_advanced.dir/tests/threading/test_threading_advanced.c.s
+.PHONY : tests/threading/test_threading_advanced.c.s
+
+tests/threading/test_threading_basic.o: tests/threading/test_threading_basic.c.o
+.PHONY : tests/threading/test_threading_basic.o
+
+# target to build an object file
+tests/threading/test_threading_basic.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_basic.dir/build.make CMakeFiles/test_threading_basic.dir/tests/threading/test_threading_basic.c.o
+.PHONY : tests/threading/test_threading_basic.c.o
+
+tests/threading/test_threading_basic.i: tests/threading/test_threading_basic.c.i
+.PHONY : tests/threading/test_threading_basic.i
+
+# target to preprocess a source file
+tests/threading/test_threading_basic.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_basic.dir/build.make CMakeFiles/test_threading_basic.dir/tests/threading/test_threading_basic.c.i
+.PHONY : tests/threading/test_threading_basic.c.i
+
+tests/threading/test_threading_basic.s: tests/threading/test_threading_basic.c.s
+.PHONY : tests/threading/test_threading_basic.s
+
+# target to generate assembly for a file
+tests/threading/test_threading_basic.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_basic.dir/build.make CMakeFiles/test_threading_basic.dir/tests/threading/test_threading_basic.c.s
+.PHONY : tests/threading/test_threading_basic.c.s
+
+tests/threading/test_threading_fiber.o: tests/threading/test_threading_fiber.c.o
+.PHONY : tests/threading/test_threading_fiber.o
+
+# target to build an object file
+tests/threading/test_threading_fiber.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_fiber.dir/build.make CMakeFiles/test_threading_fiber.dir/tests/threading/test_threading_fiber.c.o
+.PHONY : tests/threading/test_threading_fiber.c.o
+
+tests/threading/test_threading_fiber.i: tests/threading/test_threading_fiber.c.i
+.PHONY : tests/threading/test_threading_fiber.i
+
+# target to preprocess a source file
+tests/threading/test_threading_fiber.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_fiber.dir/build.make CMakeFiles/test_threading_fiber.dir/tests/threading/test_threading_fiber.c.i
+.PHONY : tests/threading/test_threading_fiber.c.i
+
+tests/threading/test_threading_fiber.s: tests/threading/test_threading_fiber.c.s
+.PHONY : tests/threading/test_threading_fiber.s
+
+# target to generate assembly for a file
+tests/threading/test_threading_fiber.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_fiber.dir/build.make CMakeFiles/test_threading_fiber.dir/tests/threading/test_threading_fiber.c.s
+.PHONY : tests/threading/test_threading_fiber.c.s
+
+tests/threading/test_threading_stress.o: tests/threading/test_threading_stress.c.o
+.PHONY : tests/threading/test_threading_stress.o
+
+# target to build an object file
+tests/threading/test_threading_stress.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/tests/threading/test_threading_stress.c.o
+.PHONY : tests/threading/test_threading_stress.c.o
+
+tests/threading/test_threading_stress.i: tests/threading/test_threading_stress.c.i
+.PHONY : tests/threading/test_threading_stress.i
+
+# target to preprocess a source file
+tests/threading/test_threading_stress.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/tests/threading/test_threading_stress.c.i
+.PHONY : tests/threading/test_threading_stress.c.i
+
+tests/threading/test_threading_stress.s: tests/threading/test_threading_stress.c.s
+.PHONY : tests/threading/test_threading_stress.s
+
+# target to generate assembly for a file
+tests/threading/test_threading_stress.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/tests/threading/test_threading_stress.c.s
+.PHONY : tests/threading/test_threading_stress.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -2891,6 +3126,7 @@ help:
 	@echo "... run_integration_tests"
 	@echo "... run_performance_tests"
 	@echo "... run_phase0_tests"
+	@echo "... run_threading_tests"
 	@echo "... run_unit_tests"
 	@echo "... benchmark_benchmark_allocation_throughput"
 	@echo "... benchmark_benchmark_hardware_adaptation"
@@ -2898,8 +3134,10 @@ help:
 	@echo "... benchmark_benchmark_memory_patterns"
 	@echo "... benchmark_benchmark_telemetry_overhead"
 	@echo "... benchmark_framework"
+	@echo "... benchmark_threading"
 	@echo "... integration_test_memory_stress"
 	@echo "... lgx_runtime"
+	@echo "... lgx_threading"
 	@echo "... perf_test_allocation_latency"
 	@echo "... perf_test_frame_time_contribution"
 	@echo "... perf_test_initialization_time"
@@ -2950,6 +3188,10 @@ help:
 	@echo "... test_telemetry_anonymization"
 	@echo "... test_telemetry_process"
 	@echo "... test_telemetry_simple"
+	@echo "... test_threading_advanced"
+	@echo "... test_threading_basic"
+	@echo "... test_threading_fiber"
+	@echo "... test_threading_stress"
 	@echo "... test_tiered_performance"
 	@echo "... test_timing_services"
 	@echo "... test_trace_events"
@@ -3045,6 +3287,9 @@ help:
 	@echo "... src/runtime/lgx_trace_events.o"
 	@echo "... src/runtime/lgx_trace_events.i"
 	@echo "... src/runtime/lgx_trace_events.s"
+	@echo "... src/threading/lgx_threading.o"
+	@echo "... src/threading/lgx_threading.i"
+	@echo "... src/threading/lgx_threading.s"
 	@echo "... tests/phase0/test_csf1_comparison.o"
 	@echo "... tests/phase0/test_csf1_comparison.i"
 	@echo "... tests/phase0/test_csf1_comparison.s"
@@ -3177,6 +3422,21 @@ help:
 	@echo "... tests/phase0/test_trace_events.o"
 	@echo "... tests/phase0/test_trace_events.i"
 	@echo "... tests/phase0/test_trace_events.s"
+	@echo "... tests/threading/benchmark_threading.o"
+	@echo "... tests/threading/benchmark_threading.i"
+	@echo "... tests/threading/benchmark_threading.s"
+	@echo "... tests/threading/test_threading_advanced.o"
+	@echo "... tests/threading/test_threading_advanced.i"
+	@echo "... tests/threading/test_threading_advanced.s"
+	@echo "... tests/threading/test_threading_basic.o"
+	@echo "... tests/threading/test_threading_basic.i"
+	@echo "... tests/threading/test_threading_basic.s"
+	@echo "... tests/threading/test_threading_fiber.o"
+	@echo "... tests/threading/test_threading_fiber.i"
+	@echo "... tests/threading/test_threading_fiber.s"
+	@echo "... tests/threading/test_threading_stress.o"
+	@echo "... tests/threading/test_threading_stress.i"
+	@echo "... tests/threading/test_threading_stress.s"
 .PHONY : help
 
 

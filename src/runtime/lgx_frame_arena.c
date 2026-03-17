@@ -204,10 +204,6 @@ static void record_profiler_reset_event(uint32_t frame_index, size_t peak_usage)
 static bool grow_arena(lgx_frame_arena_t* arena, size_t new_capacity);  // Task 3.4.5.2.2
 static void update_rolling_average(lgx_frame_arena_t* arena);           // Task 3.4.5.2.4
 static void check_high_usage_warning(lgx_frame_arena_t* arena);         // Task 3.4.5.2.5
-static void free_huge_page_arena(void* ptr, size_t size);
-static void track_allocation_histogram(lgx_frame_arena_t* arena, size_t size);
-static void track_allocation_call_site(lgx_frame_arena_t* arena, size_t size, const char* file, int line);
-static size_t get_histogram_bucket(size_t size);
 
 /**
  * Track allocation in histogram (Task 3.4.5.1.2)
@@ -1074,8 +1070,8 @@ void lgx_frame_arena_dump_stats(FILE* output) {
             allocation_call_site_t sorted[MAX_ALLOCATION_CALL_SITES];
             memcpy(sorted, arena->call_sites, sizeof(allocation_call_site_t) * arena->call_site_count);
             
-            for (uint32_t i = 0; i < arena->call_site_count - 1; i++) {
-                for (uint32_t j = 0; j < arena->call_site_count - i - 1; j++) {
+            for (uint32_t si = 0; si < arena->call_site_count - 1; si++) {
+                for (uint32_t j = 0; j < arena->call_site_count - si - 1; j++) {
                     if (sorted[j].total_bytes < sorted[j + 1].total_bytes) {
                         allocation_call_site_t temp = sorted[j];
                         sorted[j] = sorted[j + 1];
@@ -1086,14 +1082,14 @@ void lgx_frame_arena_dump_stats(FILE* output) {
             
             // Print top 10
             uint32_t top_count = arena->call_site_count < 10 ? arena->call_site_count : 10;
-            for (uint32_t i = 0; i < top_count; i++) {
+            for (uint32_t si = 0; si < top_count; si++) {
                 fprintf(output, "    %2u. %s:%d - %lu bytes (%lu allocations, avg %.1f bytes)\n",
-                        i + 1,
-                        sorted[i].file,
-                        sorted[i].line,
-                        sorted[i].total_bytes,
-                        sorted[i].count,
-                        (double)sorted[i].total_bytes / sorted[i].count);
+                        si + 1,
+                        sorted[si].file,
+                        sorted[si].line,
+                        sorted[si].total_bytes,
+                        sorted[si].count,
+                        (double)sorted[si].total_bytes / sorted[si].count);
             }
         }
         
@@ -1105,8 +1101,8 @@ void lgx_frame_arena_dump_stats(FILE* output) {
             allocation_tag_t sorted_tags[MAX_ALLOCATION_TAGS];
             memcpy(sorted_tags, arena->tags, sizeof(allocation_tag_t) * arena->tag_count);
             
-            for (uint32_t i = 0; i < arena->tag_count - 1; i++) {
-                for (uint32_t j = 0; j < arena->tag_count - i - 1; j++) {
+            for (uint32_t si = 0; si < arena->tag_count - 1; si++) {
+                for (uint32_t j = 0; j < arena->tag_count - si - 1; j++) {
                     if (sorted_tags[j].total_bytes < sorted_tags[j + 1].total_bytes) {
                         allocation_tag_t temp = sorted_tags[j];
                         sorted_tags[j] = sorted_tags[j + 1];
@@ -1116,9 +1112,9 @@ void lgx_frame_arena_dump_stats(FILE* output) {
             }
             
             // Print all tags
-            for (uint32_t i = 0; i < arena->tag_count; i++) {
+            for (uint32_t si = 0; si < arena->tag_count; si++) {
                 fprintf(output, "    %2u. %-20s - %lu bytes (%lu allocations, peak: %lu bytes)\n",
-                        i + 1,
+                        si + 1,
                         sorted_tags[i].tag,
                         sorted_tags[i].total_bytes,
                         sorted_tags[i].count,

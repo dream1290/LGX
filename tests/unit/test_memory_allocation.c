@@ -160,7 +160,7 @@ static void test_gpu_alloc(void) {
     
     if (alloc) {
         TEST_ASSERT(lgx_gpu_get_size(alloc) >= 4096, "GPU allocation size correct");
-        lgx_gpu_free(alloc, 0);
+        lgx_gpu_free(alloc);
         TEST_ASSERT(true, "GPU free succeeds");
     }
 }
@@ -169,33 +169,39 @@ static void test_gpu_alloc(void) {
 static void test_intent_frame_alloc(void) {
     printf("\nTest 9: Intent-based allocation (frame)\n");
     
-    lgx_allocation_intent_t intent = {
-        .struct_size = sizeof(lgx_allocation_intent_t),
+    lgx_allocation_intent_base_t intent = {
+        .struct_size = sizeof(lgx_allocation_intent_base_t),
+        .size = 1024,
         .lifetime = LGX_LIFETIME_FRAME,
         .access_pattern = LGX_ACCESS_SEQUENTIAL,
-        .performance_hint = LGX_PERF_LATENCY_CRITICAL
+        .hint = LGX_HINT_CRITICAL_PATH,
+        .validation_policy = LGX_INTENT_TRUST
     };
     
-    void* ptr = lgx_alloc_with_intent(1024, &intent);
+    void* ptr = lgx_alloc_with_intent(&intent);
     TEST_ASSERT(ptr != NULL, "Intent-based frame allocation succeeds");
     
     // Should route to frame arena
-    memset(ptr, 0xEE, 1024);
-    TEST_ASSERT(((uint8_t*)ptr)[0] == 0xEE, "Intent-based memory is writable");
+    if (ptr) {
+        memset(ptr, 0xEE, 1024);
+        TEST_ASSERT(((uint8_t*)ptr)[0] == 0xEE, "Intent-based memory is writable");
+    }
 }
 
 // Test 10: Intent-based allocation (persistent)
 static void test_intent_persistent_alloc(void) {
     printf("\nTest 10: Intent-based allocation (persistent)\n");
     
-    lgx_allocation_intent_t intent = {
-        .struct_size = sizeof(lgx_allocation_intent_t),
+    lgx_allocation_intent_base_t intent = {
+        .struct_size = sizeof(lgx_allocation_intent_base_t),
+        .size = 2048,
         .lifetime = LGX_LIFETIME_LEVEL,
         .access_pattern = LGX_ACCESS_RANDOM,
-        .performance_hint = LGX_PERF_BALANCED
+        .hint = LGX_HINT_BACKGROUND,
+        .validation_policy = LGX_INTENT_TRUST
     };
     
-    void* ptr = lgx_alloc_with_intent(2048, &intent);
+    void* ptr = lgx_alloc_with_intent(&intent);
     TEST_ASSERT(ptr != NULL, "Intent-based persistent allocation succeeds");
     
     if (ptr) {
@@ -238,9 +244,9 @@ static void test_alloc_stats(void) {
     lgx_result_t result = lgx_memory_stats(&stats);
     TEST_ASSERT(result == LGX_SUCCESS, "Get memory stats succeeds");
     
-    printf("    Total allocated: %zu bytes\n", stats.total_allocated);
-    printf("    Total freed: %zu bytes\n", stats.total_freed);
-    printf("    Current usage: %zu bytes\n", stats.current_usage);
+    printf("    Total allocated: %zu bytes\n", (size_t)stats.total_allocated);
+    printf("    Total freed: %zu bytes\n", (size_t)stats.total_deallocated);
+    printf("    Current allocated: %zu bytes\n", (size_t)stats.current_allocated);
 }
 
 // Test 14: Frame arena statistics
@@ -251,9 +257,9 @@ static void test_frame_stats(void) {
     lgx_result_t result = lgx_frame_get_stats(&stats);
     TEST_ASSERT(result == LGX_SUCCESS, "Get frame stats succeeds");
     
-    printf("    Current frame: %u\n", stats.current_frame);
-    printf("    Current usage: %zu bytes\n", stats.current_usage);
-    printf("    Peak usage: %zu bytes\n", stats.peak_usage);
+    printf("    Current frame: %llu\n", (unsigned long long)stats.current_frame);
+    printf("    Total allocated: %llu bytes\n", (unsigned long long)stats.total_bytes_allocated);
+    printf("    Peak usage: %llu bytes\n", (unsigned long long)stats.peak_usage_bytes);
 }
 
 // Test 15: Allocation failure handling

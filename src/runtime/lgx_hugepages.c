@@ -233,7 +233,7 @@ bool lgx_hugepages_available(void) {
 /**
  * Get huge page statistics
  */
-void lgx_hugepages_get_stats(hugepage_stats_t* stats) {
+static void __attribute__((unused)) lgx_hugepages_get_stats(hugepage_stats_t* stats) {
     if (stats) {
         *stats = g_hugepage_state.stats;
     }
@@ -242,7 +242,7 @@ void lgx_hugepages_get_stats(hugepage_stats_t* stats) {
 /**
  * Set huge page allocation strategy
  */
-void lgx_hugepages_set_strategy(hugepage_strategy_t strategy) {
+static void __attribute__((unused)) lgx_hugepages_set_strategy(hugepage_strategy_t strategy) {
     g_hugepage_state.strategy = strategy;
 }
 

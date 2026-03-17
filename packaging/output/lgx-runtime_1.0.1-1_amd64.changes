@@ -1,0 +1,50 @@
+Format: 1.8
+Date: Thu, 12 Feb 2026 23:10:00 +0100
+Source: lgx-runtime
+Binary: lgx-runtime lgx-runtime-dev
+Built-For-Profiles: noudeb
+Architecture: amd64
+Version: 1.0.1-1
+Distribution: unstable
+Urgency: medium
+Maintainer: LGX Platform Team <team@lgx-platform.org>
+Changed-By: LGX Platform Team <team@lgx-platform.org>
+Description:
+ lgx-runtime - High-performance deterministic runtime for Linux gaming
+ lgx-runtime-dev - Development files for LGX Runtime Core
+Changes:
+ lgx-runtime (1.0.1-1) unstable; urgency=medium
+ .
+   * Bug fixes and improvements:
+     - Fixed ISO C pedantic compliance in namespace isolation
+     - Eliminated variable length arrays (VLA) in test code for better portability
+     - Added NULL safety checks in test code
+     - Suppressed intentional NULL dereference warnings in signal handling tests
+     - Fixed stack protector warnings across test suite
+   * New features:
+     - Added comprehensive benchmark suite (5 benchmarks)
+     - Benchmark framework with statistical analysis
+     - Performance measurement tools for allocation, memory patterns, hardware adaptation
+   * Security improvements:
+     - All code passes strict GCC static analysis with -fanalyzer
+     - Zero warnings with -Wpedantic -Werror
+     - Enhanced code quality and ISO C compliance
+   * Build improvements:
+     - All 59 tests compile cleanly
+     - All 5 benchmarks compile cleanly
+     - Zero compilation warnings in release builds
+Checksums-Sha1:
+ 5a8ce3921559bb1af1e226de6a92593579563825 207148 lgx-runtime-dbgsym_1.0.1-1_amd64.ddeb
+ cbfeffb5c68bb10e9c05d8d5bd2ad6b97766c1a6 17428 lgx-runtime-dev_1.0.1-1_amd64.deb
+ 69a9338c5b6c416fc679407b30703f2235e505f9 7921 lgx-runtime_1.0.1-1_amd64.buildinfo
+ a9fff8d628607d9acce1477ebd98990bcbac0777 63186 lgx-runtime_1.0.1-1_amd64.deb
+Checksums-Sha256:
+ d1236b142033fe70abeee80926dcbfc19831d3489523ccec52b47f59555a9712 207148 lgx-runtime-dbgsym_1.0.1-1_amd64.ddeb
+ a4d82ad5a7061cd45427569a19979906439339a72580bf56dd290e394ae2bba8 17428 lgx-runtime-dev_1.0.1-1_amd64.deb
+ 6135ba13fb7381b1212a03ebca9cc141128bb55481bcefe6eb58f569d9a85b8c 7921 lgx-runtime_1.0.1-1_amd64.buildinfo
+ 6238d970a89ab0fe7e9859e6c5115280269a0c9492a9c93bb029a3a8e28ed07c 63186 lgx-runtime_1.0.1-1_amd64.deb
+Files:
+ 51b09645c3b64b9c029c678c75f2e218 207148 debug optional lgx-runtime-dbgsym_1.0.1-1_amd64.ddeb
+ 0b49d33cfbc2cb102466e69e2f9a1ca8 17428 libdevel optional lgx-runtime-dev_1.0.1-1_amd64.deb
+ 816a589c470c685774cef7bb10bd12dd 7921 libs optional lgx-runtime_1.0.1-1_amd64.buildinfo
+ b7bcc0b327fe0497ac641b97d0b1a30b 63186 libs optional lgx-runtime_1.0.1-1_amd64.deb
