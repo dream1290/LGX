@@ -184,7 +184,7 @@ jobs:
         path: compatibility_report_${{ matrix.os }}.txt
   
   gpu-compatibility-test:
-    name: GPU Compatibility - ${{ matrix.gpu }}
+    name: GPU Compatibility - ${{ matrix.gpu }} (Placeholder)
     runs-on: ${{ matrix.runner }}
     
     strategy:
@@ -192,37 +192,39 @@ jobs:
       matrix:
         include:
           # Note: These require self-hosted runners with actual GPUs
-          # For now, we'll document the test structure
+          # For now, these are informational placeholders
           - gpu: nvidia
-            runner: ubuntu-latest  # Would be: self-hosted-nvidia
+            runner: ubuntu-latest
             driver: nvidia-driver-535
             
           - gpu: amd
-            runner: ubuntu-latest  # Would be: self-hosted-amd
+            runner: ubuntu-latest
             driver: mesa-vulkan-drivers
             
           - gpu: intel
-            runner: ubuntu-latest  # Would be: self-hosted-intel
+            runner: ubuntu-latest
             driver: intel-media-va-driver
     
     steps:
-    - name: GPU Compatibility Test (Placeholder)
+    - name: GPU Compatibility Test (Informational)
       run: |
-        echo "=== GPU Compatibility Test ==="
+        echo "=== GPU Compatibility Test (Informational) ==="
         echo "GPU Type: ${{ matrix.gpu }}"
         echo "Driver: ${{ matrix.driver }}"
         echo ""
-        echo "Note: This test requires self-hosted runners with actual GPUs."
-        echo "To enable:"
+        echo "✅ This is an informational placeholder documenting planned GPU testing."
+        echo ""
+        echo "To enable actual GPU testing:"
         echo "  1. Set up self-hosted runners with NVIDIA/AMD/Intel GPUs"
         echo "  2. Update matrix.runner to use self-hosted labels"
         echo "  3. Install appropriate drivers"
         echo "  4. Run full GPU capability tests"
         echo ""
-        echo "For now, this is a placeholder that documents the test structure."
+        echo "Current status: Documented, infrastructure pending"
+        exit 0
   
   kernel-compatibility-test:
-    name: Kernel ${{ matrix.kernel }}
+    name: Kernel ${{ matrix.kernel }} (Placeholder)
     runs-on: ubuntu-latest
     
     strategy:
@@ -236,24 +238,27 @@ jobs:
           - "6.6"   # Latest stable
     
     steps:
-    - name: Kernel Compatibility Test (Placeholder)
+    - name: Kernel Compatibility Test (Informational)
       run: |
-        echo "=== Kernel Compatibility Test ==="
+        echo "=== Kernel Compatibility Test (Informational) ==="
         echo "Target Kernel: ${{ matrix.kernel }}"
         echo "Current Kernel: $(uname -r)"
         echo ""
-        echo "Note: Testing against specific kernel versions requires:"
-        echo "  1. Custom VM images with specific kernels"
-        echo "  2. Or kernel module testing framework"
-        echo "  3. Or containerized kernel testing"
+        echo "✅ This is an informational placeholder documenting kernel requirements."
         echo ""
-        echo "The runtime should work on any kernel >= 5.10 with:"
+        echo "LGX Runtime requires kernel >= 5.10 with:"
         echo "  - CLOCK_MONOTONIC support"
         echo "  - mmap/munmap"
         echo "  - pthread support"
         echo "  - Vulkan driver support (for GPU features)"
         echo ""
-        echo "For now, we test on the GitHub Actions default kernel."
+        echo "To enable actual kernel-specific testing:"
+        echo "  1. Custom VM images with specific kernels"
+        echo "  2. Or kernel module testing framework"
+        echo "  3. Or containerized kernel testing"
+        echo ""
+        echo "Current status: Requirements documented, specific testing pending"
+        exit 0
   
   summary:
     name: Compatibility Test Summary
