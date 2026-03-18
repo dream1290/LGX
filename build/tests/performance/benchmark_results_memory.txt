@@ -1,6 +1,6 @@
 benchmark=memory_overhead
 baseline_vm_bytes=21990311002112
-baseline_rss_bytes=11747328
+baseline_rss_bytes=11767808
 init_overhead_vm_bytes=2154463232
 init_overhead_rss_bytes=1249280
 init_overhead_data_bytes=2156036096

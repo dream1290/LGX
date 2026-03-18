@@ -198,6 +198,22 @@ install(TARGETS lgx_profile LIBRARY DESTINATION lib)
 install(FILES include/lgx_profile.h DESTINATION include)
 message(STATUS "LGX Profiling Module v1.5 enabled")
 
+# ═══════════════════════════════════════════════════════════════════════════
+# LGX Networking Module v2.0
+# ═══════════════════════════════════════════════════════════════════════════
+add_library(lgx_net SHARED src/net/lgx_net.c)
+target_include_directories(lgx_net PUBLIC include)
+target_link_libraries(lgx_net lgx_runtime)
+set_target_properties(lgx_net PROPERTIES
+    VERSION 2.0.0
+    SOVERSION 2
+)
+target_compile_options(lgx_net PRIVATE -Wno-missing-prototypes)
+
+install(TARGETS lgx_net LIBRARY DESTINATION lib)
+install(FILES include/lgx_net.h DESTINATION include)
+message(STATUS "LGX Networking Module v2.0 enabled")
+
 # Add jemalloc if available
 if(JEMALLOC_LIB)
     target_link_libraries(lgx_runtime ${JEMALLOC_LIB})
@@ -323,6 +339,15 @@ target_link_libraries(test_profile_basic lgx_profile lgx_runtime)
 add_test(NAME profile_test_basic COMMAND test_profile_basic)
 set_tests_properties(profile_test_basic PROPERTIES
     LABELS "profile"
+    TIMEOUT 30
+)
+
+# Networking Module Tests
+add_executable(test_net_basic tests/net/test_net_basic.c)
+target_link_libraries(test_net_basic lgx_net lgx_runtime m)
+add_test(NAME net_test_basic COMMAND test_net_basic)
+set_tests_properties(net_test_basic PROPERTIES
+    LABELS "net"
     TIMEOUT 30
 )
 

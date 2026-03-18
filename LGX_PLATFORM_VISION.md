@@ -131,7 +131,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 - **Observability**: Telemetry, counters, trace events (< 0.1% overhead)
 - **Security**: Guard pages, canaries, input validation, chaos testing
 
-**Test coverage**: 73/73 tests passing (100%)
+**Test coverage**: 74/74 tests passing (100%)
 
 ### v1.1 — Threading ✅ Production-Ready
 
@@ -157,6 +157,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 | v1.3 | Input (gamepad, keyboard, mouse) | ✅ Complete | Production |
 | v1.4 | Audio (3D spatial, mixing) | ✅ Complete | Production |
 | v1.5 | Profiling & Debugging | ✅ Complete | Production |
+| v2.0 | Networking (UDP, serialization, delta) | ✅ Complete | Production |
 
 ### Phase 2: Ecosystem (2027)
 
@@ -241,7 +242,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 
 1. **The gap exists.** No one else is building a complete, open-source gaming platform for Linux. Steam Runtime is minimal. SDL is input-only. The opportunity is wide open.
 
-2. **The foundation is solid.** v1.0 through v1.5 are production-tested, with 73 passing tests, comprehensive docs, and performance that exceeds targets by 10-200×.
+2. **The foundation is solid.** v1.0 through v2.0 are production-tested, with 74 passing tests, comprehensive docs, and performance that exceeds targets by 10-200×.
 
 3. **The timing is right.** Steam Deck normalized Linux gaming. Valve proved the market exists. But Proton is a compatibility layer — the market needs a native platform.
 

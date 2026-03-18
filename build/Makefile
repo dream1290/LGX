@@ -237,6 +237,19 @@ lgx_profile/fast:
 .PHONY : lgx_profile/fast
 
 #=============================================================================
+# Target rules for targets named lgx_net
+
+# Build rule for target.
+lgx_net: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lgx_net
+.PHONY : lgx_net
+
+# fast build rule for target.
+lgx_net/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_net.dir/build.make CMakeFiles/lgx_net.dir/build
+.PHONY : lgx_net/fast
+
+#=============================================================================
 # Target rules for targets named test_csf1_comparison
 
 # Build rule for target.
@@ -861,6 +874,19 @@ test_profile_basic/fast:
 .PHONY : test_profile_basic/fast
 
 #=============================================================================
+# Target rules for targets named test_net_basic
+
+# Build rule for target.
+test_net_basic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_net_basic
+.PHONY : test_net_basic
+
+# fast build rule for target.
+test_net_basic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_net_basic.dir/build.make CMakeFiles/test_net_basic.dir/build
+.PHONY : test_net_basic/fast
+
+#=============================================================================
 # Target rules for targets named run_phase0_tests
 
 # Build rule for target.
@@ -1410,6 +1436,30 @@ src/lgx_allocator_prototype.s: src/lgx_allocator_prototype.c.s
 src/lgx_allocator_prototype.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_runtime.dir/build.make CMakeFiles/lgx_runtime.dir/src/lgx_allocator_prototype.c.s
 .PHONY : src/lgx_allocator_prototype.c.s
+
+src/net/lgx_net.o: src/net/lgx_net.c.o
+.PHONY : src/net/lgx_net.o
+
+# target to build an object file
+src/net/lgx_net.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_net.dir/build.make CMakeFiles/lgx_net.dir/src/net/lgx_net.c.o
+.PHONY : src/net/lgx_net.c.o
+
+src/net/lgx_net.i: src/net/lgx_net.c.i
+.PHONY : src/net/lgx_net.i
+
+# target to preprocess a source file
+src/net/lgx_net.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_net.dir/build.make CMakeFiles/lgx_net.dir/src/net/lgx_net.c.i
+.PHONY : src/net/lgx_net.c.i
+
+src/net/lgx_net.s: src/net/lgx_net.c.s
+.PHONY : src/net/lgx_net.s
+
+# target to generate assembly for a file
+src/net/lgx_net.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_net.dir/build.make CMakeFiles/lgx_net.dir/src/net/lgx_net.c.s
+.PHONY : src/net/lgx_net.c.s
 
 src/profile/lgx_profile.o: src/profile/lgx_profile.c.o
 .PHONY : src/profile/lgx_profile.o
@@ -2202,6 +2252,30 @@ tests/input/test_input_basic.s: tests/input/test_input_basic.c.s
 tests/input/test_input_basic.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_input_basic.dir/build.make CMakeFiles/test_input_basic.dir/tests/input/test_input_basic.c.s
 .PHONY : tests/input/test_input_basic.c.s
+
+tests/net/test_net_basic.o: tests/net/test_net_basic.c.o
+.PHONY : tests/net/test_net_basic.o
+
+# target to build an object file
+tests/net/test_net_basic.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_net_basic.dir/build.make CMakeFiles/test_net_basic.dir/tests/net/test_net_basic.c.o
+.PHONY : tests/net/test_net_basic.c.o
+
+tests/net/test_net_basic.i: tests/net/test_net_basic.c.i
+.PHONY : tests/net/test_net_basic.i
+
+# target to preprocess a source file
+tests/net/test_net_basic.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_net_basic.dir/build.make CMakeFiles/test_net_basic.dir/tests/net/test_net_basic.c.i
+.PHONY : tests/net/test_net_basic.c.i
+
+tests/net/test_net_basic.s: tests/net/test_net_basic.c.s
+.PHONY : tests/net/test_net_basic.s
+
+# target to generate assembly for a file
+tests/net/test_net_basic.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_net_basic.dir/build.make CMakeFiles/test_net_basic.dir/tests/net/test_net_basic.c.s
+.PHONY : tests/net/test_net_basic.c.s
 
 tests/phase0/test_csf1_comparison.o: tests/phase0/test_csf1_comparison.c.o
 .PHONY : tests/phase0/test_csf1_comparison.o
@@ -3435,6 +3509,7 @@ help:
 	@echo "... lgx_audio"
 	@echo "... lgx_graphics"
 	@echo "... lgx_input"
+	@echo "... lgx_net"
 	@echo "... lgx_profile"
 	@echo "... lgx_runtime"
 	@echo "... lgx_threading"
@@ -3477,6 +3552,7 @@ help:
 	@echo "... test_logging_simple"
 	@echo "... test_memory_safety"
 	@echo "... test_namespace_isolation"
+	@echo "... test_net_basic"
 	@echo "... test_observability_overhead"
 	@echo "... test_performance"
 	@echo "... test_persistent_heap"
@@ -3516,6 +3592,9 @@ help:
 	@echo "... src/lgx_allocator_prototype.o"
 	@echo "... src/lgx_allocator_prototype.i"
 	@echo "... src/lgx_allocator_prototype.s"
+	@echo "... src/net/lgx_net.o"
+	@echo "... src/net/lgx_net.i"
+	@echo "... src/net/lgx_net.s"
 	@echo "... src/profile/lgx_profile.o"
 	@echo "... src/profile/lgx_profile.i"
 	@echo "... src/profile/lgx_profile.s"
@@ -3615,6 +3694,9 @@ help:
 	@echo "... tests/input/test_input_basic.o"
 	@echo "... tests/input/test_input_basic.i"
 	@echo "... tests/input/test_input_basic.s"
+	@echo "... tests/net/test_net_basic.o"
+	@echo "... tests/net/test_net_basic.i"
+	@echo "... tests/net/test_net_basic.s"
 	@echo "... tests/phase0/test_csf1_comparison.o"
 	@echo "... tests/phase0/test_csf1_comparison.i"
 	@echo "... tests/phase0/test_csf1_comparison.s"
