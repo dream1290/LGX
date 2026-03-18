@@ -84,4 +84,5 @@ input_test_basic 10 0.00493323
 audio_test_basic 4 0.253791
 profile_test_basic 2 0.00787002
 net_test_basic 2 0.0090328
+asset_test_basic 1 0.0297442
 ---

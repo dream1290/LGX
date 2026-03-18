@@ -3,9 +3,9 @@
 ### The Standard ABI for Linux Gaming
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/platform-v2.0-green.svg)](https://github.com/dream1290/LGX/releases)
+[![Version](https://img.shields.io/badge/platform-v2.1-green.svg)](https://github.com/dream1290/LGX/releases)
 [![Platform](https://img.shields.io/badge/Linux-x86__64-lightgrey.svg)]()
-[![Tests](https://img.shields.io/badge/tests-74%2F74%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-75%2F75%20passing-brightgreen.svg)]()
 
 > **What DirectX is for Windows, LGX is for Linux.**
 >
@@ -33,7 +33,7 @@ Game developers don't target Linux because there's no stable platform to build a
 | **Audio** | v1.4 | ✅ Production | 3D spatialization, mixing, ALSA output |
 | **Profiling** | v1.5 | ✅ Production | Frame profiler, zones, counters, FPS tracking |
 | **Networking** | v2.0 | ✅ Production | UDP sockets, serialization, delta compression |
-| **Asset Pipeline** | v2.1 | 🚧 Next | Asset loading, hot reloading, streaming |
+| **Asset Pipeline** | v2.1 | ✅ Production | File loading, hot reload, compression |
 
 Use only what you need. Start with memory for a 200× speedup. Add modules as you grow.
 
@@ -157,7 +157,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 - **Error Handling**: Recovery guidance with severity and actionable steps
 
 ### ABI Stability
-- **Symbol versioning**: ELF `LGX_RUNTIME_1.0`, `LGX_THREADING_1.1`, `LGX_GRAPHICS_1.2`, `LGX_INPUT_1.3`, `LGX_AUDIO_1.4`, `LGX_PROFILE_1.5`, `LGX_NET_2.0`
+- **Symbol versioning**: ELF `LGX_RUNTIME_1.0`, `LGX_THREADING_1.1`, `LGX_GRAPHICS_1.2`, `LGX_INPUT_1.3`, `LGX_AUDIO_1.4`, `LGX_PROFILE_1.5`, `LGX_NET_2.0`, `LGX_ASSET_2.1`
 - **Struct evolution**: `struct_size` first field, append-only
 - **Binary compatibility**: v1.0 binary runs on v1.x runtime forever
 
@@ -176,6 +176,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 | [Audio API Reference](docs/lgx_audio_api.md) | Audio module API (20 functions) |
 | [Profiling API Reference](docs/lgx_profile_api.md) | Profiling module API (15 functions) |
 | [Networking API Reference](docs/lgx_net_api.md) | Networking module API (25 functions) |
+| [Asset Pipeline API Reference](docs/lgx_asset_api.md) | Asset Pipeline API (20 functions) |
 | [Integration Guide](docs/lgx_runtime_integration_guide.md) | Quick start, patterns, FAQ |
 | [Architecture Deep-Dive](docs/lgx_runtime_architecture.md) | Memory subsystem, security, internals |
 
@@ -194,7 +195,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
-ctest --output-on-failure   # 74/74 tests pass
+ctest --output-on-failure   # 75/75 tests pass
 ```
 
 ### Packages
@@ -224,8 +225,8 @@ target_link_libraries(my_game lgx_runtime::lgx_runtime lgx_threading::lgx_thread
 We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Key areas needing help:**
-- 🚧 **Asset Pipeline** (v2.1) — Asset loading, hot reloading, compression
-- 📋 **Scene Graph** (v2.2) — Entity component system, transforms
+- 🚧 **Scene Graph** (v2.2) — Entity component system, transforms
+- 📋 **Scripting** (v2.3) — Lua/scripting integration
 - 📋 **Game integrations** — Port indie games to LGX
 - 🧪 **Hardware testing** — Test on diverse GPU/CPU/gamepad configs
 
@@ -233,8 +234,8 @@ We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Roadmap
 
-**2026**: Core platform (memory ✅, threading ✅, graphics ✅, input ✅, audio ✅, profiling ✅, networking ✅)  
-**2027**: Ecosystem (networking, asset pipeline, tooling, engine integrations)  
+**2026**: Core platform (memory ✅, threading ✅, graphics ✅, input ✅, audio ✅, profiling ✅, networking ✅, assets ✅)  
+**2027**: Ecosystem (scene graph, scripting, tooling, engine integrations)  
 **2028**: Industry standard (studio adoption, distro defaults, "Powered by LGX")
 
 See [LGX_PLATFORM_VISION.md](LGX_PLATFORM_VISION.md) for the full strategy.

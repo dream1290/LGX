@@ -214,6 +214,22 @@ install(TARGETS lgx_net LIBRARY DESTINATION lib)
 install(FILES include/lgx_net.h DESTINATION include)
 message(STATUS "LGX Networking Module v2.0 enabled")
 
+# ═══════════════════════════════════════════════════════════════════════════
+# LGX Asset Pipeline v2.1
+# ═══════════════════════════════════════════════════════════════════════════
+add_library(lgx_asset SHARED src/asset/lgx_asset.c)
+target_include_directories(lgx_asset PUBLIC include)
+target_link_libraries(lgx_asset lgx_runtime pthread)
+set_target_properties(lgx_asset PROPERTIES
+    VERSION 2.1.0
+    SOVERSION 2
+)
+target_compile_options(lgx_asset PRIVATE -Wno-missing-prototypes)
+
+install(TARGETS lgx_asset LIBRARY DESTINATION lib)
+install(FILES include/lgx_asset.h DESTINATION include)
+message(STATUS "LGX Asset Pipeline v2.1 enabled")
+
 # Add jemalloc if available
 if(JEMALLOC_LIB)
     target_link_libraries(lgx_runtime ${JEMALLOC_LIB})
@@ -348,6 +364,15 @@ target_link_libraries(test_net_basic lgx_net lgx_runtime m)
 add_test(NAME net_test_basic COMMAND test_net_basic)
 set_tests_properties(net_test_basic PROPERTIES
     LABELS "net"
+    TIMEOUT 30
+)
+
+# Asset Pipeline Tests
+add_executable(test_asset_basic tests/asset/test_asset_basic.c)
+target_link_libraries(test_asset_basic lgx_asset lgx_runtime)
+add_test(NAME asset_test_basic COMMAND test_asset_basic)
+set_tests_properties(asset_test_basic PROPERTIES
+    LABELS "asset"
     TIMEOUT 30
 )
 
