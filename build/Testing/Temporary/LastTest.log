@@ -1,64 +1,37 @@
-Start testing: Mar 18 01:40 +00
+Start testing: Mar 18 02:08 +00
 ----------------------------------------------------------
-50/75 Testing: asset_test_basic
-50/75 Test: asset_test_basic
-Command: "/home/karl/Projects/LGX/build/test_asset_basic"
+53/76 Testing: test_threading_stress
+53/76 Test: test_threading_stress
+Command: "/home/karl/Projects/LGX/build/test_threading_stress"
 Directory: /home/karl/Projects/LGX/build
-"asset_test_basic" start time: Mar 18 01:40 +00
+"test_threading_stress" start time: Mar 18 02:08 +00
 Output:
 ----------------------------------------------------------
+LGX Threading Module — Stress Tests
+====================================
 
-═══════════════════════════════════════════════════════════
-  LGX Asset Pipeline v2.1 — Basic Tests
-═══════════════════════════════════════════════════════════
+  [STRESS] 500_jobs_in_waves_all_complete                          PASS
+  [STRESS] pool_stats_match_job_count                              PASS
+  [STRESS] mpmc_4P_4C_40K_items                                    PASS
+  [STRESS] spsc_1P_1C_100K_items                                   PASS
+  [STRESS] mutex_8T_80K_increments_exact                           PASS
+  [STRESS] spinlock_8T_80K_increments_exact                        PASS
+  [STRESS] rwlock_6R_2W_concurrent                                 PASS
+  [STRESS] barrier_8T_100_phases                                   PASS
+  [STRESS] semaphore_bounded_buffer_1P_1C                          PASS
+  [STRESS] job_parent_child_fan_out                                PASS
 
-  [01] Manager create/destroy (NULL config)              [LGX ASSET] Manager created: max_assets=1024, max_paths=16, inotify=enabled
-[LGX ASSET] Manager destroyed
-PASS
-  [02] Manager create with explicit config               [LGX ASSET] Manager created: max_assets=256, max_paths=8, inotify=enabled
-[LGX ASSET] Manager destroyed
-PASS
-  [03] Destroy NULL is safe                              PASS
-  [04] Functions with NULL return error                  PASS
-  [05] Add search path                                   [LGX ASSET] Manager created: max_assets=1024, max_paths=16, inotify=enabled
-[LGX ASSET] Search path added: /tmp
-[LGX ASSET] Manager destroyed
-PASS
-  [06] Load file from disk                               [LGX ASSET] Manager created: max_assets=1024, max_paths=16, inotify=enabled
-[LGX ASSET] Manager destroyed
-PASS
-  [07] Load nonexistent file returns error state         [LGX ASSET] Manager created: max_assets=1024, max_paths=16, inotify=enabled
-[LGX ASSET] Not found: /no/such/file.bin
-[LGX ASSET] Manager destroyed
-PASS
-  [08] Unload frees data                                 [LGX ASSET] Manager created: max_assets=1024, max_paths=16, inotify=enabled
-[LGX ASSET] Manager destroyed
-PASS
-  [09] Reload reloads from disk                          [LGX ASSET] Manager created: max_assets=1024, max_paths=16, inotify=enabled
-[LGX ASSET] Manager destroyed
-PASS
-  [10] Compress/decompress round-trip                    PASS
-  [11] Compress all-zero data (high compression)         PASS
-  [12] Compress random-like data (still decompresses)    PASS
-  [13] Multiple search paths (priority order)            [LGX ASSET] Manager created: max_assets=1024, max_paths=16, inotify=enabled
-[LGX ASSET] Search path added: /nonexistent
-[LGX ASSET] Search path added: /tmp
-[LGX ASSET] Manager destroyed
-PASS
-
-───────────────────────────────────────────────────────────
-  Results: 13/13 passed
-───────────────────────────────────────────────────────────
-
+====================================
+Results: 10/10 passed
 <end of output>
-Test time =   0.03 sec
+Test time =   0.08 sec
 ----------------------------------------------------------
 Test Passed.
-"asset_test_basic" end time: Mar 18 01:40 +00
-"asset_test_basic" time elapsed: 00:00:00
+"test_threading_stress" end time: Mar 18 02:08 +00
+"test_threading_stress" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Mar 18 01:40 +00
+End testing: Mar 18 02:08 +00
 
-asset =   0.03 sec*proc
+threading =   0.08 sec*proc
 

@@ -16,12 +16,12 @@ LGX Runtime Platform is a modular, stable-ABI gaming platform for Linux. Each mo
 │  Includes: <lgx/platform.h>                                    │
 ├─────────────────────────────────────────────────────────────────┤
 │  LGX Platform Unified API                                       │
-│  ┌───────────┬───────────┬───────────┬───────────┬───────────┬────────────┬──────────┬──────────┐ │
-│  │ lgx_memory│lgx_thread │lgx_gfx    │ lgx_input │ lgx_audio │lgx_profile │ lgx_net  │lgx_asset │ │
-│  │   v1.0 ✅ │  v1.1 ✅  │  v1.2 ✅  │  v1.3 ✅  │  v1.4 ✅  │  v1.5 ✅   │  v2.0 ✅ │  v2.1 ✅ │ │
-│  │           │           │           │           │           │            │          │          │ │
-│  │ liblgx_   │ liblgx_   │ liblgx_   │ liblgx_   │ liblgx_   │ liblgx_    │ liblgx_  │ liblgx_  │ │
-│  │ runtime.so│threading.so│graphics.so│ input.so  │ audio.so  │ profile.so │ net.so   │ asset.so │ │
+│  ┌──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬─────────┬─────────┬─────────┐ │
+│  │lgx_memory│lgx_thread│ lgx_gfx  │lgx_input │lgx_audio │lgx_prof  │ lgx_net │lgx_asset│lgx_tools│ │
+│  │  v1.0 ✅ │  v1.1 ✅ │  v1.2 ✅ │  v1.3 ✅ │  v1.4 ✅ │  v1.5 ✅ │ v2.0 ✅ │ v2.1 ✅ │ v2.2 ✅ │ │
+│  │          │          │          │          │          │          │         │         │         │ │
+│  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_ │ liblgx_ │ liblgx_ │ │
+│  │runtime.so│thread.so │graphics.so│ input.so │ audio.so │profile.so│ net.so  │ asset.so│ tools.so│ │
 │  └───────────┴───────────┴───────────┴───────────┴───────────┘ │
 ├─────────────────────────────────────────────────────────────────┤
 │  Linux Kernel 5.10+  │  Vulkan 1.3  │  PipeWire  │  evdev     │

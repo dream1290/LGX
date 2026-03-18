@@ -230,6 +230,22 @@ install(TARGETS lgx_asset LIBRARY DESTINATION lib)
 install(FILES include/lgx_asset.h DESTINATION include)
 message(STATUS "LGX Asset Pipeline v2.1 enabled")
 
+# ═══════════════════════════════════════════════════════════════════════════
+# LGX Tooling v2.2
+# ═══════════════════════════════════════════════════════════════════════════
+add_library(lgx_tools SHARED src/tools/lgx_tools.c)
+target_include_directories(lgx_tools PUBLIC include)
+target_link_libraries(lgx_tools lgx_runtime m)
+set_target_properties(lgx_tools PROPERTIES
+    VERSION 2.2.0
+    SOVERSION 2
+)
+target_compile_options(lgx_tools PRIVATE -Wno-missing-prototypes)
+
+install(TARGETS lgx_tools LIBRARY DESTINATION lib)
+install(FILES include/lgx_tools.h DESTINATION include)
+message(STATUS "LGX Tooling v2.2 enabled")
+
 # Add jemalloc if available
 if(JEMALLOC_LIB)
     target_link_libraries(lgx_runtime ${JEMALLOC_LIB})
@@ -373,6 +389,15 @@ target_link_libraries(test_asset_basic lgx_asset lgx_runtime)
 add_test(NAME asset_test_basic COMMAND test_asset_basic)
 set_tests_properties(asset_test_basic PROPERTIES
     LABELS "asset"
+    TIMEOUT 30
+)
+
+# Tooling Tests
+add_executable(test_tools_basic tests/tools/test_tools_basic.c)
+target_link_libraries(test_tools_basic lgx_tools lgx_runtime m)
+add_test(NAME tools_test_basic COMMAND test_tools_basic)
+set_tests_properties(tools_test_basic PROPERTIES
+    LABELS "tools"
     TIMEOUT 30
 )
 

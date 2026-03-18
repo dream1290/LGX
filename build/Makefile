@@ -263,6 +263,19 @@ lgx_asset/fast:
 .PHONY : lgx_asset/fast
 
 #=============================================================================
+# Target rules for targets named lgx_tools
+
+# Build rule for target.
+lgx_tools: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lgx_tools
+.PHONY : lgx_tools
+
+# fast build rule for target.
+lgx_tools/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_tools.dir/build.make CMakeFiles/lgx_tools.dir/build
+.PHONY : lgx_tools/fast
+
+#=============================================================================
 # Target rules for targets named test_csf1_comparison
 
 # Build rule for target.
@@ -911,6 +924,19 @@ test_asset_basic: cmake_check_build_system
 test_asset_basic/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_asset_basic.dir/build.make CMakeFiles/test_asset_basic.dir/build
 .PHONY : test_asset_basic/fast
+
+#=============================================================================
+# Target rules for targets named test_tools_basic
+
+# Build rule for target.
+test_tools_basic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_tools_basic
+.PHONY : test_tools_basic
+
+# fast build rule for target.
+test_tools_basic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tools_basic.dir/build.make CMakeFiles/test_tools_basic.dir/build
+.PHONY : test_tools_basic/fast
 
 #=============================================================================
 # Target rules for targets named run_phase0_tests
@@ -2230,6 +2256,30 @@ src/threading/lgx_threading.s: src/threading/lgx_threading.c.s
 src/threading/lgx_threading.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_threading.dir/build.make CMakeFiles/lgx_threading.dir/src/threading/lgx_threading.c.s
 .PHONY : src/threading/lgx_threading.c.s
+
+src/tools/lgx_tools.o: src/tools/lgx_tools.c.o
+.PHONY : src/tools/lgx_tools.o
+
+# target to build an object file
+src/tools/lgx_tools.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_tools.dir/build.make CMakeFiles/lgx_tools.dir/src/tools/lgx_tools.c.o
+.PHONY : src/tools/lgx_tools.c.o
+
+src/tools/lgx_tools.i: src/tools/lgx_tools.c.i
+.PHONY : src/tools/lgx_tools.i
+
+# target to preprocess a source file
+src/tools/lgx_tools.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_tools.dir/build.make CMakeFiles/lgx_tools.dir/src/tools/lgx_tools.c.i
+.PHONY : src/tools/lgx_tools.c.i
+
+src/tools/lgx_tools.s: src/tools/lgx_tools.c.s
+.PHONY : src/tools/lgx_tools.s
+
+# target to generate assembly for a file
+src/tools/lgx_tools.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lgx_tools.dir/build.make CMakeFiles/lgx_tools.dir/src/tools/lgx_tools.c.s
+.PHONY : src/tools/lgx_tools.c.s
 
 tests/asset/test_asset_basic.o: tests/asset/test_asset_basic.c.o
 .PHONY : tests/asset/test_asset_basic.o
@@ -3551,6 +3601,30 @@ tests/threading/test_threading_stress.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_threading_stress.dir/build.make CMakeFiles/test_threading_stress.dir/tests/threading/test_threading_stress.c.s
 .PHONY : tests/threading/test_threading_stress.c.s
 
+tests/tools/test_tools_basic.o: tests/tools/test_tools_basic.c.o
+.PHONY : tests/tools/test_tools_basic.o
+
+# target to build an object file
+tests/tools/test_tools_basic.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tools_basic.dir/build.make CMakeFiles/test_tools_basic.dir/tests/tools/test_tools_basic.c.o
+.PHONY : tests/tools/test_tools_basic.c.o
+
+tests/tools/test_tools_basic.i: tests/tools/test_tools_basic.c.i
+.PHONY : tests/tools/test_tools_basic.i
+
+# target to preprocess a source file
+tests/tools/test_tools_basic.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tools_basic.dir/build.make CMakeFiles/test_tools_basic.dir/tests/tools/test_tools_basic.c.i
+.PHONY : tests/tools/test_tools_basic.c.i
+
+tests/tools/test_tools_basic.s: tests/tools/test_tools_basic.c.s
+.PHONY : tests/tools/test_tools_basic.s
+
+# target to generate assembly for a file
+tests/tools/test_tools_basic.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tools_basic.dir/build.make CMakeFiles/test_tools_basic.dir/tests/tools/test_tools_basic.c.s
+.PHONY : tests/tools/test_tools_basic.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -3588,6 +3662,7 @@ help:
 	@echo "... lgx_profile"
 	@echo "... lgx_runtime"
 	@echo "... lgx_threading"
+	@echo "... lgx_tools"
 	@echo "... perf_test_allocation_latency"
 	@echo "... perf_test_frame_time_contribution"
 	@echo "... perf_test_initialization_time"
@@ -3650,6 +3725,7 @@ help:
 	@echo "... test_threading_stress"
 	@echo "... test_tiered_performance"
 	@echo "... test_timing_services"
+	@echo "... test_tools_basic"
 	@echo "... test_trace_events"
 	@echo "... unit_test_error_handler"
 	@echo "... unit_test_health_monitor"
@@ -3764,6 +3840,9 @@ help:
 	@echo "... src/threading/lgx_threading.o"
 	@echo "... src/threading/lgx_threading.i"
 	@echo "... src/threading/lgx_threading.s"
+	@echo "... src/tools/lgx_tools.o"
+	@echo "... src/tools/lgx_tools.i"
+	@echo "... src/tools/lgx_tools.s"
 	@echo "... tests/asset/test_asset_basic.o"
 	@echo "... tests/asset/test_asset_basic.i"
 	@echo "... tests/asset/test_asset_basic.s"
@@ -3929,6 +4008,9 @@ help:
 	@echo "... tests/threading/test_threading_stress.o"
 	@echo "... tests/threading/test_threading_stress.i"
 	@echo "... tests/threading/test_threading_stress.s"
+	@echo "... tests/tools/test_tools_basic.o"
+	@echo "... tests/tools/test_tools_basic.i"
+	@echo "... tests/tools/test_tools_basic.s"
 .PHONY : help
 
 
