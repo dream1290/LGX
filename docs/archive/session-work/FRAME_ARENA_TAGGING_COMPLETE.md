@@ -70,10 +70,10 @@ Created comprehensive test (`tests/manual/test_frame_arena_tagging.c`):
 ## Test Results
 
 ```
-✅ Runtime initialized
-✅ Completed 10 frames
-✅ Exported allocation map with tags to /tmp/frame_arena_tags.json
-✅ Test completed successfully
+ Runtime initialized
+ Completed 10 frames
+ Exported allocation map with tags to /tmp/frame_arena_tags.json
+ Test completed successfully
 ```
 
 ### Tag Statistics Output

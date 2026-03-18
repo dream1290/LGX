@@ -6,8 +6,8 @@
 **Target P99**: 1.46 μs (or better)
 **Gap**: **14x improvement needed**
 
-**Current P50**: 0.88 μs ✅ Already excellent
-**Current Cache Hit Rate**: 94.9% ✅ Good but can improve
+**Current P50**: 0.88 μs  Already excellent
+**Current Cache Hit Rate**: 94.9%  Good but can improve
 
 ## Root Cause Analysis: Why is P99 So High?
 
@@ -44,7 +44,7 @@ When we miss the cache, we fall back to:
 
 ---
 
-## Optimization 1: Predictive Cache Pre-Warming 🔥
+## Optimization 1: Predictive Cache Pre-Warming 
 
 ### The Problem
 Cache misses happen when:
@@ -82,7 +82,7 @@ void adaptive_prewarm(thread_cache_t* cache) {
 
 ---
 
-## Optimization 2: Lock-Free Global Pool Refill 🚀
+## Optimization 2: Lock-Free Global Pool Refill 
 
 ### The Problem
 When cache misses, we hit a **mutex lock** on the global pool. This is the killer.
@@ -126,7 +126,7 @@ void* lockfree_refill_cache(int size_class) {
 
 ---
 
-## Optimization 3: Batch Refill Strategy 💪
+## Optimization 3: Batch Refill Strategy 
 
 ### The Problem
 When cache runs low, we refill one block at a time. This causes multiple cache misses.
@@ -236,7 +236,7 @@ int simd_find_free_slot(void** slots, int count) {
 
 ---
 
-## Optimization 6: Huge Page Backing for Hot Path Cache 📦
+## Optimization 6: Huge Page Backing for Hot Path Cache 
 
 ### The Problem
 Hot path cache blocks are scattered across 4KB pages, causing TLB misses.
@@ -266,7 +266,7 @@ void* allocate_hot_path_cache_with_hugepages(size_t size) {
 ## Combined Impact Projection
 
 ### Current Performance
-- P50: 0.88 μs ✅
+- P50: 0.88 μs 
 - P99: 20-21 μs ❌
 - Cache hit rate: 94.9%
 
@@ -284,7 +284,7 @@ void* allocate_hot_path_cache_with_hugepages(size_t size) {
 
 ### Projected Final Performance
 - **P50**: 0.5-0.7 μs (improved with SIMD)
-- **P99**: **0.9-1.2 μs** ✅ **BREAKTHROUGH!**
+- **P99**: **0.9-1.2 μs**  **BREAKTHROUGH!**
 - **Cache hit rate**: 99.0%
 
 **This would EXCEED our 1.46 μs claim!**
@@ -424,7 +424,7 @@ We can measure the impact of each optimization independently and validate the co
 
 **This is achievable.** We're not inventing new algorithms - we're combining proven techniques in a novel way for gaming workloads.
 
-**Let's do it.** 🚀
+**Let's do it.** 
 
 ---
 

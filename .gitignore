@@ -20,6 +20,12 @@ install_manifest.txt
 *.pkg.tar.zst
 *.tar.gz
 *.zip
+*.buildinfo
+*.changes
+*.ddeb
+
+# Packaging output directory
+/packaging/output/
 
 # Security audits (CRITICAL - keep private!)
 security_audit_*/

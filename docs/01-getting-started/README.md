@@ -13,7 +13,7 @@ Welcome! This guide will help you get started with the LGX Runtime Core in under
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Installation
 
@@ -67,7 +67,7 @@ See [Integration Guide](../03-integration-guide/README.md) for CMake/Bazel integ
 
 ---
 
-## 📚 What's Next?
+##  What's Next?
 
 - **Learn the API**: [API Reference](../02-api-reference/README.md)
 - **Integrate into your project**: [Integration Guide](../03-integration-guide/README.md)

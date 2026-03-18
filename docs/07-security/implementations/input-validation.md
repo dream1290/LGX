@@ -138,26 +138,26 @@ Max buffer size: 1 GB
 
 ### test_input_validation
 All tests pass successfully:
-- Pointer validation: OK ✅
-- Size validation: OK ✅
-- Allocation size validation: OK ✅
-- Alignment validation: OK ✅
-- String validation: OK ✅
-- String truncation: OK ✅
-- Path validation: OK ✅
-- Enum validation: OK ✅
-- Capability validation: OK ✅
-- Log level validation: OK ✅
-- Allocation intent validation: OK ✅
-- Validation limits: OK ✅
+- Pointer validation: OK 
+- Size validation: OK 
+- Allocation size validation: OK 
+- Alignment validation: OK 
+- String validation: OK 
+- String truncation: OK 
+- Path validation: OK 
+- Enum validation: OK 
+- Capability validation: OK 
+- Log level validation: OK 
+- Allocation intent validation: OK 
+- Validation limits: OK 
 
 ### Security Tests Passed
-- NULL pointer rejection ✅
-- Buffer overflow prevention ✅
-- Path traversal prevention ✅
-- Integer overflow prevention ✅
-- Invalid enum rejection ✅
-- Alignment validation ✅
+- NULL pointer rejection 
+- Buffer overflow prevention 
+- Path traversal prevention 
+- Integer overflow prevention 
+- Invalid enum rejection 
+- Alignment validation 
 
 ## Security Benefits
 

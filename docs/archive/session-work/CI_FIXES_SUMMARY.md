@@ -130,9 +130,9 @@ This document summarizes the CI/CD workflow issues identified from the GitHub Ac
 ## Expected CI Status After Fixes
 
 ### Should Pass
-- ✅ Code Quality Checks - No code changes, should pass
-- ✅ Build & Test (most configurations) - Tests are passing locally
-- ✅ Multi-Distro builds - Build system is solid
+-  Code Quality Checks - No code changes, should pass
+-  Build & Test (most configurations) - Tests are passing locally
+-  Multi-Distro builds - Build system is solid
 
 ### May Still Fail (Expected)
 - ⚠️ Coverity Scan - Requires secrets configuration (now skips gracefully)

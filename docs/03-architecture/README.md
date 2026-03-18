@@ -8,6 +8,7 @@ This section documents the architectural design and implementation details of th
 
 ### System Architecture
 
+- **[lgx_runtime_architecture.md](lgx_runtime_architecture.md)** - Complete system architecture documentation
 - **[Memory Management Architecture](memory-architecture.md)** - Hybrid allocation strategy, allocator design
 - **[Lifecycle Management](lifecycle-architecture.md)** - Initialization, suspend/resume, shutdown
 - **[Hardware Adaptation](hardware-adaptation.md)** - Tier detection, graceful degradation

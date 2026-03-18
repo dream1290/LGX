@@ -149,7 +149,7 @@ This proves that LGX can be integrated into real-world, production game engines 
 - No conflicts with existing systems
 - Simple, maintainable integration
 
-**LGX is ready for real-world use.** 🚀
+**LGX is ready for real-world use.** 
 
 ---
 

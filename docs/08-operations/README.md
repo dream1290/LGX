@@ -4,10 +4,16 @@ Operational guides for deployment, monitoring, and troubleshooting.
 
 ## Contents
 
+### Operational Guides
 - [telemetry-privacy.md](telemetry-privacy.md) - Telemetry privacy guide
 - [telemetry-verification.md](telemetry-verification.md) - SHA-256 verification for telemetry
 - [hardware-compatibility.md](hardware-compatibility.md) - Hardware compatibility matrix
 - [graceful-degradation.md](graceful-degradation.md) - Graceful degradation guide
+
+### Video Recording & Documentation
+- [VIDEO_RECORDING_GUIDE.md](VIDEO_RECORDING_GUIDE.md) - Guide for recording demos and presentations
+- [RECORDING_SUMMARY.md](RECORDING_SUMMARY.md) - Summary of recorded content
+- [READY_FOR_VIDEO.md](READY_FOR_VIDEO.md) - Video recording readiness checklist
 
 ## Telemetry
 

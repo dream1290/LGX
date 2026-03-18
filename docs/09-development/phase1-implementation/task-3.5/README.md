@@ -8,7 +8,7 @@
 
 ## Quick Start: Which Document Should I Read?
 
-### 🚀 If you have 2 minutes:
+###  If you have 2 minutes:
 **Read:** `TASK_3.5_VISUAL_SUMMARY.md` (9.5 KB)
 - Visual diagrams and charts
 - Task completion status tree
@@ -16,7 +16,7 @@
 - Risk assessment matrix
 - Decision framework flowchart
 
-### 📊 If you have 10 minutes:
+###  If you have 10 minutes:
 **Read:** `TASK_3.5_EXECUTIVE_SUMMARY.md` (5.2 KB)
 - TL;DR: What we did, why we deferred, recommendations
 - Performance metrics before/after
@@ -24,7 +24,7 @@
 - Timeline comparison (9 weeks → 3 days)
 - Bottom line verdict
 
-### 📚 If you have 30 minutes:
+###  If you have 30 minutes:
 **Read:** `TASK_3.5_TECHNICAL_REPORT.md` (28 KB)
 - Complete technical analysis (7000+ words)
 - Detailed implementation for each completed task
@@ -33,7 +33,7 @@
 - Testing coverage and validation
 - Risk mitigation strategies
 
-### 📖 If you want the full story:
+###  If you want the full story:
 **Read:** `TASK_3.5_WORK_HISTORY.md` (16 KB)
 - Complete timeline from Phase 0 to current
 - What was built from scratch (Phase 0, Phase 1)
@@ -50,9 +50,9 @@
 **Best for:** Quick visual understanding
 
 **Contains:**
-- ✅ Task completion status tree
-- 📊 Performance impact bar charts
-- 🎯 Complexity vs benefit matrix
+-  Task completion status tree
+-  Performance impact bar charts
+-  Complexity vs benefit matrix
 - ⚠️ Risk assessment boxes
 - ⏱️ Timeline comparison
 - 🔄 Decision framework flowchart
@@ -119,7 +119,7 @@
 
 ## Key Findings Summary
 
-### ✅ Completed (3 days, LOW RISK)
+###  Completed (3 days, LOW RISK)
 1. **Pattern Tracking** - Observability for size class tuning
 2. **Huge Pages** - 99% TLB miss reduction, 18% P99 improvement
 3. **SIMD (AVX2)** - 15-20% faster buddy allocator search
@@ -128,16 +128,16 @@
 1. **Lock-Free Techniques** - Very high complexity, uncertain benefit
 2. **Batch Refill** - High complexity, low benefit (5% of allocations)
 
-### 🎯 Performance (All Targets Exceeded)
+###  Performance (All Targets Exceeded)
 - Frame Arena: 0.01 μs (10× better than target)
 - GPU Pool: ~10 μs (meets target, 17% improvement from SIMD)
 - Persistent Heap: 0.09 μs (200× better than target)
 
-### 💡 Recommendation
-✅ **APPROVE completed work**  
+###  Recommendation
+ **APPROVE completed work**  
 ⏸️ **DEFER lock-free and batch refill** (high complexity, uncertain benefit)  
-✅ **PROCEED to Task 3.5.2.2-3.5.2.4** (GPU pool optimizations)  
-✅ **PROCEED to Task 3.5.3** (cleanup deprecated code)
+ **PROCEED to Task 3.5.2.2-3.5.2.4** (GPU pool optimizations)  
+ **PROCEED to Task 3.5.3** (cleanup deprecated code)
 
 ---
 

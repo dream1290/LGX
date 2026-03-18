@@ -8,10 +8,10 @@ cd stk-code
 ```
 
 This will launch SuperTuxKart with:
-- ✅ **FPS counter visible on screen** (top center)
-- ✅ **VSync disabled** (showing real performance: ~169 FPS average)
-- ✅ **LGX Runtime active** (256MB pool, frame arena resets)
-- ✅ **Automatic race start** (Lighthouse track, 2 laps, 4 karts)
+-  **FPS counter visible on screen** (top center)
+-  **VSync disabled** (showing real performance: ~169 FPS average)
+-  **LGX Runtime active** (256MB pool, frame arena resets)
+-  **Automatic race start** (Lighthouse track, 2 laps, 4 karts)
 
 ## What You'll See
 

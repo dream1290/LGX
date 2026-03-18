@@ -2,7 +2,7 @@
 
 ## Summary
 
-**Current Status**: ✅ **EXCELLENT** - No optimization needed
+**Current Status**:  **EXCELLENT** - No optimization needed
 
 - **Baseline RSS**: 4.55 MB (before runtime init)
 - **Runtime Overhead**: 1.03 MB (after init)
@@ -63,7 +63,7 @@ These large pools are allocated **on-demand** (lazy initialization):
 
 ### 12.2.1 - Reduce Runtime Memory Footprint
 
-**Status**: ✅ **NOT NEEDED**
+**Status**:  **NOT NEEDED**
 
 Current overhead (1.03 MB) is already excellent. Potential optimizations would save <500 KB, which is negligible compared to the 200 MB target.
 
@@ -84,7 +84,7 @@ These are allocated on-demand, so they don't impact startup memory. Optimization
 
 ### 12.2.3 - Implement Lazy Initialization for Optional Features
 
-**Status**: ✅ **ALREADY DONE**
+**Status**:  **ALREADY DONE**
 
 The following features are already lazily initialized:
 - Frame arena (allocated on first `lgx_frame_alloc()`)
@@ -126,8 +126,8 @@ Runtime Overhead:
 Tier 1 Target: <300MB
 Tier 2 Target: <200MB
 
-✅ PASSED Tier 2: 1.03 MB < 200MB
+ PASSED Tier 2: 1.03 MB < 200MB
 ```
 
 **Date**: February 9, 2026
-**Status**: ✅ Complete - No optimization needed
+**Status**:  Complete - No optimization needed

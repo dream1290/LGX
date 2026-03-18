@@ -9,7 +9,7 @@ Implementing comprehensive debugging tools for the frame arena allocator to help
 
 ---
 
-## ✅ Task 3.4.5.4.1: Implement `lgx_frame_arena_dump()` - COMPLETE
+##  Task 3.4.5.4.1: Implement `lgx_frame_arena_dump()` - COMPLETE
 
 ### Implementation
 
@@ -91,11 +91,11 @@ Exports a comprehensive allocation map in JSON format including:
 **Test File**: `tests/manual/test_frame_arena_dump.c`
 
 Tests verify:
-- ✅ JSON export succeeds
-- ✅ Output file has content
-- ✅ JSON structure is valid
-- ✅ Contains all expected fields
-- ✅ Works after frame reset
+-  JSON export succeeds
+-  Output file has content
+-  JSON structure is valid
+-  Contains all expected fields
+-  Works after frame reset
 
 ### Use Cases
 
@@ -108,7 +108,7 @@ Tests verify:
 
 ## 📋 Task 3.4.5.4.2: Add visualization tool for frame arena usage over time
 
-**Status**: ⏳ **NOT STARTED**
+**Status**:  **NOT STARTED**
 
 ### Planned Implementation
 
@@ -136,7 +136,7 @@ Create a Python script that:
 
 ## 📋 Task 3.4.5.4.3: Implement allocation tagging
 
-**Status**: ⏳ **NOT STARTED**
+**Status**:  **NOT STARTED**
 
 ### Planned Implementation
 
@@ -164,7 +164,7 @@ void* audio_data = lgx_frame_alloc_tagged(512, "audio");
 
 ## 📋 Task 3.4.5.4.4: Add frame arena profiler integration
 
-**Status**: ⏳ **NOT STARTED**
+**Status**:  **NOT STARTED**
 
 ### Planned Implementation
 
@@ -198,12 +198,12 @@ Integrate with popular profiling tools:
 **Progress**: 1/4 tasks complete (25%)
 
 ### Completed
-- ✅ 3.4.5.4.1: JSON allocation map export
+-  3.4.5.4.1: JSON allocation map export
 
 ### Remaining
-- ⏳ 3.4.5.4.2: Visualization tool
-- ⏳ 3.4.5.4.3: Allocation tagging
-- ⏳ 3.4.5.4.4: Profiler integration
+-  3.4.5.4.2: Visualization tool
+-  3.4.5.4.3: Allocation tagging
+-  3.4.5.4.4: Profiler integration
 
 ### Next Steps
 

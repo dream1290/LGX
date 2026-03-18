@@ -29,10 +29,10 @@ Over 10 days, we implemented sophisticated optimizations:
 ### The Fundamental Limit
 
 We optimized everything AROUND malloc/free:
-- ✅ Lock contention eliminated
-- ✅ Cache misses reduced
-- ✅ Pattern prediction implemented
-- ✅ TLB misses reduced by 99.8%
+-  Lock contention eliminated
+-  Cache misses reduced
+-  Pattern prediction implemented
+-  TLB misses reduced by 99.8%
 
 But we're still calling malloc/free underneath, which has inherent costs:
 - System call overhead
@@ -190,10 +190,10 @@ Phase 0 wasn't wasted - we learned valuable techniques that apply to specialized
 ## Success Metrics (Revised)
 
 ### Phase 0 (Completed)
-- ✅ P99: 9 μs (55% improvement)
-- ✅ Day 10 target met (<10 μs)
-- ✅ Learned fundamental limits of general-purpose approach
-- ✅ Validated infrastructure (lock-free, huge pages, pattern tracking)
+-  P99: 9 μs (55% improvement)
+-  Day 10 target met (<10 μs)
+-  Learned fundamental limits of general-purpose approach
+-  Validated infrastructure (lock-free, huge pages, pattern tracking)
 
 ### Phase 1 (Revised Targets)
 - Frame arena: P99 < 0.1 μs (900x faster than Phase 0)
@@ -223,10 +223,10 @@ Phase 0 wasn't wasted - we learned valuable techniques that apply to specialized
 - ⚠️ More allocators to maintain (3 instead of 1)
 
 ### Mitigation
-- ✅ Unified intent-based API hides complexity
-- ✅ Automatic routing to appropriate allocator
-- ✅ Reuse Phase 0 infrastructure (not starting from scratch)
-- ✅ Focus on 80% case first (frame arena), then 15% (GPU), then 5% (heap)
+-  Unified intent-based API hides complexity
+-  Automatic routing to appropriate allocator
+-  Reuse Phase 0 infrastructure (not starting from scratch)
+-  Focus on 80% case first (frame arena), then 15% (GPU), then 5% (heap)
 
 ---
 
@@ -234,13 +234,13 @@ Phase 0 wasn't wasted - we learned valuable techniques that apply to specialized
 
 | Criterion | General-Purpose (Old) | Specialized (New) | Winner |
 |-----------|----------------------|-------------------|--------|
-| Performance (80% case) | 9 μs | 0.01 μs | ✅ Specialized (900x) |
+| Performance (80% case) | 9 μs | 0.01 μs |  Specialized (900x) |
 | Performance (15% case) | 9 μs | 10 μs | Comparable |
 | Performance (5% case) | 9 μs | 20 μs | General (2x) |
-| Complexity | High | Medium | ✅ Specialized |
-| Maintainability | Low | High | ✅ Specialized |
-| Breakthrough potential | 4.5x gap | ✅ Achieved | ✅ Specialized |
-| Developer experience | Opaque | Clear intent | ✅ Specialized |
+| Complexity | High | Medium |  Specialized |
+| Maintainability | Low | High |  Specialized |
+| Breakthrough potential | 4.5x gap |  Achieved |  Specialized |
+| Developer experience | Opaque | Clear intent |  Specialized |
 
 **Verdict**: Specialized allocators win on all important criteria.
 
@@ -284,6 +284,6 @@ Phase 0 wasn't wasted - we learned valuable techniques that apply to specialized
 
 **Decision Date**: February 5, 2026
 **Decision Maker**: Engineering team based on Phase 0 data
-**Status**: ✅ Approved, ready to proceed with Phase 1 revised plan
+**Status**:  Approved, ready to proceed with Phase 1 revised plan
 **Next Steps**: Begin Month 1 frame arena implementation
 

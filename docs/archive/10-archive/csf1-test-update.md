@@ -63,11 +63,11 @@ Added 16KB and 64KB allocations to test the full range:
 
 ### CSF-1 Evaluation
 
-**Hot Path**: ✅ **VALIDATED**
+**Hot Path**:  **VALIDATED**
 - P50 = 0.89 μs < 2.0 μs target
 - Proves ultra-fast path is working
 
-**P99 Target**: ✅ **PASSED**
+**P99 Target**:  **PASSED**
 - P99 = 19.36 μs < 20.0 μs competitive threshold
 - Excellent performance for mixed workload (64B-64KB) with 50 threads
 - Best-in-class target (<5μs) requires Phase 1 optimizations:
@@ -75,7 +75,7 @@ Added 16KB and 64KB allocations to test the full range:
   - NUMA awareness
   - Huge pages support
 
-**Overall**: 🎉 **CSF-1 PASSED** - Hot path validated + competitive P99
+**Overall**:  **CSF-1 PASSED** - Hot path validated + competitive P99
 
 ### Why P99 = 19.36 μs is Excellent
 
@@ -95,9 +95,9 @@ Despite these limitations, we achieved:
 
 | Tier | P50 Target | P99 Target | Status | Notes |
 |------|------------|------------|--------|-------|
-| **Tier 1: Hot Path** | < 2μs | - | ✅ **0.89μs** | Most allocations are ultra-fast |
-| **Tier 2: Competitive** | < 2μs | < 20μs | ✅ **19.36μs** | Excellent for mixed workload |
-| **Tier 3: Best-in-Class** | < 1μs | < 5μs | 🎯 Phase 1 | Requires jemalloc + NUMA + huge pages |
+| **Tier 1: Hot Path** | < 2μs | - |  **0.89μs** | Most allocations are ultra-fast |
+| **Tier 2: Competitive** | < 2μs | < 20μs |  **19.36μs** | Excellent for mixed workload |
+| **Tier 3: Best-in-Class** | < 1μs | < 5μs |  Phase 1 | Requires jemalloc + NUMA + huge pages |
 
 ## Recommendations from report3.txt
 
@@ -147,12 +147,12 @@ Different strategies for different game phases:
 ## Conclusion
 
 The updated CSF-1 test successfully demonstrates:
-- ✅ Ultra-fast hot path is working (P50 = 0.89μs)
-- ✅ Competitive P99 performance (19.36μs for mixed 64B-64KB workload)
-- ✅ Thread-local caching provides massive performance gains (237x faster P99)
-- ✅ Large allocations are naturally slower (expected and acceptable)
-- ✅ Hybrid allocator approach is feasible and validated
+-  Ultra-fast hot path is working (P50 = 0.89μs)
+-  Competitive P99 performance (19.36μs for mixed 64B-64KB workload)
+-  Thread-local caching provides massive performance gains (237x faster P99)
+-  Large allocations are naturally slower (expected and acceptable)
+-  Hybrid allocator approach is feasible and validated
 
-**🎉 CSF-1 PASSED** - The prototype meets competitive performance targets and validates the feasibility of the hybrid allocator approach. Phase 1 optimizations (jemalloc, NUMA, huge pages) will push performance to best-in-class levels (<5μs P99).
+** CSF-1 PASSED** - The prototype meets competitive performance targets and validates the feasibility of the hybrid allocator approach. Phase 1 optimizations (jemalloc, NUMA, huge pages) will push performance to best-in-class levels (<5μs P99).
 
 The test now accurately measures allocator performance without memset overhead, provides detailed per-size-class analysis, and uses realistic tiered performance targets that account for the stress test conditions (50 threads, mixed workload, no Phase 1 optimizations yet).

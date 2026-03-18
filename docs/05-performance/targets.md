@@ -20,7 +20,7 @@ This is much harder than real-world game scenarios where:
 
 ### The Three Performance Tiers
 
-#### Tier 1: Hot Path (P50 < 2μs) ✅ CRITICAL
+#### Tier 1: Hot Path (P50 < 2μs)  CRITICAL
 **What it measures**: The typical allocation latency
 
 **Why it matters**: 
@@ -30,11 +30,11 @@ This is much harder than real-world game scenarios where:
 
 **Our result**: 0.89μs (2.2x better than target)
 
-**Verdict**: ✅ **PASSED** - Ultra-fast path is working!
+**Verdict**:  **PASSED** - Ultra-fast path is working!
 
 ---
 
-#### Tier 2: Competitive (P99 < 20μs) ✅ TARGET
+#### Tier 2: Competitive (P99 < 20μs)  TARGET
 **What it measures**: 99% of allocations are faster than this
 
 **Why it matters**:
@@ -44,7 +44,7 @@ This is much harder than real-world game scenarios where:
 
 **Our result**: 19.36μs (just under threshold)
 
-**Verdict**: ✅ **PASSED** - Excellent for stress test conditions!
+**Verdict**:  **PASSED** - Excellent for stress test conditions!
 
 **Context**:
 - tcmalloc: ~15-25μs P99 under contention
@@ -53,7 +53,7 @@ This is much harder than real-world game scenarios where:
 
 ---
 
-#### Tier 3: Best-in-Class (P99 < 5μs) 🎯 ASPIRATIONAL
+#### Tier 3: Best-in-Class (P99 < 5μs)  ASPIRATIONAL
 **What it measures**: Elite performance level
 
 **Why it matters**:
@@ -63,7 +63,7 @@ This is much harder than real-world game scenarios where:
 
 **Our result**: 19.36μs (needs Phase 1 work)
 
-**Verdict**: 🎯 **PHASE 1 TARGET** - Achievable with optimizations
+**Verdict**:  **PHASE 1 TARGET** - Achievable with optimizations
 
 **Required optimizations**:
 1. **jemalloc integration** for large allocations (>16KB)
@@ -124,8 +124,8 @@ This is **negligible** compared to the 16.67ms frame budget (60 FPS).
 - Optimized for: Low latency, single-threaded
 
 ### Our Prototype (Phase 0)
-- P50: 0.89μs ✅ Competitive
-- P99: 19.36μs ✅ Competitive
+- P50: 0.89μs  Competitive
+- P99: 19.36μs  Competitive
 - Optimized for: Gaming workloads (Phase 1 will improve further)
 
 ---
@@ -133,19 +133,19 @@ This is **negligible** compared to the 16.67ms frame budget (60 FPS).
 ## Phase 1 Performance Roadmap
 
 ### Current (Phase 0)
-- ✅ P50: 0.89μs (hot path working)
-- ✅ P99: 19.36μs (competitive)
-- ✅ Cache hit rate: 94.9%
+-  P50: 0.89μs (hot path working)
+-  P99: 19.36μs (competitive)
+-  Cache hit rate: 94.9%
 
 ### Phase 1 Target (with optimizations)
-- 🎯 P50: <0.5μs (SIMD pattern detection)
-- 🎯 P99: <5μs (jemalloc + NUMA + huge pages)
-- 🎯 Cache hit rate: >98%
+-  P50: <0.5μs (SIMD pattern detection)
+-  P99: <5μs (jemalloc + NUMA + huge pages)
+-  Cache hit rate: >98%
 
 ### Phase 2 Target (with AI/ML)
-- 🎯 P50: <0.3μs (predictive pre-warming)
-- 🎯 P99: <2μs (Markov chain prediction)
-- 🎯 Cache hit rate: >99%
+-  P50: <0.3μs (predictive pre-warming)
+-  P99: <2μs (Markov chain prediction)
+-  Cache hit rate: >99%
 
 ---
 
@@ -159,7 +159,7 @@ This is **negligible** compared to the 16.67ms frame budget (60 FPS).
 4. **Real-world performance** will be even better than stress test results
 
 The tiered approach provides:
-- ✅ Realistic expectations for Phase 0 prototype
-- ✅ Clear path to Phase 1 improvements
-- ✅ Industry-competitive baseline performance
-- ✅ Validation that the hybrid allocator approach works
+-  Realistic expectations for Phase 0 prototype
+-  Clear path to Phase 1 improvements
+-  Industry-competitive baseline performance
+-  Validation that the hybrid allocator approach works

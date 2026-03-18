@@ -26,15 +26,15 @@ Game developers don't target Linux because there's no stable platform to build a
 
 | Module | Version | Status | What It Does |
 |--------|---------|--------|--------------|
-| **Memory** | v1.0 | ✅ Production | Frame arena (0.01 μs), GPU pool, persistent heap, intent routing |
-| **Threading** | v1.1 | ✅ Production | Job system, lock-free queues, fiber scheduler, MPMC/SPSC |
-| **Graphics** | v1.2 | ✅ Production | Vulkan wrapper, command recording, pipeline management, shader cache |
-| **Input** | v1.3 | ✅ Production | Unified gamepad, keyboard, mouse via evdev |
-| **Audio** | v1.4 | ✅ Production | 3D spatialization, mixing, ALSA output |
-| **Profiling** | v1.5 | ✅ Production | Frame profiler, zones, counters, FPS tracking |
-| **Networking** | v2.0 | ✅ Production | UDP sockets, serialization, delta compression |
-| **Asset Pipeline** | v2.1 | ✅ Production | File loading, hot reload, compression |
-| **Tooling** | v2.2 | ✅ Production | Perf analyzer, memory tracker, CSV export |
+| **Memory** | v1.0 | [PROD] | Frame arena (0.01 μs), GPU pool, persistent heap, intent routing |
+| **Threading** | v1.1 | [PROD] | Job system, lock-free queues, fiber scheduler, MPMC/SPSC |
+| **Graphics** | v1.2 | [PROD] | Vulkan wrapper, command recording, pipeline management, shader cache |
+| **Input** | v1.3 | [PROD] | Unified gamepad, keyboard, mouse via evdev |
+| **Audio** | v1.4 | [PROD] | 3D spatialization, mixing, ALSA output |
+| **Profiling** | v1.5 | [PROD] | Frame profiler, zones, counters, FPS tracking |
+| **Networking** | v2.0 | [PROD] | UDP sockets, serialization, delta compression |
+| **Asset Pipeline** | v2.1 | [PROD] | File loading, hot reload, compression |
+| **Tooling** | v2.2 | [PROD] | Perf analyzer, memory tracker, CSV export |
 
 Use only what you need. Start with memory for a 200× speedup. Add modules as you grow.
 
@@ -117,20 +117,20 @@ All targets exceeded. Not by a little — by **10–200×**.
 ## Why LGX
 
 ### vs DirectX
-- ✅ Open source (community-driven, not Microsoft-controlled)
-- ✅ Vulkan-native (modern, not legacy D3D)
-- ✅ Runs on any Linux distro
+- [+] Open source (community-driven, not Microsoft-controlled)
+- [+] Vulkan-native (modern, not legacy D3D)
+- [+] Runs on any Linux distro
 
 ### vs Steam Runtime
-- ✅ Complete platform (not just glibc + libs)
-- ✅ Not Valve-controlled
-- ✅ Lightweight (< 10 MB vs 200+ MB)
+- [+] Complete platform (not just glibc + libs)
+- [+] Not Valve-controlled
+- [+] Lightweight (< 10 MB vs 200+ MB)
 
 ### vs Raw Vulkan + SDL
-- ✅ Memory management (frame arena, GPU pool, intent routing)
-- ✅ Threading (job system, fibers, lock-free structures)
-- ✅ Observability (telemetry, counters, trace events)
-- ✅ Stable ABI (version-guaranteed binary compatibility)
+- [+] Memory management (frame arena, GPU pool, intent routing)
+- [+] Threading (job system, fibers, lock-free structures)
+- [+] Observability (telemetry, counters, trace events)
+- [+] Stable ABI (version-guaranteed binary compatibility)
 
 ---
 
@@ -168,19 +168,19 @@ All targets exceeded. Not by a little — by **10–200×**.
 
 | Document | Description |
 |----------|-------------|
-| [Platform Vision](LGX_PLATFORM_VISION.md) | Mission, strategy, roadmap |
-| [Platform Architecture](LGX_PLATFORM_ARCHITECTURE.md) | Module design, API principles, ABI rules |
-| [Runtime API Reference](docs/lgx_runtime_api.md) | All 60+ functions documented |
-| [Threading API Reference](docs/lgx_threading_api.md) | Threading module API |
-| [Graphics API Reference](docs/lgx_graphics_api.md) | Graphics module API (50+ functions) |
-| [Input API Reference](docs/lgx_input_api.md) | Input module API (15 functions) |
-| [Audio API Reference](docs/lgx_audio_api.md) | Audio module API (20 functions) |
-| [Profiling API Reference](docs/lgx_profile_api.md) | Profiling module API (15 functions) |
-| [Networking API Reference](docs/lgx_net_api.md) | Networking module API (25 functions) |
-| [Asset Pipeline API Reference](docs/lgx_asset_api.md) | Asset Pipeline API (20 functions) |
-| [Tooling API Reference](docs/lgx_tools_api.md) | Tooling API (20 functions) |
-| [Integration Guide](docs/lgx_runtime_integration_guide.md) | Quick start, patterns, FAQ |
-| [Architecture Deep-Dive](docs/lgx_runtime_architecture.md) | Memory subsystem, security, internals |
+| [Platform Vision](docs/LGX_PLATFORM_VISION.md) | Mission, strategy, roadmap |
+| [Platform Architecture](docs/LGX_PLATFORM_ARCHITECTURE.md) | Module design, API principles, ABI rules |
+| [Runtime API Reference](docs/02-api-reference/lgx_runtime_api.md) | All 60+ functions documented |
+| [Threading API Reference](docs/02-api-reference/lgx_threading_api.md) | Threading module API |
+| [Graphics API Reference](docs/02-api-reference/lgx_graphics_api.md) | Graphics module API (50+ functions) |
+| [Input API Reference](docs/02-api-reference/lgx_input_api.md) | Input module API (15 functions) |
+| [Audio API Reference](docs/02-api-reference/lgx_audio_api.md) | Audio module API (20 functions) |
+| [Profiling API Reference](docs/02-api-reference/lgx_profile_api.md) | Profiling module API (15 functions) |
+| [Networking API Reference](docs/02-api-reference/lgx_net_api.md) | Networking module API (25 functions) |
+| [Asset Pipeline API Reference](docs/02-api-reference/lgx_asset_api.md) | Asset Pipeline API (20 functions) |
+| [Tooling API Reference](docs/02-api-reference/lgx_tools_api.md) | Tooling API (20 functions) |
+| [Integration Guide](docs/04-integration/lgx_runtime_integration_guide.md) | Quick start, patterns, FAQ |
+| [Architecture Deep-Dive](docs/03-architecture/lgx_runtime_architecture.md) | Memory subsystem, security, internals |
 
 ---
 
@@ -227,19 +227,30 @@ target_link_libraries(my_game lgx_runtime::lgx_runtime lgx_threading::lgx_thread
 We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Key areas needing help:**
-- 🚧 **Engine Integrations** (v2.3) — Godot, Unity, Unreal plugins
-- 📋 **Game integrations** — Port indie games to LGX
-- 🧪 **Hardware testing** — Test on diverse GPU/CPU/gamepad configs
+- [WIP] **Engine Integrations** (v2.3) — Godot, Unity, Unreal plugins
+- [TODO] **Game integrations** — Port indie games to LGX
+- [TEST] **Hardware testing** — Test on diverse GPU/CPU/gamepad configs
+
+---
+
+## Project Structure
+
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for complete project organization including:
+- Source code layout
+- Documentation structure
+- Build directories
+- Packaging infrastructure
+- Test suite organization
 
 ---
 
 ## Roadmap
 
-**2026**: Core platform (memory ✅, threading ✅, graphics ✅, input ✅, audio ✅, profiling ✅, networking ✅, assets ✅, tooling ✅)  
+**2026**: Core platform (memory [DONE], threading [DONE], graphics [DONE], input [DONE], audio [DONE], profiling [DONE], networking [DONE], assets [DONE], tooling [DONE])  
 **2027**: Ecosystem (engine integrations, distro packages, studio adoption)  
 **2028**: Industry standard (studio adoption, distro defaults, "Powered by LGX")
 
-See [LGX_PLATFORM_VISION.md](LGX_PLATFORM_VISION.md) for the full strategy.
+See [docs/LGX_PLATFORM_VISION.md](docs/LGX_PLATFORM_VISION.md) for the full strategy.
 
 ---
 

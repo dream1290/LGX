@@ -7,7 +7,7 @@
 
 ## Fixes Completed
 
-### 1. ✅ GPU Pool Heap-Use-After-Free (CRITICAL)
+### 1.  GPU Pool Heap-Use-After-Free (CRITICAL)
 **Issue:** buddy_split() realloc invalidated pointers in free lists, causing crashes
 
 **Root Cause:**
@@ -27,7 +27,7 @@
 
 ---
 
-### 2. ✅ Build Errors - Resource Limits (BLOCKING)
+### 2.  Build Errors - Resource Limits (BLOCKING)
 **Issue:** Undefined references to `lgx_resource_limits_*` functions
 
 **Root Cause:**

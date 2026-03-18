@@ -8,6 +8,12 @@ Complete documentation for the LGX Runtime Core - a high-performance Linux gamin
 **Status**: Production-Ready  
 **License**: Apache 2.0
 
+## Platform Documentation
+
+### Vision & Architecture
+- [LGX Platform Vision](LGX_PLATFORM_VISION.md) - Mission, strategy, and roadmap
+- [LGX Platform Architecture](LGX_PLATFORM_ARCHITECTURE.md) - Module design, API principles, ABI rules
+
 ## Documentation Structure
 
 ### User Documentation
@@ -108,6 +114,7 @@ Development process, project history, and implementation notes.
 - Phase 0 validation
 - Phase 1 implementation
 - Design decisions
+- Strategic planning (platform vision, go-to-market, launch plans)
 
 ### Archive
 
@@ -168,10 +175,10 @@ Historical documents, session notes, and deprecated content.
 
 | Metric | P50 | P95 | P99 | Target | Status |
 |--------|-----|-----|-----|--------|--------|
-| 1KB Allocation | 0.45μs | 1.00μs | 2.14μs | <5μs | ✅ PASS |
-| 64B Allocation | 0.47μs | 0.96μs | 4.02μs | <10μs | ✅ PASS |
-| Frame Arena | 0.24μs | 0.30μs | 0.40μs | <1μs | ✅ PASS |
-| Initialize | 2.70ms | - | - | <500ms | ✅ PASS |
+| 1KB Allocation | 0.45μs | 1.00μs | 2.14μs | <5μs |  PASS |
+| 64B Allocation | 0.47μs | 0.96μs | 4.02μs | <10μs |  PASS |
+| Frame Arena | 0.24μs | 0.30μs | 0.40μs | <1μs |  PASS |
+| Initialize | 2.70ms | - | - | <500ms |  PASS |
 
 ## Test Coverage
 
@@ -269,3 +276,8 @@ Licensed under the Apache License, Version 2.0. See [LICENSE](../LICENSE) file f
 
 **Last Updated**: February 13, 2026  
 **Documentation Version**: 1.0.1
+
+## Quick Navigation
+
+- [Quick Reference Guide](QUICK_REFERENCE.md) - Fast access to common documentation
+- [Organization Summary](ORGANIZATION_SUMMARY.md) - Documentation structure overview

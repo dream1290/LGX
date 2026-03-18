@@ -1,6 +1,6 @@
 # LGX + SuperTuxKart Integration Summary
 
-## Mission Accomplished! 🎉
+## Mission Accomplished
 
 We've successfully integrated LGX Runtime Core into SuperTuxKart, a real-world open-source racing game.
 
@@ -163,11 +163,11 @@ Particle* particles = (Particle*)lgx_alloc_frame(count * sizeof(Particle));
 
 ## Current Status
 
-✅ **CMake Integration** - Complete
-✅ **Code Changes** - Complete  
-⏳ **Build** - In Progress
-⏳ **Testing** - Pending
-⏳ **Performance Measurement** - Pending
+**CMake Integration** - Complete
+**Code Changes** - Complete  
+**Build** - In Progress
+**Testing** - Pending
+**Performance Measurement** - Pending
 
 ## Files Created
 
@@ -198,4 +198,4 @@ SuperTuxKart now has LGX frame arena support, providing:
 
 The build is currently compiling. Once complete, we'll have a fully functional racing game with LGX memory management, ready for honest performance testing.
 
-**This is how you prove a memory allocator works in the real world.** 🚀
+This is how you prove a memory allocator works in the real world.

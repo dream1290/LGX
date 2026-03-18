@@ -386,12 +386,12 @@ git push --delete origin v1.0.1
 ## Best Practices
 
 ### DO:
-- ✅ Test thoroughly before release
-- ✅ Update all version files consistently
-- ✅ Write clear release notes
-- ✅ Use semantic versioning
-- ✅ Tag releases properly
-- ✅ Keep repository clean
+-  Test thoroughly before release
+-  Update all version files consistently
+-  Write clear release notes
+-  Use semantic versioning
+-  Tag releases properly
+-  Keep repository clean
 
 ### DON'T:
 - ❌ Commit build artifacts

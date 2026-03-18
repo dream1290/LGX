@@ -7,7 +7,7 @@ Complete searchable index of all LGX Runtime Core documentation.
 
 ---
 
-## 📚 Quick Navigation
+##  Quick Navigation
 
 - [Main Documentation](README.md) - Start here
 - [Getting Started](01-getting-started/README.md) - Installation and quick start
@@ -23,7 +23,7 @@ Complete searchable index of all LGX Runtime Core documentation.
 
 ---
 
-## 📖 Complete File Listing
+##  Complete File Listing
 
 ### 01. Getting Started
 - `01-getting-started/README.md` - Getting started overview
@@ -114,7 +114,7 @@ Complete searchable index of all LGX Runtime Core documentation.
 
 ---
 
-## 🔍 Search by Topic
+##  Search by Topic
 
 ### Performance
 - [Performance Targets](05-performance/targets.md)

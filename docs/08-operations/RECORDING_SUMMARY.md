@@ -1,16 +1,16 @@
 # Video Recording - Quick Summary
 
-## 🎯 Goal
+##  Goal
 Record SuperTuxKart gameplay showing **real-time FPS counter** with LGX Runtime integrated.
 
-## 🚀 One Command to Run
+##  One Command to Run
 
 ```bash
 cd ~/Projects/LGX/stk-code
 ./play_for_recording.sh
 ```
 
-## 📊 What You'll See
+##  What You'll See
 
 **FPS Counter** (top center of screen):
 ```
@@ -18,7 +18,7 @@ FPS: 145/169/311 - 245 KTris, Ping: 0ms
 ```
 
 **Performance**:
-- Average: **169 FPS** ⚡
+- Average: **169 FPS** 
 - Min: 11 FPS (loading)
 - Max: 311 FPS (simple scenes)
 
@@ -29,13 +29,13 @@ FPS: 145/169/311 - 245 KTris, Ping: 0ms
 3. **Play** the race (1-2 minutes)
 4. **Stop** recording when done
 
-## ✅ What's Enabled
+##  What's Enabled
 
-- ✅ FPS counter visible on screen
-- ✅ VSync disabled (real performance)
-- ✅ LGX Runtime active (256MB pool)
-- ✅ Frame arena resets (169 times/second)
-- ✅ Auto-start race (Lighthouse, 2 laps, 4 karts)
+-  FPS counter visible on screen
+-  VSync disabled (real performance)
+-  LGX Runtime active (256MB pool)
+-  Frame arena resets (169 times/second)
+-  Auto-start race (Lighthouse, 2 laps, 4 karts)
 
 ## 🎬 Key Points to Show
 
@@ -44,7 +44,7 @@ FPS: 145/169/311 - 245 KTris, Ping: 0ms
 3. **Smooth performance** with LGX integrated
 4. **No crashes** or stuttering
 
-## 📝 Video Description Template
+##  Video Description Template
 
 ```
 SuperTuxKart + LGX Runtime Performance Demo
@@ -91,4 +91,4 @@ cd ~/Projects/LGX/stk-code
 ./play_for_recording.sh
 ```
 
-**The FPS counter will be visible on screen showing ~169 FPS!** 🎮
+**The FPS counter will be visible on screen showing ~169 FPS!** 

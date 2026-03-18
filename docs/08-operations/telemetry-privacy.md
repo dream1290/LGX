@@ -25,7 +25,7 @@ The LGX Runtime Core includes an enhanced telemetry system with strong privacy g
 
 ### What We CAN Collect (With Consent)
 
-✅ **Performance Metrics** (Safe, no privacy risk):
+ **Performance Metrics** (Safe, no privacy risk):
 - Frame times (milliseconds)
 - Memory usage (megabytes)
 - Allocation sizes (bytes)

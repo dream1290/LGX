@@ -56,7 +56,7 @@ void* huge = lgx_frame_alloc(UINT64_MAX);  // Integer overflow
 
 **1. Integer Overflow Protection**
 ```c
-// ✅ CORRECT: Check for overflow
+//  CORRECT: Check for overflow
 void* lgx_frame_alloc(size_t size) {
     // Check for integer overflow
     if (size > SIZE_MAX - arena->offset) {
@@ -78,7 +78,7 @@ void* lgx_frame_alloc(size_t size) {
 
 **2. Alignment Overflow Protection**
 ```c
-// ✅ CORRECT: Safe alignment
+//  CORRECT: Safe alignment
 size_t aligned_size = (size + 15) & ~15;
 
 // Check alignment didn't overflow
@@ -89,7 +89,7 @@ if (aligned_size < size) {
 
 **3. Use-After-Free Prevention**
 ```c
-// ✅ CORRECT: Poison freed memory (debug builds)
+//  CORRECT: Poison freed memory (debug builds)
 void lgx_heap_free(void* ptr) {
     if (ptr == NULL) return;
     
@@ -104,7 +104,7 @@ void lgx_heap_free(void* ptr) {
 
 **4. Buffer Overflow Prevention**
 ```c
-// ✅ CORRECT: Guard pages (debug builds)
+//  CORRECT: Guard pages (debug builds)
 void* lgx_heap_alloc_guarded(size_t size) {
     // Allocate with guard pages
     size_t total_size = size + 2 * PAGE_SIZE;
@@ -168,7 +168,7 @@ void lgx_config_set_log_path(lgx_config_t* config, const char* path) {
 lgx_config_set_log_path(NULL, "exploit");  // Crash
 lgx_config_set_log_path(config, NULL);     // Crash
 
-// ✅ CORRECT
+//  CORRECT
 void lgx_config_set_log_path(lgx_config_t* config, const char* path) {
     if (config == NULL) return;  // Null check
     if (path == NULL) return;    // Null check
@@ -192,7 +192,7 @@ char exploit[1000000];
 memset(exploit, 'A', sizeof(exploit));
 lgx_log(exploit);  // Buffer overflow
 
-// ✅ CORRECT
+//  CORRECT
 void lgx_log(const char* message) {
     if (message == NULL) return;
     
@@ -222,7 +222,7 @@ void* lgx_alloc(size_t size) {
 lgx_alloc(0);           // Zero-size allocation
 lgx_alloc(UINT64_MAX);  // Huge allocation
 
-// ✅ CORRECT
+//  CORRECT
 void* lgx_alloc(size_t size) {
     // Validate size
     if (size == 0) {
@@ -247,7 +247,7 @@ void lgx_set_log_level(lgx_log_level_t level) {
 // Attacker:
 lgx_set_log_level(9999);  // Out of range
 
-// ✅ CORRECT
+//  CORRECT
 void lgx_set_log_level(lgx_log_level_t level) {
     // Validate enum range
     if (level < LGX_LOG_DEBUG || level > LGX_LOG_FATAL) {
@@ -260,7 +260,7 @@ void lgx_set_log_level(lgx_log_level_t level) {
 
 **Comprehensive Validation Function:**
 ```c
-// ✅ BEST PRACTICE: Centralized validation
+//  BEST PRACTICE: Centralized validation
 typedef struct {
     const void* ptr;
     const char* name;
@@ -315,7 +315,7 @@ void create_isolated_namespace(void) {
 // - Mount namespace leaks
 // - File descriptor leaks
 
-// ✅ CORRECT: Secure namespace
+//  CORRECT: Secure namespace
 void create_isolated_namespace(void) {
     // Create new mount namespace
     if (unshare(CLONE_NEWNS) != 0) {
@@ -339,7 +339,7 @@ void create_isolated_namespace(void) {
 
 **2. File Descriptor Leaks**
 ```c
-// ✅ CORRECT: Close all non-essential FDs
+//  CORRECT: Close all non-essential FDs
 void secure_namespace(void) {
     // Close all file descriptors except stdin/stdout/stderr
     int maxfd = sysconf(_SC_OPEN_MAX);
@@ -356,7 +356,7 @@ void secure_namespace(void) {
 
 **3. Capability Leaks**
 ```c
-// ✅ CORRECT: Drop all unnecessary capabilities
+//  CORRECT: Drop all unnecessary capabilities
 void drop_capabilities(void) {
     // Keep only necessary capabilities
     cap_t caps = cap_init();
@@ -389,7 +389,7 @@ void load_pinned_library(const char* name) {
 // Attacker:
 load_pinned_library("../../../etc/passwd");  // Path traversal
 
-// ✅ CORRECT: Path validation
+//  CORRECT: Path validation
 void load_pinned_library(const char* name) {
     // Validate library name (no path components)
     if (strchr(name, '/') != NULL || strchr(name, '\\') != NULL) {
@@ -445,12 +445,12 @@ struct telemetry_event {
     char game_path[256];    // ❌ May contain username
 };
 
-// ✅ CORRECT: Anonymized telemetry
+//  CORRECT: Anonymized telemetry
 struct telemetry_event {
-    uint64_t session_id;    // ✅ Random, not tied to user
-    uint64_t timestamp;     // ✅ Generic
-    uint32_t event_type;    // ✅ Generic
-    uint64_t value;         // ✅ Numeric data only
+    uint64_t session_id;    //  Random, not tied to user
+    uint64_t timestamp;     //  Generic
+    uint32_t event_type;    //  Generic
+    uint64_t value;         //  Numeric data only
 };
 ```
 
@@ -461,7 +461,7 @@ void lgx_runtime_init(void) {
     enable_telemetry();  // ❌ No consent!
 }
 
-// ✅ CORRECT: Explicit opt-in
+//  CORRECT: Explicit opt-in
 void lgx_runtime_init(const lgx_config_t* config) {
     // Telemetry OFF by default
     if (config->telemetry_enabled) {
@@ -475,7 +475,7 @@ void lgx_runtime_init(const lgx_config_t* config) {
 
 **3. Data Anonymization**
 ```c
-// ✅ CORRECT: Hash sensitive data
+//  CORRECT: Hash sensitive data
 uint64_t anonymize_user_id(const char* username) {
     // Use cryptographic hash
     uint8_t hash[32];
@@ -485,7 +485,7 @@ uint64_t anonymize_user_id(const char* username) {
     return *(uint64_t*)hash;
 }
 
-// ✅ CORRECT: Sanitize paths
+//  CORRECT: Sanitize paths
 const char* sanitize_game_path(const char* path) {
     // Remove username components
     // "/home/alice/games/game.exe" → "/home/USER/games/game.exe"
@@ -504,7 +504,7 @@ const char* sanitize_game_path(const char* path) {
 
 **4. Data Retention Limits**
 ```c
-// ✅ CORRECT: Automatic data deletion
+//  CORRECT: Automatic data deletion
 void cleanup_old_telemetry(void) {
     // Delete telemetry data older than 30 days
     time_t cutoff = time(NULL) - (30 * 24 * 3600);
@@ -519,7 +519,7 @@ void cleanup_old_telemetry(void) {
 
 **5. User Data Export**
 ```c
-// ✅ REQUIRED: Allow users to see their data
+//  REQUIRED: Allow users to see their data
 lgx_result_t lgx_telemetry_export(const char* output_path) {
     if (!user_owns_file(output_path)) {
         return LGX_ERROR_PERMISSION_DENIED;
@@ -553,7 +553,7 @@ LGX pins libraries. Compromised library = all games compromised.
 
 **1. Library Tampering**
 ```c
-// ✅ CORRECT: Verify library integrity
+//  CORRECT: Verify library integrity
 bool verify_library_integrity(const char* library_path) {
     // Load expected hash from secure location
     uint8_t expected_hash[32];
@@ -574,7 +574,7 @@ bool verify_library_integrity(const char* library_path) {
     return true;
 }
 
-// ✅ CORRECT: Verify before loading
+//  CORRECT: Verify before loading
 void load_pinned_library(const char* name) {
     char path[PATH_MAX];
     construct_library_path(name, path);
@@ -590,7 +590,7 @@ void load_pinned_library(const char* name) {
 
 **2. Build Reproducibility**
 ```bash
-# ✅ REQUIRED: Reproducible builds
+#  REQUIRED: Reproducible builds
 # Same source code + same build environment = bit-identical binary
 
 # Enable reproducible builds
@@ -611,7 +611,7 @@ diff hash1.txt hash2.txt  # Should be identical
 
 **3. Dependency Verification**
 ```bash
-# ✅ REQUIRED: Verify all dependencies
+#  REQUIRED: Verify all dependencies
 # Package: glibc 2.35
 
 # Download
@@ -629,7 +629,7 @@ echo "EXPECTED_HASH glibc-2.35.tar.gz" | sha256sum -c
 
 **4. Secure Update Mechanism**
 ```c
-// ✅ CORRECT: Secure library updates
+//  CORRECT: Secure library updates
 lgx_result_t update_pinned_library(const char* name, const char* update_path) {
     // 1. Verify update is signed
     if (!verify_update_signature(update_path)) {
@@ -682,7 +682,7 @@ bool verify_api_key(const char* provided_key) {
 // "A..." → fast (first char wrong)
 // "S..." → slower (first char correct, second wrong)
 
-// ✅ CORRECT: Constant-time comparison
+//  CORRECT: Constant-time comparison
 bool verify_api_key_secure(const char* provided_key) {
     const char* expected_key = get_api_key();
     size_t expected_len = strlen(expected_key);
@@ -719,7 +719,7 @@ void process_secret_index(int index) {
     return secret_array[index];  // Cache timing leak!
 }
 
-// ✅ MITIGATION: Access all elements
+//  MITIGATION: Access all elements
 void process_secret_index_secure(int index) {
     volatile char dummy;
     
@@ -826,13 +826,13 @@ Have rollback mechanism
 ### Secure Coding Patterns
 
 **Always:**
-- ✅ Initialize all variables
-- ✅ Check return values of all functions
-- ✅ Use compiler warnings (-Wall -Wextra -Werror)
-- ✅ Enable stack canaries (-fstack-protector-strong)
-- ✅ Enable ASLR (Address Space Layout Randomization)
-- ✅ Enable DEP/NX (Data Execution Prevention)
-- ✅ Use fortify source (-D_FORTIFY_SOURCE=2)
+-  Initialize all variables
+-  Check return values of all functions
+-  Use compiler warnings (-Wall -Wextra -Werror)
+-  Enable stack canaries (-fstack-protector-strong)
+-  Enable ASLR (Address Space Layout Randomization)
+-  Enable DEP/NX (Data Execution Prevention)
+-  Use fortify source (-D_FORTIFY_SOURCE=2)
 
 **Never:**
 - ❌ Use gets(), strcpy(), sprintf()
@@ -949,22 +949,22 @@ jobs:
 
 **1. Immediate Actions (Hour 0)**
 - ⚠️ **STOP** further development
-- 🔒 **ISOLATE** affected systems
-- 📝 **DOCUMENT** the vulnerability
+-  **ISOLATE** affected systems
+-  **DOCUMENT** the vulnerability
 - 👥 **NOTIFY** security team
 - 🚫 **DO NOT** disclose publicly yet
 
 **2. Assessment (Hours 0-24)**
-- 🔍 **ANALYZE** impact and severity
-- 📊 **DETERMINE** affected versions
-- 🎯 **IDENTIFY** attack vectors
-- 📈 **ESTIMATE** exploitation risk
+-  **ANALYZE** impact and severity
+-  **DETERMINE** affected versions
+-  **IDENTIFY** attack vectors
+-  **ESTIMATE** exploitation risk
 
 **3. Response (Hours 24-72)**
 - 🔧 **DEVELOP** fix
-- ✅ **TEST** fix thoroughly
-- 📦 **PREPARE** security update
-- 📝 **DRAFT** security advisory
+-  **TEST** fix thoroughly
+-  **PREPARE** security update
+-  **DRAFT** security advisory
 
 **4. Disclosure (Day 3+)**
 - 📢 **NOTIFY** affected users
@@ -987,11 +987,11 @@ jobs:
 6. 🔴 Side-channel attacks
 
 **Mandatory Actions:**
-- ✅ Implement comprehensive input validation
-- ✅ Use memory safety tools (ASAN, Valgrind)
-- ✅ Fuzz all APIs for 24+ hours
-- ✅ Get professional security review
-- ✅ Plan incident response
+-  Implement comprehensive input validation
+-  Use memory safety tools (ASAN, Valgrind)
+-  Fuzz all APIs for 24+ hours
+-  Get professional security review
+-  Plan incident response
 
 **Remember:** One security vulnerability can destroy years of work and user trust.
 

@@ -63,11 +63,11 @@ The numbers tell the story:
 │  LGX Runtime Platform (Stable ABI)                  │
 │  ┌──────────┬──────────┬──────────┬──────────┐      │
 │  │ Memory   │ Threading│ Graphics │  Input   │      │
-│  │  v1.0 ✅ │  v1.1 ✅ │  v1.2 ✅ │  v1.3 ✅ │      │
+│  │  v1.0  │  v1.1  │  v1.2  │  v1.3  │      │
 │  └──────────┴──────────┴──────────┴──────────┘      │
 │  ┌──────────┬──────────┬──────────────────────┐      │
 │  │  Audio   │ Network  │ Profiling & Tooling  │      │
-│  │  v1.4 ✅ │  v2.0 🚧 │  v2.1 🚧               │      │
+│  │  v1.4  │  v2.0  │  v2.1                │      │
 │  └──────────┴──────────┴──────────────────────┘      │
 ├─────────────────────────────────────────────────────┤
 │  Any Linux Distribution (kernel 5.10+)              │
@@ -97,14 +97,14 @@ Result: Game runs on every Linux distro, guaranteed.
 
 | | **DirectX** | **Steam Runtime** | **SDL** | **LGX** |
 |---|---|---|---|---|
-| **Complete platform** | ✅ | ❌ Minimal | ❌ Input/window only | ✅ |
-| **Stable ABI** | ✅ | ✅ | ⚠️ Partial | ✅ |
-| **Open source** | ❌ | ⚠️ Partial | ✅ | ✅ |
-| **Gaming-optimized** | ✅ | ❌ | ⚠️ Partial | ✅ |
-| **Memory management** | Basic (malloc) | Basic (glibc) | None | ✅ Specialized |
-| **Threading/jobs** | ✅ | ❌ | ❌ | ✅ |
-| **Profiling built-in** | ✅ (PIX) | ❌ | ❌ | ✅ |
-| **Community-owned** | ❌ Microsoft | ❌ Valve | ✅ | ✅ |
+| **Complete platform** |  | ❌ Minimal | ❌ Input/window only |  |
+| **Stable ABI** |  |  | ⚠️ Partial |  |
+| **Open source** | ❌ | ⚠️ Partial |  |  |
+| **Gaming-optimized** |  | ❌ | ⚠️ Partial |  |
+| **Memory management** | Basic (malloc) | Basic (glibc) | None |  Specialized |
+| **Threading/jobs** |  | ❌ | ❌ |  |
+| **Profiling built-in** |  (PIX) | ❌ | ❌ |  |
+| **Community-owned** | ❌ Microsoft | ❌ Valve |  |  |
 | **Size** | N/A | 200+ MB | ~5 MB | < 10 MB |
 
 ### LGX's Unfair Advantage
@@ -121,7 +121,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 
 ## What's Built Today
 
-### v1.0 — Memory Management ✅ Production-Ready
+### v1.0 — Memory Management  Production-Ready
 
 - **Frame Arena**: Triple-buffered bump pointer (P99 < 0.1 μs, handles 80% of game allocations)
 - **GPU Memory Pool**: Buddy allocator with Vulkan integration (P99 < 10 μs)
@@ -133,7 +133,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 
 **Test coverage**: 76/76 tests passing (100%)
 
-### v1.1 — Threading ✅ Production-Ready
+### v1.1 — Threading  Production-Ready
 
 - **Mutex & Spinlock**: Adaptive, with contention tracking
 - **MPMC/SPSC Queues**: Lock-free, cache-line aligned
@@ -151,15 +151,15 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 
 | Version | Module | Timeline | Status |
 |---------|--------|----------|--------|
-| v1.0 | Memory Management | ✅ Complete | Production |
-| v1.1 | Threading & Jobs | ✅ Complete | Production |
-| v1.2 | Graphics (Vulkan wrapper) | ✅ Complete | Production |
-| v1.3 | Input (gamepad, keyboard, mouse) | ✅ Complete | Production |
-| v1.4 | Audio (3D spatial, mixing) | ✅ Complete | Production |
-| v1.5 | Profiling & Debugging | ✅ Complete | Production |
-| v2.0 | Networking (UDP, serialization, delta) | ✅ Complete | Production |
-| v2.1 | Asset Pipeline (loading, hot reload, compression) | ✅ Complete | Production |
-| v2.2 | Tooling (perf analyzer, memory tracker) | ✅ Complete | Production |
+| v1.0 | Memory Management |  Complete | Production |
+| v1.1 | Threading & Jobs |  Complete | Production |
+| v1.2 | Graphics (Vulkan wrapper) |  Complete | Production |
+| v1.3 | Input (gamepad, keyboard, mouse) |  Complete | Production |
+| v1.4 | Audio (3D spatial, mixing) |  Complete | Production |
+| v1.5 | Profiling & Debugging |  Complete | Production |
+| v2.0 | Networking (UDP, serialization, delta) |  Complete | Production |
+| v2.1 | Asset Pipeline (loading, hot reload, compression) |  Complete | Production |
+| v2.2 | Tooling (perf analyzer, memory tracker) |  Complete | Production |
 
 ### Phase 2: Ecosystem (2027)
 

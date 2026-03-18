@@ -4,7 +4,18 @@ Internal development documentation including project history, validation reports
 
 ## Contents
 
+### Development Planning
+- [implementation_plan.md](implementation_plan.md) - Careful refactoring plan
+- [task.md](task.md) - Current refactoring task list
 - [project-history.md](project-history.md) - Complete project history from inception
+
+### Strategic Planning
+- [platform-strategy.md](platform-strategy.md) - Platform vision and competitive positioning
+- [development-strategy.md](development-strategy.md) - Architecture-first development approach
+- [go-to-market-strategy.md](go-to-market-strategy.md) - Market domination and business strategy
+- [launch-plan.md](launch-plan.md) - Tactical 7-day launch execution plan
+
+### Phase Documentation
 - [phase0-validation/](phase0-validation/) - Phase 0 validation reports
 - [phase1-implementation/](phase1-implementation/) - Phase 1 implementation details
 - [session-notes/](session-notes/) - Development session notes

@@ -274,7 +274,7 @@ void* ptr = lgx_alloc_with_intent(&(lgx_allocation_intent_t){
 | **Lines of Code** | ~3,000 | ~800 | **73% less code** |
 | **Timeline** | 15 months | 3 months | **5x faster** |
 | **Fragmentation** | Variable | 0% (frame), <5% (heap) | **Better** |
-| **Breakthrough** | 4.5x gap | ✅ Achieved | **Success** |
+| **Breakthrough** | 4.5x gap |  Achieved | **Success** |
 
 ## The Bottom Line
 
@@ -283,14 +283,14 @@ void* ptr = lgx_alloc_with_intent(&(lgx_allocation_intent_t){
 - ❌ High complexity (many optimizations)
 - ❌ 15 months timeline
 - ❌ Diminishing returns
-- ✅ Validated infrastructure (lock-free, huge pages)
+-  Validated infrastructure (lock-free, huge pages)
 
 ### Phase 1 (Specialized)
-- ✅ 0.01 μs P99 for 80% of allocations (900x faster!)
-- ✅ Medium complexity (simpler, focused)
-- ✅ 3 months timeline (5x faster)
-- ✅ Breakthrough achieved
-- ✅ Reuses Phase 0 infrastructure
+-  0.01 μs P99 for 80% of allocations (900x faster!)
+-  Medium complexity (simpler, focused)
+-  3 months timeline (5x faster)
+-  Breakthrough achieved
+-  Reuses Phase 0 infrastructure
 
 ## Conclusion
 
@@ -310,6 +310,6 @@ void* ptr = lgx_alloc_with_intent(&(lgx_allocation_intent_t){
 ---
 
 **Comparison Date**: February 5, 2026
-**Status**: ✅ Spec revised, ready for implementation
+**Status**:  Spec revised, ready for implementation
 **Next Step**: Begin frame arena implementation (Month 1)
 

@@ -291,12 +291,21 @@ Expected results:
 - Memory overhead: < 2 MB
 - Initialization time: < 5 ms
 
+## Documentation
+
+- `README.md` - This file (comprehensive packaging guide)
+- `QUICKSTART.md` - Quick start guide
+- `ORGANIZATION.md` - Directory organization and structure
+- `PPA_SETUP.md` - Ubuntu PPA setup guide
+- `COPR_SETUP.md` - Fedora Copr setup guide
+- `AUR_SETUP.md` - Arch AUR setup guide
+- `PUBLIC_REPOSITORIES.md` - Public repository distribution overview
+
 ## Support
 
-- **Issues:** https://github.com/lgx-platform/LGX/issues
-- **Documentation:** https://github.com/lgx-platform/LGX/tree/main/docs
-- **Email:** team@lgx-platform.org
+- **Issues:** https://github.com/dream1290/LGX/issues
+- **Documentation:** https://github.com/dream1290/LGX/tree/main/docs
 
 ## License
 
-MIT License - See LICENSE file for details.
+Apache License 2.0 - See LICENSE file for details.

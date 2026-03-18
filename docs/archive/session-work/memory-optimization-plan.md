@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Objective
+##  Objective
 
 Reduce runtime memory footprint to meet Tier 2 target of <200MB overhead.
 
@@ -15,7 +15,7 @@ Reduce runtime memory footprint to meet Tier 2 target of <200MB overhead.
 
 ---
 
-## 📊 Memory Usage Analysis
+##  Memory Usage Analysis
 
 ### Major Memory Consumers
 
@@ -57,8 +57,8 @@ Reduce runtime memory footprint to meet Tier 2 target of <200MB overhead.
 **Effort**: Medium  
 
 Initialize components only when first used:
-- ✅ Telemetry (only if enabled)
-- ✅ GPU pool (only if GPU allocations requested)
+-  Telemetry (only if enabled)
+-  GPU pool (only if GPU allocations requested)
 - ⚠️ Frame arenas (needed immediately)
 - ⚠️ Persistent heap (needed immediately)
 
@@ -127,7 +127,7 @@ Track memory usage:
 **Goal**: Don't allocate until needed
 
 **Components**:
-1. **Telemetry** ✅ Already lazy
+1. **Telemetry**  Already lazy
    - Only initialize if `lgx_telemetry_enable()` called
    
 2. **GPU Pool** ⚠️ Needs lazy init
@@ -187,7 +187,7 @@ lgx_result_t lgx_get_memory_usage(lgx_memory_usage_t* usage);
 
 ---
 
-## 🎯 Memory Targets
+##  Memory Targets
 
 ### Tier 1 (MVP): <300MB
 - Frame arenas: 96MB (3 × 32MB)
@@ -195,7 +195,7 @@ lgx_result_t lgx_get_memory_usage(lgx_memory_usage_t* usage);
 - Persistent heap: 64MB (lazy, grow to 128MB)
 - Telemetry: 8MB (lazy)
 - Metadata: 10MB
-- **Total**: ~242MB ✅
+- **Total**: ~242MB 
 
 ### Tier 2 (Competitive): <200MB
 - Frame arenas: 64MB (2 × 32MB, 3rd lazy)
@@ -203,7 +203,7 @@ lgx_result_t lgx_get_memory_usage(lgx_memory_usage_t* usage);
 - Persistent heap: 32MB (lazy, grow to 64MB)
 - Telemetry: 4MB (lazy)
 - Metadata: 10MB
-- **Total**: ~142MB ✅
+- **Total**: ~142MB 
 
 ### Aggressive: <150MB
 - Frame arenas: 32MB (1 × 32MB, 2nd/3rd lazy)
@@ -211,11 +211,11 @@ lgx_result_t lgx_get_memory_usage(lgx_memory_usage_t* usage);
 - Persistent heap: 16MB (lazy, grow to 32MB)
 - Telemetry: 2MB (lazy)
 - Metadata: 10MB
-- **Total**: ~76MB ✅
+- **Total**: ~76MB 
 
 ---
 
-## 📝 Implementation Details
+##  Implementation Details
 
 ### Lazy GPU Pool Initialization
 
@@ -333,7 +333,7 @@ size_t get_rss_bytes(void) {
 
 ---
 
-## 🚀 Execution Plan
+##  Execution Plan
 
 ### Week 1: Measurement & Analysis
 - [ ] Implement memory monitoring (12.2.4)
@@ -354,11 +354,11 @@ size_t get_rss_bytes(void) {
 - [ ] Update documentation
 
 **Total Time**: 2-3 weeks  
-**Expected Outcome**: <200MB memory overhead ✅
+**Expected Outcome**: <200MB memory overhead 
 
 ---
 
-## 📊 Success Criteria
+##  Success Criteria
 
 - [ ] Memory monitoring implemented
 - [ ] Lazy initialization for optional components

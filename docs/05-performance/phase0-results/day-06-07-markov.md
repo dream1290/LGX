@@ -1,4 +1,4 @@
-# Day 6-7: Markov Chain Prediction - COMPLETED ✅
+# Day 6-7: Markov Chain Prediction - COMPLETED 
 
 ## Objective
 Predict next allocation size based on transition patterns to pre-warm the predicted size class before it's requested.
@@ -53,9 +53,9 @@ Predict next allocation size based on transition patterns to pre-warm the predic
 
 ### After Markov Chain (Day 6-7)
 **Best Run:**
-- P50: 0.54 μs ✅ (comparable)
-- P99: 10.86 μs ✅ **22% improvement from Day 5!**
-- Cache hit rate: 100.0% ✅ (maintained)
+- P50: 0.54 μs  (comparable)
+- P99: 10.86 μs  **22% improvement from Day 5!**
+- Cache hit rate: 100.0%  (maintained)
 
 **Average Across 5 Runs:**
 - P50: 0.50 μs (±0.03 μs)
@@ -156,7 +156,7 @@ Applications have predictable allocation sequences (e.g., "allocate 64B header, 
 ### Expected vs Actual
 - **Expected**: P99 13.85 μs → 10-12 μs (15-25% improvement)
 - **Actual**: P99 13.85 μs → 10.86 μs (22% improvement)
-- **Result**: **EXCEEDED EXPECTATIONS!** ✅
+- **Result**: **EXCEEDED EXPECTATIONS!** 
 
 ### Why This Worked Better Than Pattern Tracking
 - **Pattern tracking (Day 5)**: Identifies hot size classes (static)
@@ -181,9 +181,9 @@ Result: Markov chain pre-warms the NEXT size class, not just hot classes
 - Cache hit rate: 94.9%
 
 **After Day 6-7:**
-- P50: 0.54 μs ✅ **39% improvement**
-- P99: 10.86 μs ✅ **46% improvement** (best run)
-- Cache hit rate: 100.0% ✅ **5.1% improvement**
+- P50: 0.54 μs  **39% improvement**
+- P99: 10.86 μs  **46% improvement** (best run)
+- Cache hit rate: 100.0%  **5.1% improvement**
 
 ### Progress Toward Breakthrough Target
 **Current**: P99 = 10.86 μs
@@ -244,7 +244,7 @@ The current cache operations use scalar code. SIMD can parallelize operations.
 - **Con**: Cold start period before patterns learned
 - **Con**: Prediction overhead adds slight latency
 
-## Breakthrough Milestone Achieved! 🎉
+## Breakthrough Milestone Achieved! 
 
 **P99 < 11 μs**: We've crossed a major milestone!
 
@@ -256,13 +256,13 @@ The current cache operations use scalar code. SIMD can parallelize operations.
 
 ## Conclusion
 
-**Day 6-7 Objective: EXCEEDED ✅**
+**Day 6-7 Objective: EXCEEDED **
 
 We successfully implemented Markov chain prediction and achieved:
-- ✅ 22% P99 improvement (13.85 μs → 10.86 μs best run)
-- ✅ 100% cache hit rate maintained
-- ✅ Sequence prediction working effectively
-- ✅ Exceeded expected improvement (22% vs 15-25%)
+-  22% P99 improvement (13.85 μs → 10.86 μs best run)
+-  100% cache hit rate maintained
+-  Sequence prediction working effectively
+-  Exceeded expected improvement (22% vs 15-25%)
 
 **Current Status**: P99 = 10.86 μs (best run), 13.30 μs (average)
 
@@ -274,9 +274,9 @@ We successfully implemented Markov chain prediction and achieved:
 
 **Implementation Time**: Day 6-7 (as planned)
 **Lines of Code**: ~140 lines (Markov chain) + ~30 lines (integration)
-**Test Status**: ✅ All tests passing
-**Memory Safety**: ✅ No leaks detected
-**Thread Safety**: ✅ Lock-free operations maintained
+**Test Status**:  All tests passing
+**Memory Safety**:  No leaks detected
+**Thread Safety**:  Lock-free operations maintained
 
 **Cumulative Improvement**: 46% P99 reduction (20 μs → 10.86 μs) over 7 days
 

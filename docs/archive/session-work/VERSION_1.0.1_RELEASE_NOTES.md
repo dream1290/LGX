@@ -18,7 +18,7 @@ Version 1.0.1 is a maintenance release that addresses compilation issues, improv
 - **Stack Protection:** Fixed stack protector warnings in 10 test files
 - **Signal Handling:** Properly suppressed intentional NULL dereference warnings in signal handling tests
 
-### ✨ New Features
+###  New Features
 
 #### Comprehensive Benchmark Suite
 
@@ -37,7 +37,7 @@ Added 5 production-grade benchmarks with statistical analysis:
 - Warmup iterations for stable measurements
 - Comprehensive documentation
 
-### 🔒 Security Improvements
+###  Security Improvements
 
 - All code passes strict GCC static analysis with `-fanalyzer`
 - Zero warnings with `-Wpedantic -Werror`
@@ -142,22 +142,22 @@ find_package(lgx_runtime 1.0.1 REQUIRED)
 ## Compatibility
 
 ### API Compatibility
-✅ **Fully compatible** with v1.0.0 - No API changes
+ **Fully compatible** with v1.0.0 - No API changes
 
 ### ABI Compatibility
-✅ **Fully compatible** with v1.0.0 - No ABI changes
+ **Fully compatible** with v1.0.0 - No ABI changes
 
 ### Binary Compatibility
-✅ Applications built against v1.0.0 work with v1.0.1 without recompilation
+ Applications built against v1.0.0 work with v1.0.1 without recompilation
 
 ## Testing
 
 All tests pass successfully:
-- ✅ 59 unit and integration tests
-- ✅ 5 benchmarks
-- ✅ 0 memory leaks (Valgrind clean)
-- ✅ 0 AddressSanitizer errors
-- ✅ 0 compilation warnings
+-  59 unit and integration tests
+-  5 benchmarks
+-  0 memory leaks (Valgrind clean)
+-  0 AddressSanitizer errors
+-  0 compilation warnings
 
 ## Performance
 

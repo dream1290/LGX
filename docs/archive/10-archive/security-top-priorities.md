@@ -26,7 +26,7 @@
 
 ---
 
-## ⚡ TOP 5 CRITICAL CONCERNS (In Order)
+##  TOP 5 CRITICAL CONCERNS (In Order)
 
 ### #1: Memory Safety - HIGHEST PRIORITY 🔴
 
@@ -44,7 +44,7 @@ void* lgx_frame_alloc(size_t size) {
 // Result: Wraps around, returns pointer in wrong memory region
 // Impact: ARBITRARY CODE EXECUTION
 
-// ✅ SAFE: Always check overflow
+//  SAFE: Always check overflow
 void* lgx_frame_alloc(size_t size) {
     // 1. Check integer overflow
     if (size > SIZE_MAX - arena->offset) {
@@ -107,7 +107,7 @@ memset(exploit, 'A', sizeof(exploit));
 lgx_config_set_log_path(cfg, exploit);
 // Result: Stack smashed, code execution
 
-// ✅ SAFE: Always validate
+//  SAFE: Always validate
 void lgx_config_set_log_path(lgx_config_t* cfg, const char* path) {
     // 1. Null checks
     if (cfg == NULL || path == NULL) {
@@ -158,10 +158,10 @@ lgx_result_t lgx_api_function(void* ptr, size_t size, const char* str) {
 - ❌ `strcat()` - buffer overflow
 
 **ALWAYS use these instead:**
-- ✅ `fgets()` - bounded
-- ✅ `strncpy()` - bounded
-- ✅ `snprintf()` - bounded
-- ✅ `strncat()` - bounded
+-  `fgets()` - bounded
+-  `strncpy()` - bounded
+-  `snprintf()` - bounded
+-  `strncat()` - bounded
 
 **IF YOU SKIP THIS:** First malicious game = owned system.
 
@@ -184,7 +184,7 @@ void setup_namespace(void) {
 // - File descriptor inheritance
 // - Mount namespace leaks
 
-// ✅ SAFE: Secure the namespace
+//  SAFE: Secure the namespace
 void setup_namespace(void) {
     // 1. Create namespace
     if (unshare(CLONE_NEWNS) != 0) {
@@ -227,7 +227,7 @@ void load_library(const char* name) {
 // Attacker: load_library("../../../bin/bash");
 // Result: Arbitrary code execution
 
-// ✅ SAFE: Validate paths
+//  SAFE: Validate paths
 void load_library(const char* name) {
     // 1. No path separators allowed
     if (strchr(name, '/') || strchr(name, '\\')) {
@@ -277,15 +277,15 @@ struct telemetry {
     char home_dir[256];    // ❌ PII - ILLEGAL
 };
 
-// ✅ LEGAL: Anonymized, opt-in only
+//  LEGAL: Anonymized, opt-in only
 struct telemetry {
-    uint64_t session_id;   // ✅ Random, not tied to user
-    uint64_t timestamp;    // ✅ Generic
-    uint32_t event_type;   // ✅ Enum
-    uint64_t value;        // ✅ Numeric only
+    uint64_t session_id;   //  Random, not tied to user
+    uint64_t timestamp;    //  Generic
+    uint32_t event_type;   //  Enum
+    uint64_t value;        //  Numeric only
 };
 
-// ✅ LEGAL: Explicit opt-in
+//  LEGAL: Explicit opt-in
 void lgx_runtime_init(const lgx_config_t* cfg) {
     // TELEMETRY OFF BY DEFAULT
     g_telemetry_enabled = false;
@@ -301,13 +301,13 @@ void lgx_runtime_init(const lgx_config_t* cfg) {
 ```
 
 **PRIVACY REQUIREMENTS:**
-1. ✅ OFF by default (opt-in, not opt-out)
-2. ✅ NO personally identifiable information (PII)
-3. ✅ Anonymize all data (hash usernames, etc.)
-4. ✅ Allow users to export their data
-5. ✅ Allow users to delete their data
-6. ✅ Auto-delete data after 30 days
-7. ✅ Clear privacy policy visible to users
+1.  OFF by default (opt-in, not opt-out)
+2.  NO personally identifiable information (PII)
+3.  Anonymize all data (hash usernames, etc.)
+4.  Allow users to export their data
+5.  Allow users to delete their data
+6.  Auto-delete data after 30 days
+7.  Clear privacy policy visible to users
 
 **NEVER collect:**
 - ❌ Usernames
@@ -335,7 +335,7 @@ void load_pinned_library(const char* name) {
 // Attacker: Replace glibc with backdoored version
 // Result: All games compromised
 
-// ✅ SAFE: Verify before loading
+//  SAFE: Verify before loading
 void load_pinned_library(const char* name) {
     // 1. Compute hash of library file
     uint8_t actual_hash[32];
@@ -385,7 +385,7 @@ SOURCE_DATE_EPOCH=1580601600 ./build.sh
 
 ---
 
-## 🛠️ MANDATORY SECURITY TOOLS
+##  MANDATORY SECURITY TOOLS
 
 **You MUST run ALL of these:**
 
@@ -561,20 +561,20 @@ gcc -fsanitize=thread -g src/*.c -o test_tsan
 
 ---
 
-## 🎯 SUCCESS CRITERIA
+##  SUCCESS CRITERIA
 
 **Security hardening is complete when:**
 
-✅ **ALL** Valgrind/ASAN/MSAN/UBSAN tests pass (zero errors)  
-✅ **ALL** APIs have input validation  
-✅ **ALL** memory operations have bounds checks  
-✅ **ALL** integer arithmetic has overflow checks  
-✅ **24+ hours** of fuzzing with zero crashes  
-✅ **Static analysis** clean (zero warnings)  
-✅ **Code review** by security expert passed  
-✅ **Privacy policy** implemented and visible  
-✅ **Supply chain** verification working  
-✅ **Incident response** plan documented  
+ **ALL** Valgrind/ASAN/MSAN/UBSAN tests pass (zero errors)  
+ **ALL** APIs have input validation  
+ **ALL** memory operations have bounds checks  
+ **ALL** integer arithmetic has overflow checks  
+ **24+ hours** of fuzzing with zero crashes  
+ **Static analysis** clean (zero warnings)  
+ **Code review** by security expert passed  
+ **Privacy policy** implemented and visible  
+ **Supply chain** verification working  
+ **Incident response** plan documented  
 
 **Until ALL boxes checked, code is NOT production-ready.**
 
@@ -596,7 +596,7 @@ gcc -fsanitize=thread -g src/*.c -o test_tsan
 
 ---
 
-## ✅ FINAL REMINDER
+##  FINAL REMINDER
 
 **Security is not:**
 - ❌ Optional
@@ -605,10 +605,10 @@ gcc -fsanitize=thread -g src/*.c -o test_tsan
 - ❌ Something you can rush
 
 **Security is:**
-- ✅ MANDATORY
-- ✅ Critical for survival
-- ✅ Required for production
-- ✅ Worth the time investment
+-  MANDATORY
+-  Critical for survival
+-  Required for production
+-  Worth the time investment
 
 **Budget 4 weeks minimum for proper security hardening.**
 

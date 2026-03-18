@@ -6,12 +6,20 @@ This guide covers integrating the LGX Runtime Core into your project's build sys
 
 ## Contents
 
+### Integration Guides
+- [lgx_runtime_integration_guide.md](lgx_runtime_integration_guide.md) - Complete integration guide
 - [CMake Integration](#cmake-integration)
 - [Makefile Integration](#makefile-integration)
 - [Meson Integration](#meson-integration)
 - [Manual Compilation](#manual-compilation)
 - [Runtime Configuration](#runtime-configuration)
 - [Best Practices](#best-practices)
+
+### Real-World Integration Examples
+- [INTEGRATION_SUMMARY.md](INTEGRATION_SUMMARY.md) - SuperTuxKart integration summary
+- [LGX_STK_INTEGRATION_PLAN.md](LGX_STK_INTEGRATION_PLAN.md) - Integration planning document
+- [STK_LGX_INTEGRATION_COMPLETE.md](STK_LGX_INTEGRATION_COMPLETE.md) - Complete implementation details
+- [STK_LGX_PROGRESS.md](STK_LGX_PROGRESS.md) - Integration progress tracking
 
 ## CMake Integration
 

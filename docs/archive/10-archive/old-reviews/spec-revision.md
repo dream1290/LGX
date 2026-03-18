@@ -86,18 +86,18 @@ Based on your feedback that "games need specialized allocators, not a faster gen
 ## What Phase 0 Taught Us
 
 ### Achievements
-- ✅ 55% P99 improvement (20 μs → 9 μs)
-- ✅ Lock-free techniques validated
-- ✅ Huge pages reduce TLB misses by 99.8%
-- ✅ Pattern tracking works
-- ✅ SIMD acceleration infrastructure
+-  55% P99 improvement (20 μs → 9 μs)
+-  Lock-free techniques validated
+-  Huge pages reduce TLB misses by 99.8%
+-  Pattern tracking works
+-  SIMD acceleration infrastructure
 
 ### Learnings
 - ❌ Can't optimize around malloc/free forever (fundamental limit)
 - ❌ Diminishing returns (each optimization harder than last)
 - ❌ Still 4.5x away from breakthrough target (9 μs → 2 μs)
-- ✅ Games have predictable patterns (80% frame-scoped)
-- ✅ Specialized allocators are the right approach
+-  Games have predictable patterns (80% frame-scoped)
+-  Specialized allocators are the right approach
 
 ### What We're Reusing
 - Lock-free techniques → Frame arena, persistent heap
@@ -132,7 +132,7 @@ Based on your feedback that "games need specialized allocators, not a faster gen
 ## Next Steps
 
 ### Immediate (This Week)
-1. ✅ Spec revision complete
+1.  Spec revision complete
 2. ⏭️ Review and approve revised spec
 3. ⏭️ Begin Month 1: Frame arena implementation
 
@@ -181,11 +181,11 @@ Based on your feedback that "games need specialized allocators, not a faster gen
 
 The spec has been revised to pivot from a general-purpose allocator to specialized allocators based on your feedback. This approach:
 
-- ✅ Solves the right problem (80% of allocations are frame-scoped)
-- ✅ Achieves breakthrough performance (900x faster for 80% of allocations)
-- ✅ Reuses Phase 0 learnings (lock-free, huge pages, pattern tracking)
-- ✅ Reduces complexity (simpler code, easier to maintain)
-- ✅ Faster time to value (3 months vs 15 months)
+-  Solves the right problem (80% of allocations are frame-scoped)
+-  Achieves breakthrough performance (900x faster for 80% of allocations)
+-  Reuses Phase 0 learnings (lock-free, huge pages, pattern tracking)
+-  Reduces complexity (simpler code, easier to maintain)
+-  Faster time to value (3 months vs 15 months)
 
 **Ready to proceed with Phase 1 Month 1: Frame Arena implementation.**
 
@@ -193,6 +193,6 @@ The spec has been revised to pivot from a general-purpose allocator to specializ
 
 **Revision Date**: February 5, 2026
 **Revised By**: Kiro AI Assistant
-**Status**: ✅ Complete, ready for review and approval
+**Status**:  Complete, ready for review and approval
 **Next Step**: Begin Month 1 frame arena implementation
 

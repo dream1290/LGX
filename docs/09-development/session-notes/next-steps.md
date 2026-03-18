@@ -2,11 +2,11 @@
 
 ## What Just Happened
 
-✅ **Spec revised** to pivot from general-purpose allocator to specialized allocators
-✅ **Requirements updated** with specialized allocator acceptance criteria
-✅ **Design updated** with frame arena, GPU pool, and persistent heap designs
-✅ **Tasks updated** with Month 1-3 implementation plan
-✅ **Documentation created** explaining the pivot decision
+ **Spec revised** to pivot from general-purpose allocator to specialized allocators
+ **Requirements updated** with specialized allocator acceptance criteria
+ **Design updated** with frame arena, GPU pool, and persistent heap designs
+ **Tasks updated** with Month 1-3 implementation plan
+ **Documentation created** explaining the pivot decision
 
 ## Files to Review
 
@@ -94,22 +94,22 @@ If you need clarification:
 ## Success Criteria
 
 ### Month 1 (Frame Arena)
-- ✅ P99 < 0.1 μs (100 nanoseconds)
-- ✅ Handles 80% of typical game allocations
-- ✅ Zero fragmentation
-- ✅ Automatic reset at frame boundaries
+-  P99 < 0.1 μs (100 nanoseconds)
+-  Handles 80% of typical game allocations
+-  Zero fragmentation
+-  Automatic reset at frame boundaries
 
 ### Month 2 (GPU Pool)
-- ✅ P99 < 10 μs
-- ✅ Pre-allocated GPU memory (no runtime allocation)
-- ✅ Alignment guarantees (256B buffers, 4KB images)
-- ✅ Vulkan integration
+-  P99 < 10 μs
+-  Pre-allocated GPU memory (no runtime allocation)
+-  Alignment guarantees (256B buffers, 4KB images)
+-  Vulkan integration
 
 ### Month 3 (Persistent Heap)
-- ✅ P99 < 20 μs
-- ✅ <5% fragmentation over 8-hour sessions
-- ✅ Defragmentation during loading screens
-- ✅ Leak detection
+-  P99 < 20 μs
+-  <5% fragmentation over 8-hour sessions
+-  Defragmentation during loading screens
+-  Leak detection
 
 ## Questions to Answer
 
@@ -155,7 +155,7 @@ If you need clarification:
 
 ---
 
-**Status**: ✅ Spec revision complete, awaiting approval to proceed
+**Status**:  Spec revision complete, awaiting approval to proceed
 **Next Action**: Your decision on how to proceed
 **Timeline**: 3 months for Phase 1 (Month 1: Frame arena, Month 2: GPU pool, Month 3: Persistent heap)
 

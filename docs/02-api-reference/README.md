@@ -2,9 +2,7 @@
 
 Complete API documentation for the LGX Runtime Core.
 
----
-
-## 📖 Overview
+## Overview
 
 The LGX Runtime Core provides a high-performance memory management system with:
 - **Intent-based allocation** - Automatic routing to optimal allocators
@@ -13,9 +11,7 @@ The LGX Runtime Core provides a high-performance memory management system with:
 - **Persistent heap** - Fragmentation-resistant long-lived allocations
 - **Graceful degradation** - Works across diverse hardware
 
----
-
-## 🚀 Quick Reference
+## Quick Reference
 
 ### Initialization
 ```c
@@ -48,15 +44,23 @@ if (result != LGX_SUCCESS) {
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
-### Core APIs
-- [initialization.md](initialization.md) - Init/shutdown and configuration
-- [memory-allocation.md](memory-allocation.md) - Memory allocation APIs
-- [error-handling.md](error-handling.md) - Error codes and handling
-- [telemetry.md](telemetry.md) - Telemetry and monitoring
+### Core Runtime APIs
+- [lgx_runtime_api.md](lgx_runtime_api.md) - Complete LGX Runtime Core API Reference
+- [lgx_runtime_integration_guide.md](../04-integration/lgx_runtime_integration_guide.md) - Integration guide and patterns
 
-### API Categories
+### Module APIs
+- [lgx_threading_api.md](lgx_threading_api.md) - Threading and concurrency primitives
+- [lgx_graphics_api.md](lgx_graphics_api.md) - Graphics and rendering API
+- [lgx_audio_api.md](lgx_audio_api.md) - 3D spatial audio engine with ALSA output
+- [lgx_input_api.md](lgx_input_api.md) - Input handling (gamepad, keyboard, mouse)
+- [lgx_asset_api.md](lgx_asset_api.md) - Asset loading, hot-reload, and compression
+- [lgx_net_api.md](lgx_net_api.md) - Networking primitives
+- [lgx_profile_api.md](lgx_profile_api.md) - Profiling and performance analysis
+- [lgx_tools_api.md](lgx_tools_api.md) - Development tools and utilities
+
+### API Categories (Core Runtime)
 
 **Initialization & Configuration**
 - `lgx_config_create()` - Create configuration
@@ -88,7 +92,7 @@ if (result != LGX_SUCCESS) {
 
 ---
 
-## 💡 Code Examples
+## Code Examples
 
 See the [examples/](examples/) directory for complete working examples:
 - [basic-usage.c](examples/basic-usage.c) - Basic allocation and deallocation
@@ -98,7 +102,7 @@ See the [examples/](examples/) directory for complete working examples:
 
 ---
 
-## 🎯 Best Practices
+## Best Practices
 
 1. **Use intent-based allocation** - Let the runtime choose the optimal allocator
 2. **Check return values** - Always check for NULL and error codes
@@ -108,7 +112,7 @@ See the [examples/](examples/) directory for complete working examples:
 
 ---
 
-## 📊 Performance Characteristics
+## Performance Characteristics
 
 | Allocator | P99 Latency | Use Case |
 |-----------|-------------|----------|
@@ -120,7 +124,7 @@ See [Performance Guide](../05-performance/README.md) for details.
 
 ---
 
-## 🔗 Related Documentation
+## Related Documentation
 
 - [Integration Guide](../03-integration-guide/README.md) - Integrate into your project
 - [Architecture](../04-architecture/README.md) - System design
@@ -128,4 +132,4 @@ See [Performance Guide](../05-performance/README.md) for details.
 
 ---
 
-**Status**: 🚧 To be completed in Task 11.1
+**Status**: To be completed in Task 11.1

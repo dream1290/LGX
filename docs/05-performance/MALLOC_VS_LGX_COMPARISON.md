@@ -193,16 +193,16 @@ cd stk-code
 
 ## Current Status
 
-✅ **Baseline Established**
+ **Baseline Established**
 - Standard malloc: ~165-170 FPS
 - LGX Runtime: ~169-175 FPS (similar, as expected)
 
-⏳ **Next Steps**
+ **Next Steps**
 1. Profile allocation hot spots
 2. Replace malloc/free with lgx_alloc_frame()
 3. Measure improvement (expect +10-20% FPS)
 
-🎯 **Goal**
+ **Goal**
 - Achieve 200+ FPS average
 - Reduce variance from 30% to 15-20%
 - Improve min FPS from 11 to 15-20

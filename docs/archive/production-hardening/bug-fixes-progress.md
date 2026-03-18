@@ -8,7 +8,7 @@
 
 ## Summary of Current Status
 
-### ✅ Fixed Issues
+###  Fixed Issues
 1. **GPU Pool Heap-Use-After-Free** - FIXED
    - Issue: buddy_split() realloc invalidated pointers in free lists
    - Fix: Added buddy_rebuild_free_lists() to rebuild all pointers after realloc
@@ -134,9 +134,9 @@ D. **Fix test expectations** - Accept >= 2 lines instead of == 2
 
 ## Next Actions
 
-1. ✅ **Analyze logging test** - COMPLETE
-2. ✅ **Analyze memory leaks** - COMPLETE  
-3. ✅ **Analyze build errors** - COMPLETE
+1.  **Analyze logging test** - COMPLETE
+2.  **Analyze memory leaks** - COMPLETE  
+3.  **Analyze build errors** - COMPLETE
 4. **Fix build errors** - Check resource_limits implementation
 5. **Fix logging tests** - Modify test expectations
 6. **Analyze intent tests** - Run with verbose output

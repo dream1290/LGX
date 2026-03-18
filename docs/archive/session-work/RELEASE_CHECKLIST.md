@@ -39,20 +39,20 @@ This checklist ensures that all release requirements are met before publishing a
 ### 2. Performance Validation
 
 - [ ] Allocation latency meets targets
-  - Frame arena: P99 < 100ns ✅
-  - General allocations: P99 < 5μs (Tier 1) ✅
+  - Frame arena: P99 < 100ns 
+  - General allocations: P99 < 5μs (Tier 1) 
   ```bash
   ./build/tests/performance/perf_test_allocation_latency
   ```
 
 - [ ] Memory overhead meets targets
-  - Runtime overhead < 200MB (Tier 2) ✅
+  - Runtime overhead < 200MB (Tier 2) 
   ```bash
   ./build/tests/performance/test_memory_footprint
   ```
 
 - [ ] Initialization time meets targets
-  - Init time < 500ms (Tier 2) ✅
+  - Init time < 500ms (Tier 2) 
   ```bash
   ./build/tests/performance/test_initialization_time
   ```

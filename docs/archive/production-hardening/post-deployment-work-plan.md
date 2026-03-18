@@ -352,7 +352,7 @@ sudo dnf install afl clang
 ## Next Steps
 
 ### Immediate (This Week)
-1. ✅ Create work plan (this document)
+1.  Create work plan (this document)
 2. [ ] Start fixing critical bugs
 3. [ ] Set up fuzzing infrastructure
 4. [ ] Begin API documentation

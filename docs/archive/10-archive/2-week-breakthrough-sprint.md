@@ -504,12 +504,12 @@ void init_hot_path_with_hugepages(hot_path_cache_t* cache) {
 **Confidence**: HIGH (each optimization is proven)
 **Expected Outcome**: P99 < 2 μs (10x improvement)
 
-**Let's make our claims real.** 🚀
+**Let's make our claims real.** 
 
 ---
 
 **Next Steps**:
-1. ✅ Review and approve this plan
+1.  Review and approve this plan
 2. ⏭️ Allocate 2 weeks for implementation
 3. ⏭️ Start Day 1: Lock-free refill
 4. ⏭️ Measure and iterate

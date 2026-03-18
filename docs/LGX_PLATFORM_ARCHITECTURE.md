@@ -18,7 +18,7 @@ LGX Runtime Platform is a modular, stable-ABI gaming platform for Linux. Each mo
 │  LGX Platform Unified API                                       │
 │  ┌──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬─────────┬─────────┬─────────┐ │
 │  │lgx_memory│lgx_thread│ lgx_gfx  │lgx_input │lgx_audio │lgx_prof  │ lgx_net │lgx_asset│lgx_tools│ │
-│  │  v1.0 ✅ │  v1.1 ✅ │  v1.2 ✅ │  v1.3 ✅ │  v1.4 ✅ │  v1.5 ✅ │ v2.0 ✅ │ v2.1 ✅ │ v2.2 ✅ │ │
+│  │  v1.0  │  v1.1  │  v1.2  │  v1.3  │  v1.4  │  v1.5  │ v2.0  │ v2.1  │ v2.2  │ │
 │  │          │          │          │          │          │          │         │         │         │ │
 │  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_  │ liblgx_ │ liblgx_ │ liblgx_ │ │
 │  │runtime.so│thread.so │graphics.so│ input.so │ audio.so │profile.so│ net.so  │ asset.so│ tools.so│ │
@@ -369,9 +369,9 @@ Each module has a strict performance budget to ensure the platform never becomes
 
 | Module | Operation | P99 Budget | Current |
 |--------|-----------|------------|---------|
-| Memory | Frame alloc | < 0.1 μs | 0.04 μs ✅ |
-| Memory | Persistent alloc | < 20 μs | 0.09 μs ✅ |
-| Memory | GPU alloc | < 10 μs | 5.1 μs ✅ |
+| Memory | Frame alloc | < 0.1 μs | 0.04 μs  |
+| Memory | Persistent alloc | < 20 μs | 0.09 μs  |
+| Memory | GPU alloc | < 10 μs | 5.1 μs  |
 | Threading | Job submit | < 1 μs | — |
 | Threading | Job steal | < 5 μs | — |
 | Graphics | Command record | < 10 μs | — |

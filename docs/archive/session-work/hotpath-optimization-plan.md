@@ -51,7 +51,7 @@ lgx_alloc_with_intent()
 
 ## Optimization Strategy
 
-### 12.1.1 Profile with perf ✅
+### 12.1.1 Profile with perf 
 - [x] Create profiling script
 - [ ] Run perf record on allocation benchmark
 - [ ] Analyze hot functions
@@ -145,7 +145,7 @@ lgx_alloc_with_intent()
 
 **Total Time**: 11-15 hours  
 **Total Expected Improvement**: 50-75%  
-**Target Achievement**: P50 < 0.5μs, P99 < 1μs ✅
+**Target Achievement**: P50 < 0.5μs, P99 < 1μs 
 
 ---
 
@@ -259,7 +259,7 @@ done:
 ## Performance Targets
 
 ### Current Performance
-- P50: 0.89μs ✅ (already good)
+- P50: 0.89μs  (already good)
 - P99: 19.36μs ❌ (needs improvement)
 - Cache hit rate: 94.9%
 - Branch miss rate: ~5%
@@ -320,4 +320,4 @@ done:
 **Status**: Ready to implement  
 **Priority**: High (blocks Tier 2 performance target)  
 **Estimated Time**: 11-15 hours  
-**Expected Outcome**: P50 < 0.5μs, P99 < 1μs ✅
+**Expected Outcome**: P50 < 0.5μs, P99 < 1μs 

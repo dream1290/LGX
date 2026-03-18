@@ -143,7 +143,7 @@ SuperTuxKart Startup
 ✓ Build completes successfully  
 ✓ LGX initializes and runs  
 ✓ Frame resets work correctly  
-⏳ Run game with assets to verify no crashes
+ Run game with assets to verify no crashes
 
 ### Phase 2: Performance Measurement
 - Measure baseline FPS without LGX
@@ -234,7 +234,7 @@ The `lgx_stk_wrapper.h` provides:
 
 ## Conclusion
 
-**Mission Accomplished!** 🎉
+**Mission Accomplished!** 
 
 We successfully integrated LGX Runtime Core into SuperTuxKart, proving that:
 - LGX works in real-world production code
@@ -248,7 +248,7 @@ SuperTuxKart now has automatic per-frame memory management via LGX, with:
 - Compile-time optional integration
 - Production-ready implementation
 
-**This is how you prove a memory allocator works in the real world.** 🚀
+**This is how you prove a memory allocator works in the real world.** 
 
 ---
 

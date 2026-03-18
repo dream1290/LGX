@@ -4,10 +4,18 @@ Documentation related to performance targets, benchmarks, and optimization.
 
 ## Contents
 
+### Performance Documentation
 - [targets.md](targets.md) - Performance targets explained (Tier 1 & Tier 2)
 - [benchmarks.md](benchmarks.md) - Performance testing implementation
 - [optimization-report.md](optimization-report.md) - Performance optimization report
 - [phase0-results/](phase0-results/) - Phase 0 breakthrough sprint results
+
+### Real-World Performance Results
+- [MALLOC_VS_LGX_COMPARISON.md](MALLOC_VS_LGX_COMPARISON.md) - Comparison with standard malloc
+- [STK_LGX_BASELINE_PERFORMANCE.md](STK_LGX_BASELINE_PERFORMANCE.md) - SuperTuxKart baseline measurements
+- [STK_LGX_REAL_PERFORMANCE.md](STK_LGX_REAL_PERFORMANCE.md) - Real-world performance data
+- [STK_LGX_SUCCESS.md](STK_LGX_SUCCESS.md) - Performance success metrics
+- [STK_LGX_VERIFIED.md](STK_LGX_VERIFIED.md) - Verified performance results
 
 ## Phase 0 Breakthrough Sprint
 
