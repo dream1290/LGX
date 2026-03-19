@@ -75,6 +75,12 @@ NOTES.md
 personal/
 lead-engineer-new-verdict/
 
+# Kiro IDE configuration (user-specific)
+/.kiro/
+
+# Development scripts (user-specific)
+/scripts/
+
 # Customer data
 customers/
 contracts/
