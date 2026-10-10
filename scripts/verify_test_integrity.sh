@@ -38,9 +38,20 @@
 #           int rc = check();  if (rc) return rc;
 #           return failures ? 1 : 0;
 #           return (tests_failed == 0) ? 0 : 1;
-#           return run_suite();
 #       Identifiers that are function calls, C keywords, ALL_CAPS constants
 #       and `.member` / `->member` names are not treated as verdicts.
+#
+#       Note that `return run_suite();` is therefore NOT credited: a call is not
+#       an identifier, so the statement carries no verdict this checker can read
+#       and the file is reported ALWAYS_ZERO. That is the fail-safe direction
+#       (capable reported as incapable, not the reverse), but it means a test
+#       that delegates its whole verdict to a function must still expose one:
+#
+#           int rc = run_suite();   /* rc is driven by the assignment -> M3 */
+#           return rc;
+#
+#       Verified: a file whose only exit is `return run_suite();` is reported
+#       incapable [ALWAYS_ZERO], whether or not run_suite() can return non-zero.
 #
 #   M4  Every identifier carrying main()'s verdict is DRIVEN. An identifier is
 #       driven if the file increments it (v++, v--) or assigns it something
@@ -77,10 +88,11 @@
 # ===========================================================================
 # KNOWN LIMITATIONS -- this is a text heuristic, not a compiler
 # ===========================================================================
-#   L1  A verdict of the form `return some_function();` is credited (M3) even
-#       if that function can only ever return 0. Ruling that out needs dataflow
-#       analysis. This is the main source of false negatives (a file credited
-#       here that still cannot fail).
+#   L1  A verdict of the form `return some_function();` is NOT credited at all,
+#       because the callee's return value cannot be read without dataflow
+#       analysis. The file is reported incapable even if the function does
+#       return non-zero. This errs toward flagging capable files, which is the
+#       safe direction for a gate: it never lets an incapable file through.
 #   L2  exit()/abort() is credited file-wide (M1) even when it sits in a helper
 #       main() never calls. Verified against a scratch fixture:
 #       scripts/verify_test_integrity.sh --classify classifies a file whose only
@@ -123,6 +135,13 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$(mktemp -d)"
+
+# Both gate scripts must stay tracked by git, or CI silently stops running
+# them. See scripts/check_gate_scripts_tracked.sh for why this is checked at
+# run time rather than left as a comment in .gitignore.
+if [ "${LGX_SKIP_TRACKING_CHECK:-0}" != "1" ] && [ -f "$REPO_ROOT/scripts/check_gate_scripts_tracked.sh" ]; then
+    "$REPO_ROOT/scripts/check_gate_scripts_tracked.sh" "$REPO_ROOT" || exit 2
+fi
 trap 'rm -rf "$WORK"' EXIT
 
 # ---------------------------------------------------------------------------
@@ -414,6 +433,15 @@ classify() {
     esac
 }
 
+# Print this file's comment header as help. Stops at the first non-comment
+# line rather than using a line range, so the header can grow without silently
+# truncating the limitations section -- which is the part that matters.
+print_header() {
+    awk 'NR == 1 { next }
+         /^#/    { sub(/^# ?/, ""); print; next }
+         { exit }' "$0"
+}
+
 # ---------------------------------------------------------------------------
 # Argument handling. Paths given on the command line are resolved against the
 # caller's cwd first, then against the repository root, so the script behaves
@@ -422,7 +450,7 @@ classify() {
 MODE="scan"
 case "${1:-}" in
     --classify) MODE="classify"; shift ;;
-    -h|--help)  sed -n '2,80p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help)  print_header; exit 0 ;;
 esac
 
 if [ "$MODE" = "classify" ]; then

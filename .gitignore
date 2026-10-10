@@ -1,3 +1,25 @@
+# ===========================================================================
+# DO NOT REMOVE THE /scripts/* UN-IGNORE LINES FURTHER DOWN.
+#
+# /scripts/* is ignored so developer scratch scripts stay out of the repo. The
+# negations below exist because these scripts ARE CI gates: if they are not
+# tracked, CI cannot run them and the suite rots again without anyone noticing.
+#
+#   scripts/verify_test_integrity.sh       fails CI if a test cannot report
+#                                          failure
+#   scripts/count_tests.sh                 the registered/verifying/incapable
+#                                          census the gate is measured against
+#   scripts/check_gate_scripts_tracked.sh  fails if the two above are not
+#                                          tracked by git
+#   scripts/verify_benchmark_methodology.sh fails CI if the benchmark stops
+#                                          measuring what it claims to
+#
+# A wholesale rewrite of this file (as planned for task 5 of the test-integrity
+# work) must keep them. scripts/check_gate_scripts_tracked.sh enforces that at
+# run time rather than trusting this comment: both gate scripts call it on
+# startup and fail if either is untracked.
+# ===========================================================================
+
 # Build artifacts
 /build/
 /build-*/
@@ -87,6 +109,7 @@ lead-engineer-new-verdict/
 !/scripts/verify_benchmark_methodology.sh
 !/scripts/verify_test_integrity.sh
 !/scripts/count_tests.sh
+!/scripts/check_gate_scripts_tracked.sh
 
 # Customer data
 customers/

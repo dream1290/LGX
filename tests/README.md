@@ -375,6 +375,45 @@ Accepted mechanisms, as implemented by `scripts/verify_test_integrity.sh`:
 | A failure counter that `main()` reads **and** something increments | `return (failures == 0) ? 0 : 1;` with a real `failures++` |
 | A macro defined in the test file that returns non-zero, invoked from `main()` | `#define CHECK(c) do { if (!(c)) return 1; } while (0)` |
 
+A verdict that is a bare call — `return run_suite();` — is **not** accepted: a
+callee's return value cannot be read without dataflow analysis. Write it so the
+value is visible:
+
+```c
+int rc = run_suite();   /* rc is driven by this assignment */
+return rc;              /* accepted */
+```
+
+This errs toward reporting a capable file as incapable, never the reverse, so a
+gate built on it cannot let an incapable test through.
+
+### The gate scripts must stay tracked by git
+
+`.gitignore` ignores `/scripts/*` and then un-ignores the scripts CI depends on.
+That makes four files' tracked status depend on a handful of negation lines:
+
+```text
+scripts/verify_test_integrity.sh        fails CI if a test cannot report failure
+scripts/count_tests.sh                  the census the gate is measured against
+scripts/check_gate_scripts_tracked.sh   fails if the two above are untracked
+scripts/verify_benchmark_methodology.sh fails CI if the benchmark stops measuring
+```
+
+A wholesale rewrite of `.gitignore` — as the next task in this plan does — will
+drop those negations unless it keeps them, and then CI silently stops running
+the gate. So it is enforced at run time rather than left to a comment: **both
+gate scripts call `scripts/check_gate_scripts_tracked.sh` on startup and fail if
+either is untracked.**
+
+```bash
+scripts/check_gate_scripts_tracked.sh          # PASS/FAIL on its own
+git ls-files --error-unmatch scripts/verify_test_integrity.sh scripts/count_tests.sh
+```
+
+If you rewrite `.gitignore`, re-add the `!/scripts/...` lines and then run the
+check. Do not `git add -f` as a permanent fix — an un-ignoring line is the fix,
+because it survives the *next* rewrite too.
+
 ### `assert()` does not count
 
 `CMakeLists.txt` defaults `CMAKE_BUILD_TYPE` to Release (lines 9-10) and adds
@@ -394,6 +433,19 @@ the real Release flags:
 with -DNDEBUG    -> exit 0    (the test "passes")
 without -DNDEBUG -> exit 134  (SIGABRT from assert)
 ```
+
+Where `-DNDEBUG` comes from: CMake's own built-in default for
+`CMAKE_C_FLAGS_RELEASE` is `-O3 -DNDEBUG`, and `CMakeLists.txt:18` *appends*
+`-O2 -DNDEBUG -march=native` to it. A fresh configure produces:
+
+```text
+C_FLAGS = -Wall -Wextra -Werror -fPIC -Wredundant-decls -Wshadow -O3 -DNDEBUG -O2 -DNDEBUG -march=native -std=gnu11
+```
+
+Both spellings define `NDEBUG`, and the project's `-O2` comes last, so `assert()`
+is compiled out either way. (Reproduce with `env -i PATH=/usr/bin:/bin
+HOME=/tmp cmake -S . -B /tmp/somewhere` to confirm the flags come from the
+project rather than the environment.)
 
 This is not hypothetical: it is exactly how `test_csf2_numa_awareness.c` was
 broken until commit `ca172c2`. The checker reports `assert()`-only files with an
@@ -431,7 +483,7 @@ Baseline on 2026-10-10, from an actual Release build and an actual run:
 | ... registered and verifying | 51 | (`verifying=`) |
 | ... registered and incapable | 26 | (`incapable=`) |
 | ... registered but unmappable to a source | 0 | (`unmapped=`) |
-| Disabled in CMake ("compilation errors", "API mismatch") | 12 | see `docs/STATE.md` |
+| Disabled in CMake (commented out of `*_SOURCES`) | 12 | see below |
 
 The 30 incapable files break down as **25 `ASSERT_ONLY`**, **4 `ALWAYS_ZERO`**
 (`main()` returns 0 and nothing else), and **1 `NO_MAIN`**
@@ -473,9 +525,24 @@ Never quote the registered test count as a pass rate. Quote
 incapable, and unmapped. `unmapped` is reported explicitly and is never folded
 into `verifying` — an unaccounted-for test is how the count drifts.
 
-Disabled tests are listed in `docs/STATE.md`. Each must be migrated to the
-current API or deleted; leaving them commented out is how the suite silently
-stopped covering the runtime.
+### Disabled tests
+
+Twelve test sources are commented out of their `*_SOURCES` list in the build
+files, so they are never compiled and never registered with ctest:
+
+| File | Count | Reasons given |
+|---|---|---|
+| `tests/failure_injection/CMakeLists.txt` | 5 | 4 "Not implemented", 1 "Compilation errors" |
+| `tests/integration/CMakeLists.txt` | 4 | 2 "Compilation errors", 1 "API mismatches", 1 non-existent `lgx_version_info_t` API |
+| `tests/unit/CMakeLists.txt` | 3 | 2 "Compilation errors", 1 non-existent `lgx_version_info_t` API |
+
+Each must be migrated to the current API or deleted. Leaving them commented out
+is how the suite silently stopped covering the runtime: a source file that looks
+like a test, is not built, and is not counted anywhere.
+
+Note that `tests/unit/test_memory_protection.c` is one of these twelve and also
+appears in the incapable list above — it is both not registered and unable to
+report failure.
 
 ---
 
