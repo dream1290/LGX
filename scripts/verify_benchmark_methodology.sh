@@ -112,6 +112,22 @@ if ! printf '%s\n' "$CODE" | awk '
         "Expected a comparison against LGX_SUCCESS."
 fi
 
+# 5a. The run record names the CPU it used. "pinned" without an id cannot be
+#     compared with anything, and the whole premise of this baseline is that runs
+#     from different CPUs are not comparable.
+grep -qE 'BENCH_AFFINITY cpu=%d' "$BENCH" \
+    || fail "$BENCH does not record which CPU it ran on" \
+        "BENCH_AFFINITY must print the CPU id (cpu=%d), not just the word" \
+        "pinned: two runs cannot be compared unless the baseline says which CPU" \
+        "produced it."
+
+# 5b. The reset total must be checkable against the work that was requested,
+#     rather than hard-coded by the reader.
+grep -qE 'expected_resets=%llu' "$BENCH" \
+    || fail "$BENCH does not report expected_resets on FRAME_RESET_STATUS" \
+        "A gate must be able to assert the reset count against" \
+        "sizes x repeats x (iterations + warmup)."
+
 # 5. The harness pins itself to one CPU.
 pin_line="$(call_line pin_to_single_cpu)"
 [ -n "$pin_line" ] || fail "$BENCH never calls pin_to_single_cpu()" \

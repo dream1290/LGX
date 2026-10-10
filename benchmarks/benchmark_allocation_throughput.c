@@ -88,6 +88,13 @@ static void stderr_mute_end(void) {
  * is widened. Returns the pinned CPU, or -1 if pinning is unavailable (in which
  * case the run still proceeds -- noisily -- rather than failing).
  *
+ * LGX_BENCH_CPU=<n> requests a specific CPU instead of the lowest. It is
+ * honoured only if <n> is inside the inherited mask; anything else is refused
+ * and the lowest CPU is used, because widening past the mask is never correct.
+ * Two runs can only be compared if they record the SAME cpu= on the
+ * BENCH_AFFINITY line, which is why that line carries the id and not just a
+ * "pinned" word.
+ *
  * Setting LGX_BENCH_NO_AFFINITY=1 skips pinning. That switch exists only so the
  * effect of pinning can be measured and shown; every run self-labels as
  * UNPINNED on its BENCH_AFFINITY line, and no gate may use such a run.
@@ -98,8 +105,21 @@ static int pin_to_single_cpu(void) {
     if (sched_getaffinity(0, sizeof(inherited), &inherited) != 0) return -1;
 
     int cpu = -1;
-    for (int i = 0; i < CPU_SETSIZE; i++) {
-        if (CPU_ISSET(i, &inherited)) { cpu = i; break; }
+    const char* requested = getenv("LGX_BENCH_CPU");
+    if (requested && requested[0] != '\0') {
+        char* end = NULL;
+        long want = strtol(requested, &end, 10);
+        if (end && *end == '\0' && want >= 0 && want < CPU_SETSIZE && CPU_ISSET(want, &inherited)) {
+            cpu = (int)want;
+        } else {
+            fprintf(stderr, "NOTE: LGX_BENCH_CPU=%s is not in the inherited affinity mask; "
+                            "ignoring it and using the lowest available CPU.\n", requested);
+        }
+    }
+    if (cpu < 0) {
+        for (int i = 0; i < CPU_SETSIZE; i++) {
+            if (CPU_ISSET(i, &inherited)) { cpu = i; break; }
+        }
     }
     if (cpu < 0) return -1;
 
@@ -109,6 +129,31 @@ static int pin_to_single_cpu(void) {
     if (sched_setaffinity(0, sizeof(single), &single) != 0) return -1;
     return cpu;
 }
+
+/*
+ * Keep the compiler from deleting the memset as a dead store.
+ *
+ * Without this, `malloc(p); memset(p, 0, n); free(p);` is compiled to malloc+free
+ * with NO write at all -- GCC proves the bytes are dead before free(). That was
+ * verified in this file's own object code: bench_malloc had malloc and free
+ * relocations and NO memset relocation, while every lgx_* path kept its memset.
+ * The result was a malloc row flat at ~34 ns for 16B and 4KB alike, measured
+ * without touching memory, and compared against an arena row that did touch it.
+ *
+ * Two weaker barriers were tried and both failed against GCC's dead-store
+ * elimination for malloc'd memory: a file-static volatile sink, and a sink with
+ * external linkage. Both still compiled to malloc+free with no write. An empty
+ * asm with a "memory" clobber states the fact directly -- the contents of memory
+ * are unknown afterwards -- so the write survives. The escape through the global
+ * is kept as well so the pointer is not obviously dead to less aggressive
+ * compilers. Both sides of the malloc/arena comparison now do the same work.
+ */
+#if defined(__GNUC__) || defined(__clang__)
+#define TOUCH(ptr) __asm__ __volatile__("" : : "r"(ptr) : "memory")
+#else
+void* volatile lgx_bench_touch_sink;
+#define TOUCH(ptr) ((void)(lgx_bench_touch_sink = (ptr)))
+#endif
 
 typedef struct {
     size_t size;
@@ -121,6 +166,7 @@ static void bench_malloc(void* ctx) {
     void* ptr = malloc(actx->size);
     if (ptr) {
         memset(ptr, 0, actx->size);
+        TOUCH(ptr);
         free(ptr);
     }
 }
@@ -130,6 +176,7 @@ static void bench_lgx_alloc(void* ctx) {
     void* ptr = lgx_alloc(actx->size);
     if (ptr) {
         memset(ptr, 0, actx->size);
+        TOUCH(ptr);
         lgx_free(ptr);
     }
 }
@@ -164,6 +211,12 @@ static void bench_lgx_alloc(void* ctx) {
  */
 #define FRAME_BURST 64
 #define FRAME_REPEATS 5
+/* benchmark_run() invokes the function once per warmup iteration as well as
+ * once per measured iteration, so each repeat accounts for
+ * FRAME_ITERATIONS + FRAME_WARMUP resets. FRAME_RESET_STATUS prints the
+ * expected total so a gate can assert it instead of hard-coding 275000. */
+#define FRAME_ITERATIONS 10000
+#define FRAME_WARMUP 1000
 
 static uint64_t g_frame_resets = 0;
 static uint64_t g_frame_reset_failures = 0;
@@ -180,6 +233,7 @@ static void bench_lgx_frame(void* ctx) {
         void* ptr = lgx_alloc_frame(actx->size);
         if (ptr) {
             memset(ptr, 0, actx->size); /* touch it, as a real frame would */
+            TOUCH(ptr);
         }
     }
     /* The reset happens at the top of the next call, so the cost of
@@ -191,6 +245,7 @@ static void bench_lgx_persistent(void* ctx) {
     void* ptr = lgx_alloc_persistent(actx->size);
     if (ptr) {
         memset(ptr, 0, actx->size);
+        TOUCH(ptr);
         lgx_free(ptr);
     }
 }
@@ -201,7 +256,8 @@ int main(void) {
 
     printf("LGX Runtime Core - Allocation Throughput Benchmark\n");
     printf("===================================================\n\n");
-    printf("BENCH_AFFINITY cpu=%s repeats=%d burst=%d\n",
+    printf("BENCH_AFFINITY cpu=%d status=%s repeats=%d burst=%d\n",
+           pinned_cpu,
            pinned_cpu >= 0 ? "pinned" : "UNPINNED",
            FRAME_REPEATS, FRAME_BURST);
     if (pinned_cpu < 0) {
@@ -252,7 +308,8 @@ int main(void) {
         benchmark_result_t frame_reps[FRAME_REPEATS];
         for (int r = 0; r < FRAME_REPEATS; r++) {
             stderr_mute_begin();        /* keep diagnostics out of the timing */
-            frame_reps[r] = benchmark_run(names[result_count], bench_lgx_frame, &ctx, 10000, 1000);
+            frame_reps[r] = benchmark_run(names[result_count], bench_lgx_frame, &ctx,
+                                         FRAME_ITERATIONS, FRAME_WARMUP);
             stderr_mute_end();
         }
         /* Insertion sort by median_ns; FRAME_REPEATS is odd so the middle
@@ -316,9 +373,14 @@ int main(void) {
     /* If any reset failed, the frame numbers above describe a no-reset
      * workload and must not be trusted. Say so loudly and fail the run rather
      * than let a bogus baseline propagate. */
-    printf("FRAME_RESET_STATUS resets=%llu failures=%llu stderr=muted_during_timing\n",
+    printf("FRAME_RESET_STATUS resets=%llu failures=%llu stderr=muted_during_timing"
+           " expected_resets=%llu sizes=%d repeats=%d iterations=%u\n",
            (unsigned long long)g_frame_resets,
-           (unsigned long long)g_frame_reset_failures);
+           (unsigned long long)g_frame_reset_failures,
+           (unsigned long long)((uint64_t)num_sizes * FRAME_REPEATS
+                                * (FRAME_ITERATIONS + FRAME_WARMUP)),
+           (int)num_sizes, FRAME_REPEATS,
+           (unsigned)FRAME_ITERATIONS);
     if (g_frame_reset_failures > 0) {
         fprintf(stderr, "ERROR: %llu of %llu frame-arena resets failed; "
                         "the frame-arena numbers above are invalid.\n",
