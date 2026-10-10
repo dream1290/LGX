@@ -38,12 +38,26 @@
 #      `set(CMAKE_DEPENDS_DEPENDENCY_FILES ...)` lists the exact sources.
 #   2. CMakeFiles/<exe>.dir/build.make        (same generator, fallback)
 #   3. build.ninja                            (Ninja generator)
+#      the `<exe>.dir/<name>.c.o` build edge names the source it compiles.
+#      Note the object rule path may carry a subdirectory prefix
+#      (`tests/unit/CMakeFiles/<exe>.dir/...`), so it is matched anywhere in
+#      the path, not only at the start.
 #
-# The executable comes from ctest itself via `--show-only=json-v1`, which
-# reports the command ctest will run, so `name -> executable` is CMake's
-# statement rather than an inference. `cmake --build` must have been run at
-# least once for this metadata to exist; if it has not, every test is reported
-# UNMAPPED with an actionable message instead of being guessed at.
+# `name -> executable` comes from parsing `add_test(<name> "<abs-exe>")` out of
+# the generated CTestTestfile.cmake files, which is what CMake itself writes
+# there. Plain CTestTestfile.cmake parsing is used in preference to
+# `ctest --show-only=json-v1` deliberately: the JSON output is pretty-printed
+# with incidental line breaks and nested "name"/"command" keys, and its exact
+# shape has moved between CMake versions, so parsing it in awk means carrying a
+# fragile JSON reader. The CTestTestfile.cmake form is one line per test in a
+# layout CMake has emitted for many years, and it is what a reader can verify by
+# eye. ctest is still consulted for the authoritative test COUNT, and a
+# disagreement between the two fails loudly rather than being resolved silently.
+#
+# The per-target metadata is written when the tree is CONFIGURED, not when it
+# is built, so a configured-but-unbuilt tree is enough to take a census. Only an
+# unconfigured (or foreign) build dir is rejected, and it is rejected with a
+# message that says so rather than blaming a missing build.
 #
 # If a target has several sources, ALL of them are classified and the target is
 # counted as incapable only if every source is incapable. Multi-source targets
@@ -188,31 +202,55 @@ build_index() {
         done <<< "$srcs"
     done < <(find "$BUILD_DIR" -path '*.dir/DependInfo.cmake' -o -path '*.dir/build.make' 2>/dev/null)
 
-    # 3: Ninja has neither of the above; the build edge names the source.
+    # 3: Ninja has neither of the above, so the source is read off the build
+    #    edge itself. The previous version registered the target on the `build`
+    #    line and then `next`ed past it -- but the source path is ON that line,
+    #    so it extracted nothing, and the indented variable lines it did look at
+    #    belonged to whatever rule happened to be last. On a fully built Ninja
+    #    tree that produced an empty index and the misleading "no CMake build
+    #    metadata found, run the build first" message for a tree that had been
+    #    built. Both bugs are fixed here: the source is taken from the build
+    #    line, and variable lines are ignored entirely.
+    #
+    # Pass 1 collects `NAME = value` definitions so `${NAME}` in a source token
+    # can be expanded. A token that still contains `$` after that is DROPPED,
+    # not guessed: an unresolved path would be a wrong mapping, and the target
+    # then lands in UNMAPPED, which is loud.
     if [ -f "$BUILD_DIR/build.ninja" ]; then
-        awk -v root="$REPO_ROOT" '
-            /^build / {
-                rule = $2
-                sub(/:.*$/, "", rule)
-                if (rule !~ /^CMakeFiles\/[^/]+\.dir\//) next
-                path = rule
-                sub(/^CMakeFiles\//, "", path); sub(/\.dir\/.*$/, "", path)
-                if (!(path in seen)) { seen[path] = 1; order[++n] = path }
+        awk -v builddir="$BUILD_DIR" '
+            NR == FNR {
+                if ($0 ~ /^[ 	]*[A-Za-z_][A-Za-z0-9_]*[ 	]*=[ 	]/) {
+                    k = $0; sub(/^[ 	]*/, "", k); sub(/[ 	]*=.*$/, "", k)
+                    v = $0; sub(/^[^=]*=[ 	]*/, "", v)
+                    if (k != "") var[k] = v
+                }
                 next
             }
-            /^\|/ { next }
-            {
-                for (i = 1; i <= n; i++) {
-                    t = order[i]
-                    if (rule ~ (t "\\.dir/")) {
-                        for (j = 3; j <= NF; j++) {
-                            if ($j == "||") break
-                            if ($j ~ /\.(c|cc|cpp)$/) { print t "\t" $j; break }
-                        }
-                    }
+            /^build / {
+                out = $2
+                sub(/:$/, "", out)
+                if (out !~ /CMakeFiles\/[^/]+\.dir\//) next
+                t = out
+                sub(/^.*CMakeFiles\//, "", t)
+                sub(/\.dir\/.*$/, "", t)
+                for (i = 4; i <= NF; i++) {
+                    if ($i == "||") break
+                    s = $i
+                    if (s !~ /\.(c|cc|cpp)$/) continue
+                    for (k in var) { gsub("\\$\\{" k "\\}", var[k], s); gsub("\\$" k "\\>", var[k], s) }
+                    if (s ~ /\$/) continue          # unresolved: drop, do not guess
+                    print t "\t" s
                 }
             }
-        ' "$BUILD_DIR/build.ninja" >> "$INDEX" 2>/dev/null || true
+        ' "$BUILD_DIR/build.ninja" "$BUILD_DIR/build.ninja" 2>/dev/null \
+        | while IFS=$'\t' read -r ntarget nsrc; do
+            [ -n "$ntarget" ] && [ -n "$nsrc" ] || continue
+            case "$nsrc" in /*) nabs="$nsrc" ;; *) nabs="$BUILD_DIR/$nsrc" ;; esac
+            [ -f "$nabs" ] || continue
+            case "$nabs" in
+                "$REPO_ROOT"/*) printf '%s\t%s\n' "$ntarget" "${nabs#$REPO_ROOT/}" >> "$INDEX" ;;
+            esac
+        done || true
     fi
     sort -u -o "$INDEX" "$INDEX"
 }
@@ -222,8 +260,10 @@ build_index
 if [ ! -s "$INDEX" ]; then
     echo "FAIL: no CMake build metadata found under '$BUILD_DIR'." >&2
     echo "      This script ties each ctest target to its source using the files" >&2
-    echo "      CMake generates while building. Run the build first:" >&2
-    echo "        cmake --build $BUILD_DIR" >&2
+    echo "      CMake writes when a tree is configured. This one has none, so it" >&2
+    echo "      was never configured (or was wiped). Configure it:" >&2
+    echo "        cmake -S . -B $BUILD_DIR" >&2
+    echo "      Building is NOT required for a census -- configuring is enough." >&2
     echo "      No test is guessed at when this metadata is missing." >&2
     exit 2
 fi
@@ -296,8 +336,10 @@ fi
 if [ "$unmapped" -gt 0 ]; then
     echo ""
     echo "UNMAPPED: $unmapped registered test(s) could not be tied to a source file."
-    echo "          They are NOT counted as verifying. Run 'cmake --build $BUILD_DIR'"
-    echo "          so CMake records the mapping, or rename the target."
+    echo "          They are NOT counted as verifying. Re-running cmake will"
+    echo "          refresh the mapping if the build tree is stale; otherwise the"
+    echo "          test's executable has no source in the tree, which usually"
+    echo "          means the target is a wrapper, a script, or a renamed test."
     sed 's/^/  - /' "$UNMAPPED_FILE"
 fi
 

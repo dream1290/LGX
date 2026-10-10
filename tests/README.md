@@ -491,6 +491,35 @@ The 30 incapable files break down as **25 `ASSERT_ONLY`**, **4 `ALWAYS_ZERO`**
 Four of the 30 are not ctest-registered (two fuzzing harnesses, one debug tool,
 `tests/unit/test_memory_protection.c`), which is why 30 − 4 = 26 above.
 
+### How a ctest target is tied to a source file
+
+`count_tests.sh` does not match targets to files by name. An earlier version
+peeled leading `_`-words off a target name until the remainder matched some
+file's basename, which mapped `basic_test_init_shutdown` onto
+`tests/unit/test_init_shutdown.c` — a file it has nothing to do with — and
+reported the result as `verifying` without complaint. Name similarity is not
+evidence that two files are related.
+
+The mapping now comes from CMake's own generated build metadata: each
+`CTestTestfile.cmake` states `add_test(<name> "<exe>")`, and
+`CMakeFiles/<exe>.dir/DependInfo.cmake` (Unix Makefiles) or the
+`<exe>.dir/<name>.c.o` build edge in `build.ninja` (Ninja) states which sources
+were compiled into that executable. Both generators were checked and produce an
+identical mapping for all 77 registered tests.
+
+Plain `CTestTestfile.cmake` parsing is used in preference to
+`ctest --show-only=json-v1`: the JSON is pretty-printed with incidental line
+breaks and nested keys, and its shape has moved between CMake versions, so
+parsing it would mean carrying a fragile JSON reader in awk. ctest is still the
+authority on the test *count*, and a disagreement fails loudly.
+
+Consequences you will see:
+- `cmake --build` must have been run at least once, or every test reports
+  `unmapped` (or the script exits 2 explaining why).
+- `unmapped > 0` exits **3**. An undetermined test is neither verifying nor
+  incapable, so the census does not account for the whole suite.
+- A build dir configured from a different source tree is rejected outright.
+
 ### Correction to the 2026-10-10 audit
 
 The audit reported "37 of 100 test files have no failure mechanism", and named
