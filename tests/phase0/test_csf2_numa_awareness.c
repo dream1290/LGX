@@ -1,7 +1,6 @@
 #include <lgx_runtime.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <string.h>
@@ -19,6 +18,18 @@
     #define LGX_NUMA_USABLE 0
 #endif
 
+/* Explicit failure helpers. These deliberately avoid assert(): Release builds
+ * define NDEBUG, which compiles assert() out entirely and would leave this
+ * test with no way to fail. These macros return non-zero regardless. */
+#define NUMA_FAIL(msg) do { \
+    printf("❌ FAIL: %s\n", (msg)); \
+    return 1; \
+} while (0)
+
+#define NUMA_REQUIRE(cond, msg) do { \
+    if (!(cond)) { NUMA_FAIL(msg); } \
+} while (0)
+
 #define NUM_THREADS 8
 #define ALLOCS_PER_THREAD 10000
 #define ALLOCATION_SIZE 4096
@@ -30,12 +41,17 @@ typedef struct {
     double avg_time_us;
     uint64_t total_time_ns;
     pthread_barrier_t* start_barrier;
+    int allocated;        /* number of slots in ptrs[] that hold a live pointer */
+    int alloc_failures;   /* allocations that returned NULL */
 } thread_data_t;
 
 static void* allocation_thread(void* arg) {
     thread_data_t* data = (thread_data_t*)arg;
     void* ptrs[ALLOCS_PER_THREAD];
-    
+    for (int i = 0; i < ALLOCS_PER_THREAD; i++) { ptrs[i] = NULL; }
+    data->allocated = 0;
+    data->alloc_failures = 0;
+
 #if LGX_NUMA_USABLE
     // Bind thread to NUMA node if NUMA-aware
     if (data->numa_aware && data->numa_node >= 0) {
@@ -69,8 +85,14 @@ static void* allocation_thread(void* arg) {
 #endif
         
         uint64_t end_time = lgx_time_now_ns();
-        
-        assert(ptrs[i] != NULL);
+
+        /* Explicit NULL check rather than assert(): under -DNDEBUG an assert
+         * vanishes, and a NULL slot would be dereferenced by the memset below. */
+        if (ptrs[i] == NULL) {
+            data->alloc_failures++;
+            break;  /* ptrs[i..] stay NULL and are not freed below */
+        }
+        data->allocated = i + 1;
         total_time += (end_time - start_time);
         
         // Simulate memory access (this is where NUMA locality matters)
@@ -84,11 +106,13 @@ static void* allocation_thread(void* arg) {
         }
     }
     
-    data->avg_time_us = (double)total_time / (double)ALLOCS_PER_THREAD / 1000.0;
+    data->avg_time_us = (data->allocated > 0)
+                        ? (double)total_time / (double)data->allocated / 1000.0
+                        : 0.0;
     data->total_time_ns = total_time;
     
-    // Free allocations
-    for (int i = 0; i < ALLOCS_PER_THREAD; i++) {
+    // Free allocations (only the slots that actually hold a pointer)
+    for (int i = 0; i < data->allocated; i++) {
 #if LGX_NUMA_USABLE
         if (data->numa_aware && data->numa_node >= 0) {
             numa_free(ptrs[i], ALLOCATION_SIZE);
@@ -103,7 +127,10 @@ static void* allocation_thread(void* arg) {
     return NULL;
 }
 
-static double run_numa_test(const char* test_name, bool numa_aware) {
+static int run_numa_test(const char* test_name, bool numa_aware,
+                         double* out_time_ms, int* out_alloc_failures) {
+    *out_time_ms = 0.0;
+    *out_alloc_failures = 0;
     printf("\n%s\n", test_name);
     printf("========================================\n");
     
@@ -166,7 +193,14 @@ static double run_numa_test(const char* test_name, bool numa_aware) {
     
     pthread_barrier_destroy(&start_barrier);
     
-    return test_time_ms;  // Return total test time for comparison
+    /* Aggregate allocation failures across threads so the caller can fail. */
+    int total_failures = 0;
+    for (int i = 0; i < NUM_THREADS; i++) {
+        total_failures += thread_data[i].alloc_failures;
+    }
+    *out_alloc_failures = total_failures;
+    *out_time_ms = test_time_ms;
+    return 0;  // 0 = ran to completion; failures reported via out_alloc_failures
 }
 
 int main() {
@@ -201,15 +235,42 @@ int main() {
     
     // Initialize LGX runtime for timing
     lgx_runtime_config_t* config = lgx_config_create();
-    lgx_runtime_init(config);
+    NUMA_REQUIRE(config != NULL, "lgx_config_create() returned NULL");
+
+    /* From here on the runtime is live, so failure paths must tear it down
+     * before exiting; otherwise a leak sanitizer would report the abandoned
+     * runtime instead of the assertion that actually failed. */
+#define NUMA_REQUIRE_LIVE(cond, msg) do { \
+    if (!(cond)) { \
+        printf("❌ FAIL: %s\n", (msg)); \
+        lgx_runtime_shutdown(); \
+        lgx_config_destroy(config); \
+        return 1; \
+    } \
+} while (0)
+
+    NUMA_REQUIRE_LIVE(lgx_runtime_init(config) == LGX_SUCCESS,
+                      "lgx_runtime_init() failed");
     
     // Test 1: Regular allocation (no NUMA awareness)
-    double baseline_time = run_numa_test("TEST 1: Regular allocation (no NUMA awareness)", false);
+    double baseline_time = 0.0;
+    double numa_time = 0.0;
+    int alloc_failures = 0;
+    int rc = run_numa_test("TEST 1: Regular allocation (no NUMA awareness)",
+                           false, &baseline_time, &alloc_failures);
+    NUMA_REQUIRE_LIVE(rc == 0, "TEST 1 (baseline) did not complete");
+    NUMA_REQUIRE_LIVE(alloc_failures == 0,
+                      "TEST 1 (baseline) had allocation failures");
     printf("Baseline time: %.2f ms\n", baseline_time);
     
     // Test 2: NUMA-aware allocation (may be same as baseline if no NUMA)
-    double numa_time = run_numa_test("TEST 2: NUMA-aware allocation", true);
+    rc = run_numa_test("TEST 2: NUMA-aware allocation", true,
+                       &numa_time, &alloc_failures);
+    NUMA_REQUIRE_LIVE(rc == 0, "TEST 2 (NUMA-aware) did not complete");
+    NUMA_REQUIRE_LIVE(alloc_failures == 0,
+                      "TEST 2 (NUMA-aware) had allocation failures");
     printf("NUMA-aware time: %.2f ms\n", numa_time);
+    NUMA_REQUIRE_LIVE(baseline_time > 0.0, "Baseline time was not measurable");
     
     // CSF-2 Analysis
     printf("\n" "CSF-2 VALIDATION RESULTS:\n");
@@ -219,6 +280,8 @@ int main() {
     int num_nodes = numa_max_node() + 1;
     
     if (num_nodes < 2) {
+        /* INCONCLUSIVE, not a failure: the hardware cannot answer the question,
+         * so this is a skip and exits 0. Only the <2-node verdict below fails. */
         printf("❌ CSF-2 CANNOT BE VALIDATED: Single NUMA node system\n");
         printf("   Target: >10%% improvement on multi-socket systems\n");
         printf("   Result: Cannot measure NUMA benefits on single-node system\n");
@@ -252,6 +315,12 @@ int main() {
             printf("❌ CSF-2 FAILED: %.1f%% < 5%% threshold\n", improvement);
             printf("   Status: DEPRIORITIZE - NUMA benefits too small\n");
             printf("   Recommendation: Skip NUMA features in Phase 1\n");
+            /* Below-threshold benefit is a real assertion failure, not a run
+             * that merely prints ❌ and exits 0. Fail for real. */
+            printf("❌ FAIL: CSF-2 validation: NUMA improvement below 5%% threshold\n");
+            lgx_runtime_shutdown();
+            lgx_config_destroy(config);
+            return 1;
         }
     }
 #else
