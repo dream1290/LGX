@@ -51,6 +51,15 @@ else()
     add_definitions(-DHAVE_JEMALLOC=0)
 endif()
 
+# Optional: Find libnuma for NUMA-awareness tests.
+# The platform degrades gracefully without it -- only the NUMA test is conditional.
+find_library(NUMA_LIBRARY numa)
+if(NUMA_LIBRARY)
+    message(STATUS "Found libnuma: ${NUMA_LIBRARY} (NUMA tests enabled)")
+else()
+    message(STATUS "libnuma not found - NUMA test will skip its NUMA-specific checks")
+endif()
+
 # Include directories
 include_directories(include)
 include_directories(include/lgx)
@@ -294,9 +303,15 @@ install(FILES ${CMAKE_BINARY_DIR}/lgx_runtime.pc
 enable_testing()
 
 # Phase 0 tests (moved to phase0 subdirectory)
+# The NUMA test needs libnuma and its own guards, so it is excluded from the
+# generic phase0 glob below and given an explicit target in tests/phase0/CMakeLists.txt.
+set(PHASE0_TESTS_EXCLUDED test_csf2_numa_awareness)
 file(GLOB PHASE0_TESTS tests/phase0/*.c)
 foreach(test_file ${PHASE0_TESTS})
     get_filename_component(test_name ${test_file} NAME_WE)
+    if(${test_name} IN_LIST PHASE0_TESTS_EXCLUDED)
+        continue()
+    endif()
     add_executable(${test_name} ${test_file})
     target_link_libraries(${test_name} lgx_runtime m)
     
@@ -313,6 +328,9 @@ foreach(test_file ${PHASE0_TESTS})
         ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
     )
 endforeach()
+
+# NUMA test (conditional, requires libnuma)
+add_subdirectory(tests/phase0)
 
 # Phase 1 Unit Tests
 add_subdirectory(tests/unit)
