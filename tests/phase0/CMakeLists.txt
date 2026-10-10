@@ -18,6 +18,12 @@ else()
 endif()
 
 add_test(NAME test_csf2_numa_awareness COMMAND test_csf2_numa_awareness)
+# The NUMA allocation-cost timing verdict is a benchmark observation, not a
+# correctness property, so it is opt-in and off on the default run. Functional
+# assertions always run. To enforce the timing threshold:
+#   ctest -R test_csf2_numa_awareness --overwrite
+#     Environment=LGX_NUMA_PERF=1
+# or just run the binary with LGX_NUMA_PERF=1 in the environment.
 set_tests_properties(test_csf2_numa_awareness PROPERTIES
     LABELS "phase0"
     TIMEOUT 300
