@@ -162,7 +162,13 @@ static void test_reload(void) {
     /* Overwrite file */
     int fd = open(path, O_WRONLY | O_TRUNC);
     const char* content2 = "version2_longer";
-    if (fd >= 0) { write(fd, content2, strlen(content2)); close(fd); }
+    if (fd >= 0) {
+        /* The rewritten length is already asserted by the size check below,
+         * so the write status itself is not asserted here. */
+        ssize_t written = write(fd, content2, strlen(content2));
+        (void)written;
+        close(fd);
+    }
 
     lgx_result_t r = lgx_asset_reload(asset);
     size_t new_size = lgx_asset_get_size(asset);

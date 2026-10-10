@@ -457,7 +457,8 @@ lgx_gfx_device_t* lgx_gfx_device_create(const lgx_gfx_device_config_t* config) {
     /* Init stats */
     memset(&dev->stats, 0, sizeof(dev->stats));
     dev->stats.struct_size = sizeof(lgx_gfx_stats_t);
-    strncpy(dev->stats.gpu_name, dev->properties.deviceName, sizeof(dev->stats.gpu_name) - 1);
+    snprintf(dev->stats.gpu_name, sizeof(dev->stats.gpu_name), "%.*s",
+             (int)sizeof(dev->stats.gpu_name) - 1, dev->properties.deviceName);
     dev->stats.vulkan_api_version = dev->properties.apiVersion;
 
     /* Calculate total device memory */
@@ -499,7 +500,8 @@ lgx_result_t lgx_gfx_device_get_gpu_info(lgx_gfx_device_t* dev, lgx_gfx_gpu_info
     if (!dev || !info) return LGX_ERROR_INVALID_PARAM;
     memset(info, 0, sizeof(*info));
     info->struct_size = sizeof(lgx_gfx_gpu_info_t);
-    strncpy(info->gpu_name, dev->properties.deviceName, sizeof(info->gpu_name) - 1);
+    snprintf(info->gpu_name, sizeof(info->gpu_name), "%.*s",
+             (int)sizeof(info->gpu_name) - 1, dev->properties.deviceName);
     snprintf(info->driver_version, sizeof(info->driver_version), "%u.%u.%u",
              VK_VERSION_MAJOR(dev->properties.driverVersion),
              VK_VERSION_MINOR(dev->properties.driverVersion),
@@ -1814,7 +1816,11 @@ lgx_result_t lgx_gfx_shader_cache_flush(lgx_gfx_device_t* dev) {
     /* Ensure directory exists */
     char cmd_buf[650];
     snprintf(cmd_buf, sizeof(cmd_buf), "mkdir -p %s", dev->cache_dir);
-    (void)system(cmd_buf);
+    if (system(cmd_buf) != 0) {
+        /* Non-fatal: the cache write below surfaces the failure via fopen(). */
+        fprintf(stderr, "LGX: could not create pipeline cache directory: %s\n",
+                dev->cache_dir);
+    }
 
     char path[600];
     snprintf(path, sizeof(path), "%s/pipeline_cache.bin", dev->cache_dir);

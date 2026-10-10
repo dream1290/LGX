@@ -304,7 +304,8 @@ static void open_device(lgx_in_system_t* sys, const char* path) {
 
     char name[128] = "Unknown";
     ioctl(fd, EVIOCGNAME(sizeof(name)), name);
-    strncpy(dev->name, name, sizeof(dev->name) - 1);
+    snprintf(dev->name, sizeof(dev->name), "%.*s",
+             (int)sizeof(dev->name) - 1, name);
 
     /* Gamepad setup */
     if (type == DEV_GAMEPAD && sys->gamepad_count < LGX_IN_MAX_GAMEPADS) {
@@ -315,7 +316,8 @@ static void open_device(lgx_in_system_t* sys, const char* path) {
         gp->connected = true;
         gp->deadzone = DEFAULT_DEADZONE;
         gp->device = dev;
-        strncpy(gp->name, name, sizeof(gp->name) - 1);
+        snprintf(gp->name, sizeof(gp->name), "%.*s",
+                 (int)sizeof(gp->name) - 1, name);
 
         /* Read axis ranges */
         uint16_t axes[] = { ABS_X, ABS_Y, ABS_RX, ABS_RY, ABS_Z, ABS_RZ,
