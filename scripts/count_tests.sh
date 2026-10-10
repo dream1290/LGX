@@ -111,9 +111,9 @@ BUILD_DIR="${1:-build}"
 if [ ! -d "$BUILD_DIR" ]; then
     if [ -d "$REPO_ROOT/$BUILD_DIR" ]; then BUILD_DIR="$REPO_ROOT/$BUILD_DIR"
     else
-        echo "No CTest build directory at '$BUILD_DIR'." >&2
-        echo "Configure one first: cmake -S $REPO_ROOT -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release" >&2
-        echo "then: cmake --build $BUILD_DIR" >&2
+        echo "No CMake build directory at '$BUILD_DIR'." >&2
+        echo "Configure one: cmake -S $REPO_ROOT -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release" >&2
+        echo "Building it is NOT required for a census -- only running the tests is." >&2
         exit 2
     fi
 fi
@@ -156,8 +156,10 @@ NAMES_EXES="$(list_tests | grep -v '^$' || true)"
 
 if [ -z "$NAMES_EXES" ]; then
     echo "FAIL: no add_test() entries found under '$BUILD_DIR'." >&2
-    echo "      Configure and build first:" >&2
-    echo "        cmake -S . -B $BUILD_DIR && cmake --build $BUILD_DIR" >&2
+    echo "      CMake writes those when a tree is configured. This tree has" >&2
+    echo "      none, so it was never configured (or was wiped). Configure it:" >&2
+    echo "        cmake -S . -B $BUILD_DIR" >&2
+    echo "      Building is NOT required for a census." >&2
     exit 2
 fi
 

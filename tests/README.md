@@ -513,9 +513,16 @@ breaks and nested keys, and its shape has moved between CMake versions, so
 parsing it would mean carrying a fragile JSON reader in awk. ctest is still the
 authority on the test *count*, and a disagreement fails loudly.
 
+What the census needs is a **configured** CMake tree, not a built one. The
+metadata it reads — `CTestTestfile.cmake` and the per-target source records — is
+written when CMake generates the build system, so `cmake -S . -B <dir>` is
+enough. Verified: a configure-only Makefiles tree (95 `DependInfo.cmake` files
+present, never built) and a configure-only Ninja tree both produce the full
+`77/51/26/0` census at exit 0. Building is only needed to *run* the tests.
+
 Consequences you will see:
-- `cmake --build` must have been run at least once, or every test reports
-  `unmapped` (or the script exits 2 explaining why).
+- An unconfigured or foreign build dir is rejected with exit 2 and a message
+  saying to configure it. Building is not part of that instruction.
 - `unmapped > 0` exits **3**. An undetermined test is neither verifying nor
   incapable, so the census does not account for the whole suite.
 - A build dir configured from a different source tree is rejected outright.
