@@ -1,32 +1,81 @@
 # Baseline for the frame-arena benchmark under the real frame pattern
-# (lgx_frame_reset + burst of 64 allocations per frame).
+# (lgx_frame_reset + a burst of 64 allocations per frame).
 #
-# Lines starting with '#' are metadata. Consumers MUST filter them out, e.g.
-#   grep '^FRAME_RESET' benchmarks/baseline_frame_arena.txt
+# Lines starting with '#' are metadata. Consumers MUST filter them out:
+#   grep '^FRAME_RESET_PATTERN' benchmarks/baseline_frame_arena.txt
 #
-# command      : taskset -c 4 ./benchmarks/benchmark_benchmark_allocation_throughput
-# cwd          : the CMake build directory (Release)
-# source commit: b701211 + fix round 1 (stderr mute + reset return check)
-# stderr       : discarded by the harness itself around the timed region
-#                (FRAME_RESET_STATUS stderr=muted_during_timing). The caller's
-#                stderr disposition no longer changes the numbers: verified
-#                +0.0% to +0.4% between /dev/null and a pipe, against +10% to
-#                +33% before this fix. DO NOT redirect stderr outside the
-#                harness expecting a different (larger) number; that was the bug.
-# one interval  = ONE FRAME = 64 allocations + memset + the reclaiming reset.
-#                The malloc_/lgx_alloc_ rows in the benchmark output are per
-#                allocation, so frame medians must be divided by 64 to compare.
-# resets        : 55000 per size x 5 sizes, 0 failures (FRAME_RESET_STATUS).
-# machine      : Intel Core Ultra 5 235U, 14 cores, governor=powersave (~1.2 GHz),
-#                Linux 6.14.0-37-generic, gcc 13.3.0, cmake 3.28.3.
-# stability    : 5 identical-invocation runs -> 64B/256B/1KB/4KB within 1%.
-#                16B is bimodal (~2000 ns steady state, ~3560 ns cold first run
-#                after the machine has been idle); 4 of 5 runs landed at 1993-2006.
-# noise        : absolute nanoseconds are NOT portable. Gate on relative change
-#                with a generous tolerance, never on these exact values.
-# recorded     : 2026-10-10T20:42:30Z
-FRAME_RESET_PATTERN size=16B median=1998ns p99=2560ns
-FRAME_RESET_PATTERN size=64B median=2026ns p99=2262ns
-FRAME_RESET_PATTERN size=256B median=2159ns p99=2421ns
-FRAME_RESET_PATTERN size=1KB median=3484ns p99=4357ns
-FRAME_RESET_PATTERN size=4KB median=10520ns p99=14324ns
+# ---- HOW TO REPRODUCE -----------------------------------------------------
+# command      : ./benchmarks/benchmark_benchmark_allocation_throughput
+# cwd          : the CMake build directory, configured -DCMAKE_BUILD_TYPE=Release
+# build        : cmake -S . -B <dir> -DCMAKE_BUILD_TYPE=Release
+# source       : branch ground-truth, task 3 fix round 2 (commit d44ebf0 + this)
+# No taskset, no shell redirection, no environment variable is required.
+#
+# ---- WHAT THE HARNESS GUARANTEES ------------------------------------------
+# cpu pinning  : sched_setaffinity inside main(), narrowing to the lowest CPU in
+#                the INHERITED affinity mask (so a caller's taskset/cgroup is
+#                respected and never widened). Every run prints
+#                "BENCH_AFFINITY cpu=pinned|UNPINNED". Setting
+#                LGX_BENCH_NO_AFFINITY=1 disables pinning; that is only for
+#                demonstrating what pinning is worth, and no gate may use such a
+#                run -- it self-labels as UNPINNED.
+# stderr       : muted by the harness (dup/dup2 to /dev/null) around the timed
+#                region only, restored afterwards. The caller's stderr
+#                disposition does not change the numbers: measured drift between
+#                /dev/null and a pipe is <=0.4%, against +10%..+33% before this
+#                existed. It works around a real runtime defect -- lgx_frame_arena.c
+#                fprintf's on EVERY reset under 8 ms, which never happens at
+#                60 FPS. That runtime fix is deferred to Plan 01 and is NOT done
+#                here; src/runtime/ is unmodified.
+# repeats      : the frame measurement is repeated FRAME_REPEATS=5 times
+#                in-process. median= below is the MEDIAN OF THE PER-REPEAT
+#                MEDIANS. p99= is the p99 of that same (median) repeat, not a
+#                median of p99s, so both numbers describe one run.
+#                The FRAME_REPEATS line in the output prints each run's own
+#                min/median/max/spread, so a tolerance band can be derived from
+#                the run in hand instead of guessed.
+# reset check  : every lgx_frame_reset() return value is compared to LGX_SUCCESS.
+#                FRAME_RESET_STATUS reports the totals; main() exits non-zero if
+#                any reset failed, because a silently no-op reset would make this
+#                file describe the old no-reset workload.
+#
+# ---- WHAT A GATE MAY AND MAY NOT DO ---------------------------------------
+# The median= values below are the MEDIAN OF ONE RUN on ONE MACHINE. They are a
+# reference point, not a threshold. A gate MUST:
+#   * compare RATIOS (e.g. lgx_frame / malloc at the same size) rather than
+#     absolute nanoseconds;
+#   * allow a tolerance band of at least +/-15% on those ratios;
+#   * require at least 3 repeats (the harness already does 5 per run) and re-run
+#     the benchmark rather than compare against these literal numbers;
+#   * treat a run whose BENCH_AFFINITY says UNPINNED as invalid.
+# Absolute nanoseconds on shared or virtualised CI hardware are not stable: the
+# same binary moved by more than 2x between back-to-back unpinned runs, and by
+# ~30% merely by changing which single CPU it was pinned to.
+#
+# ---- OBSERVED STABILITY (measured, not aspirational) ----------------------
+# 20 consecutive runs, identical invocation, in-harness pinning:
+#   size   min    median  max     spread   outliers >5% from median
+#   16B    1659   1671    2336    1.41x    2 of 20   (18 of 20 within 1.01x)
+#   64B    1638   1654    1665    1.02x    0 of 20
+#   256B   1790   1805    1814    1.01x    0 of 20
+#   1KB    2447   2467    2481    1.01x    0 of 20
+#   4KB    7328   7374    7392    1.01x    0 of 20
+# Overall 2 of 100 measurements (2.0%) were outliers, all of them at 16B. The
+# reviewer measured ~12.5% outliers before pinning and median-of-N. The 16B
+# outliers are process-level (frequency/scheduler/page state), NOT warmup-level:
+# 1,000 warmup iterations already precede 10,000 measured ones and adding
+# warmup does not remove them. Treat 16B as the noisiest size.
+# With pinning disabled (LGX_BENCH_NO_AFFINITY=1, 10 runs) the outlier rate
+# rose to 4 of 50, with 1.42x excursions at 16B and 256B.
+# Within a single run the five repeats typically agree to 0.0% (worst observed
+# 42%, again 16B).
+#
+# ---- MACHINE --------------------------------------------------------------
+# Intel Core Ultra 5 235U, 14 cores, governor=powersave (~1.2 GHz),
+# Linux 6.14.0-37-generic, gcc 13.3.0, cmake 3.28.3.
+# recorded: 2026-10-10T20:53:36Z, pinned to CPU 0, 275000 resets, 0 failures.
+FRAME_RESET_PATTERN size=16B median=1669ns p99=1751ns
+FRAME_RESET_PATTERN size=64B median=1652ns p99=1809ns
+FRAME_RESET_PATTERN size=256B median=1800ns p99=1915ns
+FRAME_RESET_PATTERN size=1KB median=2474ns p99=2574ns
+FRAME_RESET_PATTERN size=4KB median=7371ns p99=8477ns

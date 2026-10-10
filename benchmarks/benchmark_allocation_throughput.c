@@ -3,8 +3,12 @@
  * @brief Benchmark allocation throughput across different allocators
  */
 
+/* sched_getaffinity/sched_setaffinity and the CPU_SET macros are GNU extensions. */
+#define _GNU_SOURCE
+
 #include "benchmark_framework.h"
 #include "lgx_runtime.h"
+#include <sched.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,6 +75,41 @@ static void stderr_mute_end(void) {
     g_stderr_null = NULL;
 }
 
+/*
+ * CPU pinning, from inside the harness.
+ *
+ * Unpinned, this benchmark moves by more than 2x between back-to-back runs on
+ * this machine, which makes any absolute-nanosecond gate meaningless. Pinning
+ * by hand (`taskset`) is a comment the reader has to remember; making it a
+ * property of the program is not.
+ *
+ * The inherited affinity mask is respected: if the caller already narrowed us
+ * (taskset, cgroup, container), the lowest CPU in that mask is used and nothing
+ * is widened. Returns the pinned CPU, or -1 if pinning is unavailable (in which
+ * case the run still proceeds -- noisily -- rather than failing).
+ *
+ * Setting LGX_BENCH_NO_AFFINITY=1 skips pinning. That switch exists only so the
+ * effect of pinning can be measured and shown; every run self-labels as
+ * UNPINNED on its BENCH_AFFINITY line, and no gate may use such a run.
+ */
+static int pin_to_single_cpu(void) {
+    cpu_set_t inherited;
+    CPU_ZERO(&inherited);
+    if (sched_getaffinity(0, sizeof(inherited), &inherited) != 0) return -1;
+
+    int cpu = -1;
+    for (int i = 0; i < CPU_SETSIZE; i++) {
+        if (CPU_ISSET(i, &inherited)) { cpu = i; break; }
+    }
+    if (cpu < 0) return -1;
+
+    cpu_set_t single;
+    CPU_ZERO(&single);
+    CPU_SET(cpu, &single);
+    if (sched_setaffinity(0, sizeof(single), &single) != 0) return -1;
+    return cpu;
+}
+
 typedef struct {
     size_t size;
     size_t count;
@@ -115,8 +154,16 @@ static void bench_lgx_alloc(void* ctx) {
  * the benchmark would quietly measure the old no-reset pattern while still
  * passing scripts/verify_benchmark_methodology.sh. main() reports the failure
  * count on a FRAME_RESET_STATUS line and exits non-zero.
+ *
+ * FRAME_REPEATS: the measurement is repeated in-process and the reported value
+ * is the median of the per-repeat medians. The bimodality that makes single
+ * runs unreliable is process-level (frequency scaling, page-cache and scheduler
+ * state), NOT warmup-level -- 1,000 warmup iterations already precede 10,000
+ * measured ones, and adding warmup does not remove it. See the FRAME_REPEATS
+ * line emitted below for the observed spread of the repeats themselves.
  */
 #define FRAME_BURST 64
+#define FRAME_REPEATS 5
 
 static uint64_t g_frame_resets = 0;
 static uint64_t g_frame_reset_failures = 0;
@@ -149,9 +196,19 @@ static void bench_lgx_persistent(void* ctx) {
 }
 
 int main(void) {
+    const char* no_affinity = getenv("LGX_BENCH_NO_AFFINITY");
+    int pinned_cpu = (no_affinity && no_affinity[0] == '1') ? -1 : pin_to_single_cpu();
+
     printf("LGX Runtime Core - Allocation Throughput Benchmark\n");
     printf("===================================================\n\n");
-    
+    printf("BENCH_AFFINITY cpu=%s repeats=%d burst=%d\n",
+           pinned_cpu >= 0 ? "pinned" : "UNPINNED",
+           FRAME_REPEATS, FRAME_BURST);
+    if (pinned_cpu < 0) {
+        fprintf(stderr, "WARNING: not pinned to a single CPU; results will be noisy "
+                        "and must not be used as a baseline.\n");
+    }
+
     // Initialize runtime
     lgx_runtime_config_t* config = lgx_config_create();
     if (lgx_runtime_init(config) != LGX_SUCCESS) {
@@ -189,11 +246,32 @@ int main(void) {
         benchmark_print_result(&results[result_count]);
         result_count++;
         
-        // Benchmark lgx_alloc_frame
+        // Benchmark lgx_alloc_frame (FRAME_REPEATS in-process repeats; the
+        // reported row is the median of the per-repeat medians)
         snprintf(names[result_count], 256, "lgx_frame_%s", size_names[i]);
-        stderr_mute_begin();            /* keep diagnostics out of the timing */
-        results[result_count] = benchmark_run(names[result_count], bench_lgx_frame, &ctx, 10000, 1000);
-        stderr_mute_end();
+        benchmark_result_t frame_reps[FRAME_REPEATS];
+        for (int r = 0; r < FRAME_REPEATS; r++) {
+            stderr_mute_begin();        /* keep diagnostics out of the timing */
+            frame_reps[r] = benchmark_run(names[result_count], bench_lgx_frame, &ctx, 10000, 1000);
+            stderr_mute_end();
+        }
+        /* Insertion sort by median_ns; FRAME_REPEATS is odd so the middle
+         * element is the median of the per-repeat medians. p99 is taken from
+         * that same repeat, so the two numbers always describe one run. */
+        for (int a = 1; a < FRAME_REPEATS; a++) {
+            benchmark_result_t key = frame_reps[a];
+            int b = a - 1;
+            while (b >= 0 && frame_reps[b].median_ns > key.median_ns) {
+                frame_reps[b + 1] = frame_reps[b];
+                b--;
+            }
+            frame_reps[b + 1] = key;
+        }
+        const benchmark_result_t* chosen = &frame_reps[FRAME_REPEATS / 2];
+        double rep_lo = frame_reps[0].median_ns;
+        double rep_hi = frame_reps[FRAME_REPEATS - 1].median_ns;
+
+        results[result_count] = *chosen;
         benchmark_print_result(&results[result_count]);
         result_count++;
 
@@ -201,13 +279,22 @@ int main(void) {
          * and by Plan 01's performance gate.
          *
          * benchmark_run() returns by value; benchmark_result_t stores latency
-         * fields as double nanoseconds (median_ns, p99_ns). */
+         * fields as double nanoseconds (median_ns, p99_ns).
+         *
+         * median= is the median of FRAME_REPEATS per-repeat medians; p99= is
+         * the p99 of that same (median) repeat, not a median of p99s. */
         {
             const benchmark_result_t* fr = &results[result_count - 1];
             printf("FRAME_RESET_PATTERN size=%s median=%.0fns p99=%.0fns\n",
                    size_names[i],
                    fr->median_ns,
                    fr->p99_ns);
+            /* Spread of the repeats, so a gate can be given a tolerance band
+             * from this run's own data instead of from a guess. */
+            printf("FRAME_REPEATS size=%s n=%d min=%.0fns median=%.0fns max=%.0fns spread=%.0f%%\n",
+                   size_names[i], FRAME_REPEATS,
+                   rep_lo, fr->median_ns, rep_hi,
+                   rep_lo > 0.0 ? (rep_hi - rep_lo) * 100.0 / rep_lo : 0.0);
         }
 
         // Benchmark lgx_alloc_persistent
