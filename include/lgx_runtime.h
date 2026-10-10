@@ -47,8 +47,12 @@ lgx_result_t lgx_alloc_validate_intent(void* ptr);  // Manually trigger validati
 // These make intent-based allocation easier to use
 
 // Convenience allocation functions (inline for performance)
-// Note: These are outside extern "C" for C++ compatibility
+// Note: These are outside extern "C" for C++ compatibility.
+// static inline functions are given C++ linkage here so they can be inlined
+// into C++ translation units without inheriting C language linkage.
 #ifdef __cplusplus
+extern "C++" {
+
 static inline void* lgx_alloc_frame(size_t size) {
     lgx_allocation_intent_base_t intent;
     intent.struct_size = sizeof(lgx_allocation_intent_base_t);
@@ -92,6 +96,7 @@ static inline void* lgx_alloc_gpu_shared(size_t size) {
     intent.validation_policy = LGX_INTENT_TRUST;
     return lgx_alloc_with_intent(&intent);
 }
+}  /* extern "C++" */
 #else
 // C version with designated initializers
 static inline void* lgx_alloc_frame(size_t size) {
@@ -309,6 +314,13 @@ void lgx_intent_aggregate_stats(void);  // Aggregate thread-local stats to globa
 
 #ifdef __cplusplus
 }
+#endif
+
+// Everything below (telemetry, chaos testing, trace events) is part of the same
+// C ABI and must stay inside extern "C", so re-open the linkage block here and
+// let the closer at the end of this file terminate it.
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 // Telemetry with privacy framework
