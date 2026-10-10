@@ -1,5 +1,32 @@
-FRAME_RESET_PATTERN size=16B median=2014ns p99=2343ns
-FRAME_RESET_PATTERN size=64B median=2032ns p99=2074ns
-FRAME_RESET_PATTERN size=256B median=2172ns p99=2213ns
-FRAME_RESET_PATTERN size=1KB median=3511ns p99=3634ns
-FRAME_RESET_PATTERN size=4KB median=10524ns p99=15146ns
+# Baseline for the frame-arena benchmark under the real frame pattern
+# (lgx_frame_reset + burst of 64 allocations per frame).
+#
+# Lines starting with '#' are metadata. Consumers MUST filter them out, e.g.
+#   grep '^FRAME_RESET' benchmarks/baseline_frame_arena.txt
+#
+# command      : taskset -c 4 ./benchmarks/benchmark_benchmark_allocation_throughput
+# cwd          : the CMake build directory (Release)
+# source commit: b701211 + fix round 1 (stderr mute + reset return check)
+# stderr       : discarded by the harness itself around the timed region
+#                (FRAME_RESET_STATUS stderr=muted_during_timing). The caller's
+#                stderr disposition no longer changes the numbers: verified
+#                +0.0% to +0.4% between /dev/null and a pipe, against +10% to
+#                +33% before this fix. DO NOT redirect stderr outside the
+#                harness expecting a different (larger) number; that was the bug.
+# one interval  = ONE FRAME = 64 allocations + memset + the reclaiming reset.
+#                The malloc_/lgx_alloc_ rows in the benchmark output are per
+#                allocation, so frame medians must be divided by 64 to compare.
+# resets        : 55000 per size x 5 sizes, 0 failures (FRAME_RESET_STATUS).
+# machine      : Intel Core Ultra 5 235U, 14 cores, governor=powersave (~1.2 GHz),
+#                Linux 6.14.0-37-generic, gcc 13.3.0, cmake 3.28.3.
+# stability    : 5 identical-invocation runs -> 64B/256B/1KB/4KB within 1%.
+#                16B is bimodal (~2000 ns steady state, ~3560 ns cold first run
+#                after the machine has been idle); 4 of 5 runs landed at 1993-2006.
+# noise        : absolute nanoseconds are NOT portable. Gate on relative change
+#                with a generous tolerance, never on these exact values.
+# recorded     : 2026-10-10T20:42:30Z
+FRAME_RESET_PATTERN size=16B median=1998ns p99=2560ns
+FRAME_RESET_PATTERN size=64B median=2026ns p99=2262ns
+FRAME_RESET_PATTERN size=256B median=2159ns p99=2421ns
+FRAME_RESET_PATTERN size=1KB median=3484ns p99=4357ns
+FRAME_RESET_PATTERN size=4KB median=10520ns p99=14324ns

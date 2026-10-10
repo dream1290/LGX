@@ -20,10 +20,11 @@ if [ ! -f "$BENCH" ]; then
     exit 1
 fi
 
-# Strip comment-only lines and "//" line comments, then drop any prototype
-# ("... lgx_frame_reset(void);") so only real call sites remain.
+# Keep only real call sites: strip "//" comments and whole-line block-comment
+# lines, strip string literals (prose mentioning the function is not a call),
+# then drop the prototype form "... lgx_frame_reset(void);".
 reset_calls="$(
-    sed -e 's://.*::' "$BENCH" \
+    sed -e 's://.*::' -e 's:"[^"]*": :g' "$BENCH" \
         | grep -vE '^[[:space:]]*(\*|/\*|#)' \
         | grep -E 'lgx_frame_reset[[:space:]]*\(' \
         | grep -vE 'lgx_frame_reset[[:space:]]*\([[:space:]]*void[[:space:]]*\)' \
