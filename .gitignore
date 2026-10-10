@@ -78,8 +78,11 @@ lead-engineer-new-verdict/
 # Kiro IDE configuration (user-specific)
 /.kiro/
 
-# Development scripts (user-specific)
-/scripts/
+# Development scripts (user-specific), except the ones CI gates depend on:
+# scripts/verify_benchmark_methodology.sh fails the build if the frame-arena
+# benchmark stops exercising lgx_frame_reset(), so it must be tracked.
+/scripts/*
+!/scripts/verify_benchmark_methodology.sh
 
 # Customer data
 customers/
