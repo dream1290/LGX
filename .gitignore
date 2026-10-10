@@ -81,8 +81,12 @@ lead-engineer-new-verdict/
 # Development scripts (user-specific), except the ones CI gates depend on:
 # scripts/verify_benchmark_methodology.sh fails the build if the frame-arena
 # benchmark stops exercising lgx_frame_reset(), so it must be tracked.
+# scripts/verify_test_integrity.sh fails the build if a test cannot report
+# failure; scripts/count_tests.sh produces the census it is measured against.
 /scripts/*
 !/scripts/verify_benchmark_methodology.sh
+!/scripts/verify_test_integrity.sh
+!/scripts/count_tests.sh
 
 # Customer data
 customers/

@@ -354,6 +354,132 @@ valgrind --leak-check=full ./build/test_name
 
 ---
 
-**Last Updated**: 2026-03-18
+## Test Integrity Contract
+
+A test that cannot fail is a defect, not a passing test.
+
+### The rule
+
+Every test file must contain at least one mechanism that can cause a **non-zero
+process exit**. A file with none of these always exits 0: it passes
+unconditionally, so including it in a pass rate inflates that rate while
+proving nothing.
+
+Accepted mechanisms, as implemented by `scripts/verify_test_integrity.sh`:
+
+| Mechanism | Example |
+|---|---|
+| Non-zero return from `main()` | `return 1;` |
+| `exit()` with a non-zero status | `exit(1)`, `EXIT_FAILURE` |
+| Abort | `abort()`, `__builtin_trap()`, `raise(SIGABRT)` |
+| A failure counter that `main()` reads **and** something increments | `return (failures == 0) ? 0 : 1;` with a real `failures++` |
+| A macro defined in the test file that returns non-zero, invoked from `main()` | `#define CHECK(c) do { if (!(c)) return 1; } while (0)` |
+
+### `assert()` does not count
+
+`CMakeLists.txt` defaults `CMAKE_BUILD_TYPE` to Release (lines 9-10) and adds
+`-DNDEBUG` to `CMAKE_C_FLAGS_RELEASE` and `CMAKE_C_FLAGS_RELWITHDEBINFO`
+(lines 18-19). The generated build flags confirm it:
+
+```text
+C_FLAGS = -Wall -Wextra -Werror ... -O3 -DNDEBUG -O2 -DNDEBUG -march=native
+```
+
+Under `NDEBUG`, `assert()` expands to `((void)0)`. An `assert()`-only test
+therefore exits 0 in every configuration this project ships. Verified by
+building `tests/phase0/test_logging.c` with a forced failing assertion against
+the real Release flags:
+
+```text
+with -DNDEBUG    -> exit 0    (the test "passes")
+without -DNDEBUG -> exit 134  (SIGABRT from assert)
+```
+
+This is not hypothetical: it is exactly how `test_csf2_numa_awareness.c` was
+broken until commit `ca172c2`. The checker reports `assert()`-only files with an
+explicit `ASSERT_ONLY` diagnosis so they are not mistaken for covered tests.
+
+### Enforcement
+
+```bash
+scripts/verify_test_integrity.sh                            # all tests, exits 1 if any cannot fail
+scripts/verify_test_integrity.sh tests/unit/test_init_shutdown.c   # one file
+scripts/verify_test_integrity.sh --classify FILE            # one-line machine verdict
+scripts/count_tests.sh <build-dir>                          # registered / verifying / incapable / unmapped
+```
+
+`verify_test_integrity.sh` is a CI gate: a PR that adds a test without a failure
+mechanism fails CI. `count_tests.sh` uses `--classify`, so the gate and the
+census can never disagree about what "capable of failing" means.
+
+The checker answers **"could this file ever exit non-zero?"** — not "does it
+assert enough?". A test that can fail but checks one trivial condition passes
+the gate. `scripts/verify_test_integrity.sh --help` lists every detection rule
+and every known limitation (false negatives from `return helper();`, file-wide
+credit for `exit()`/`abort()`, unevaluated conditional compilation, and more).
+
+### Current census
+
+Baseline on 2026-10-10, from an actual Release build and an actual run:
+
+| Metric | Count | Command |
+|---|---|---|
+| Test files under `tests/` (96 `.c` + 2 `.cpp`) | 98 | `verify_test_integrity.sh` (`checked=`) |
+| ... of those, can report failure | 68 | (`verifying=`) |
+| ... of those, **cannot** report failure | 30 | (`incapable=`, exit 1) |
+| ctest-registered tests | 77 | `count_tests.sh <build-dir>` (`registered=`) |
+| ... registered and verifying | 51 | (`verifying=`) |
+| ... registered and incapable | 26 | (`incapable=`) |
+| ... registered but unmappable to a source | 0 | (`unmapped=`) |
+| Disabled in CMake ("compilation errors", "API mismatch") | 12 | see `docs/STATE.md` |
+
+The 30 incapable files break down as **25 `ASSERT_ONLY`**, **4 `ALWAYS_ZERO`**
+(`main()` returns 0 and nothing else), and **1 `NO_MAIN`**
+(`tests/fuzzing/fuzz_allocation_patterns.cpp`, a libFuzzer harness with no `main`).
+Four of the 30 are not ctest-registered (two fuzzing harnesses, one debug tool,
+`tests/unit/test_memory_protection.c`), which is why 30 − 4 = 26 above.
+
+### Correction to the 2026-10-10 audit
+
+The audit reported "37 of 100 test files have no failure mechanism", and named
+specific groups. The aggregate is close to the measured 30 of 98, but four of
+its named claims are **wrong**, and were checked by hand:
+
+- **All five performance tests were called incapable.** They are not. Each
+  assigns a live `passed` from real measurements
+  (`tests/performance/test_memory_footprint.c:90-111`: `passed = 2` / `= 1` /
+  `= 0`, then `return (passed > 0) ? 0 : 1;`) and exits 1 when the memory or
+  latency target is missed.
+- **All seven module smoke tests were called incapable.** They are not. `TEST()`
+  increments `tests_run` and `PASS()` increments `tests_passed`, while `FAIL()`
+  increments neither (`tests/graphics/test_graphics_basic.c:16-22`), so a failed
+  check makes `tests_passed != tests_run` and `main()` returns 1.
+- **Four of five threading tests were called incapable.** All five use live
+  counters and return non-zero on failure.
+- **`tests/phase0/test_frame_arena.c` (363 lines, zero assertions) was called
+  incapable.** It is not. It has zero `assert()` calls — which is what the audit
+  appears to have measured — but its `TEST()` macro increments `tests_failed`
+  (line 25) and `main()` returns `(tests_failed == 0) ? 0 : 1` (line 362).
+  Confirmed by building it with one sub-test forced to `return false`: the
+  binary exits 1.
+
+The real problem is narrower and worse in kind than "no non-zero exit path":
+**25 files assert their way to a pass that Release builds compile out.**
+
+### Reporting rule
+
+Never quote the registered test count as a pass rate. Quote
+`scripts/count_tests.sh <build-dir>`, which separates registered, verifying,
+incapable, and unmapped. `unmapped` is reported explicitly and is never folded
+into `verifying` — an unaccounted-for test is how the count drifts.
+
+Disabled tests are listed in `docs/STATE.md`. Each must be migrated to the
+current API or deleted; leaving them commented out is how the suite silently
+stopped covering the runtime.
+
+---
+
+**Last Updated**: 2026-10-10
 **Test Suite Version**: 1.0.1
-**Status**: All tests passing (76/76)
+**Status**: 77 registered; 26 of them cannot report failure. Do not quote a
+pass rate — run `scripts/count_tests.sh <build-dir>`.
