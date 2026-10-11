@@ -9,17 +9,19 @@
 #                                           failure
 #   scripts/count_tests.sh                  the registered/verifying/incapable
 #                                           census the gate is measured against
-#   scripts/check_gate_scripts_tracked.sh   fails if the two above are not
-#                                           tracked by git
 #   scripts/verify_benchmark_methodology.sh fails CI if the benchmark stops
 #                                           measuring what it claims to
+#   scripts/check_gate_scripts_tracked.sh   fails if any of the three above is
+#                                           untracked by git, itself included
 #
 # This file was rewritten once already, in task 5 of the ground-truth plan. All
 # four negations survived it and CI runs all four. They are kept that way by a
 # run-time check rather than by trusting this comment: the gate scripts call
-# scripts/check_gate_scripts_tracked.sh on startup and fail if any of them is
-# untracked, so the next wholesale rewrite breaks the build instead of quietly
-# disarming it.
+# scripts/check_gate_scripts_tracked.sh on startup, and that script's default
+# list is exactly these four -- so it fails if any one of them is untracked and
+# the next wholesale rewrite breaks the build instead of quietly disarming it.
+# Keep the two lists in sync: a new gate script needs a negation here AND an
+# entry in check_gate_scripts_tracked.sh's GATES array.
 # ===========================================================================
 
 # ── Build directories ───────────────────────────────────────────────────────

@@ -6,27 +6,40 @@
 # .gitignore ignores /scripts/* so that developer scratch scripts do not get
 # committed, and then un-ignores the ones CI depends on. That makes the gate
 # scripts' tracked status depend entirely on a few negation lines staying in
-# .gitignore. A later wholesale rewrite of .gitignore -- which is exactly what
-# the next task in this plan does -- silently drops those negations, the scripts
-# become untracked, and nothing fails at that moment: `git status` goes quiet,
-# CI stops running the gate, and the suite rots again unnoticed.
+# .gitignore. A wholesale rewrite of .gitignore -- which task 5 of the
+# ground-truth plan was -- silently drops those negations, the scripts become
+# untracked, and nothing fails at that moment: `git status` goes quiet, CI stops
+# running the gate, and the suite rots again unnoticed.
 #
 # So the requirement is checked at run time instead of being left as a comment.
-# Both gate scripts call this on startup. If either one is untracked, they fail
-# loudly instead of quietly losing their own enforcement.
+# The gate scripts call this on startup. If any one of them is untracked, they
+# fail loudly instead of quietly losing their own enforcement.
 #
-# The two scripts that must stay tracked:
-#   scripts/verify_test_integrity.sh   - the CI gate itself
-#   scripts/count_tests.sh             - the census it is measured against
+# The four scripts that must stay tracked:
+#   scripts/verify_test_integrity.sh        - the test-integrity gate itself
+#   scripts/count_tests.sh                  - the census it is measured against
+#   scripts/verify_benchmark_methodology.sh - fails if the benchmark stops
+#                                             measuring what it claims to
+#   scripts/check_gate_scripts_tracked.sh   - this script. It is in the list
+#                                             deliberately: a self-check that
+#                                             exempts itself is exactly the
+#                                             kind of gap that hides.
+#
+# The list used to be only the first two, which meant this check reported PASS
+# while verify_benchmark_methodology.sh -- a gate CI actually runs -- could go
+# untracked. The list below is the whole contract, so keep it in sync with the
+# negations in .gitignore.
 #
 # Behaviour:
 #   * not inside a git work tree -> SKIP (exit 0). Git tracking is meaningless
 #     in a source tarball; failing there would be wrong.
-#   * inside a work tree and both scripts tracked -> PASS.
-#   * inside a work tree and either script untracked -> FAIL (exit 1).
+#   * inside a work tree and every gate tracked -> PASS (exit 0).
+#   * inside a work tree and any gate untracked -> FAIL (exit 1).
 #
 # Usage: scripts/check_gate_scripts_tracked.sh [repo-root] [path ...]
-#        Defaults to this script's own repository and the two gate scripts.
+#        Defaults to this script's own repository and the four gate scripts.
+#        Passing paths explicitly replaces the default list, which is what the
+#        self-tests use to prove a single untracked gate is caught.
 # ===========================================================================
 set -euo pipefail
 
@@ -37,7 +50,12 @@ if [ "$#" -gt 0 ]; then shift; fi
 if [ "$#" -gt 0 ]; then
     GATES=("$@")
 else
-    GATES=(scripts/verify_test_integrity.sh scripts/count_tests.sh)
+    GATES=(
+        scripts/verify_test_integrity.sh
+        scripts/count_tests.sh
+        scripts/verify_benchmark_methodology.sh
+        scripts/check_gate_scripts_tracked.sh
+    )
 fi
 
 if ! command -v git >/dev/null 2>&1; then
