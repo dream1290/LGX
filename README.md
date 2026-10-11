@@ -1,283 +1,220 @@
-# LGX Runtime Platform
+# LGX
 
-### The Standard ABI for Linux Gaming
+A memory runtime for Linux games.
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/platform-v2.2-green.svg)](https://github.com/dream1290/LGX/releases)
-[![Platform](https://img.shields.io/badge/Linux-x86__64-lightgrey.svg)]()
-[![Tests](https://img.shields.io/badge/tests-77%20registered%20%C2%B7%2026%20cannot%20report%20failure-lightgrey.svg)]()
+Most of a frame's allocations are temporary — particles, physics temporaries,
+per-frame buffers. They live for one frame and die. `malloc` is built for a much
+harder problem than that, and you pay for the difference in frame time.
 
-> **What DirectX is for Windows, LGX is for Linux.**
->
-> A stable, high-performance, open-source gaming platform.  
-> Build once. Run on every Linux distro. Guaranteed.
-
----
-
-## The Problem
-
-Game developers don't target Linux because there's no stable platform to build against. Ubuntu ≠ Fedora ≠ Arch. APIs break. Performance varies. Porting is a nightmare.
-
-**LGX solves this.** One API. One ABI. Every distro. Period.
-
----
-
-## Platform Modules
-
-| Module | Version | Status | What It Does |
-|--------|---------|--------|--------------|
-| **Memory** | v1.0 | [PROD] | Frame arena (no per-frame `free()`), GPU pool, persistent heap, intent routing |
-| **Threading** | v1.1 | [PROD] | Job system, lock-free queues, fiber scheduler, MPMC/SPSC |
-| **Graphics** | v1.2 | [PROD] | Vulkan wrapper, command recording, pipeline management, shader cache |
-| **Input** | v1.3 | [PROD] | Unified gamepad, keyboard, mouse via evdev |
-| **Audio** | v1.4 | [PROD] | 3D spatialization, mixing, ALSA output |
-| **Profiling** | v1.5 | [PROD] | Frame profiler, zones, counters, FPS tracking |
-| **Networking** | v2.0 | [PROD] | UDP sockets, serialization, delta compression |
-| **Asset Pipeline** | v2.1 | [PROD] | File loading, hot reload, compression |
-| **Tooling** | v2.2 | [PROD] | Perf analyzer, memory tracker, CSV export |
-
-Use only what you need. Start with memory: the frame arena needs no `free()` calls. Add modules as you grow.
-
----
-
-## Quick Start
-
-```bash
-# Install
-git clone https://github.com/dream1290/LGX.git
-cd LGX && mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release .. && make -j$(nproc)
-sudo make install
-```
+LGX gives you an arena: allocate by advancing a pointer, reclaim the whole frame
+at once.
 
 ```c
 #include <lgx_runtime.h>
-#include <lgx_threading.h>
-#include <lgx_graphics.h>
-#include <lgx_input.h>
-#include <lgx_audio.h>
-#include <lgx_profile.h>
-#include <lgx_net.h>
 
-int main(void) {
-    // Initialize platform
-    lgx_runtime_config_t* cfg = lgx_config_create();
-    lgx_config_set_flags(cfg, LGX_CONFIG_ENABLE_HUGE_PAGES);
-    lgx_runtime_init(cfg);
-    lgx_config_destroy(cfg);
+while (running) {
+    Particle* particles = lgx_alloc_frame(sizeof(Particle) * 4096);
+    simulate(particles, 4096);
 
-    // Initialize GPU + Input
-    lgx_gfx_device_t* gpu = lgx_gfx_device_create(NULL);
-    lgx_in_system_t* input = lgx_in_create(NULL);
-    lgx_aud_system_t* audio = lgx_aud_create(NULL);
-    lgx_prof_context_t* prof = lgx_prof_create(NULL);
-
-    // Game loop — frame allocations are FREE
-    while (running) {
-        lgx_prof_frame_begin(prof);
-        lgx_in_poll(input);  // Poll input devices
-        void* particles = lgx_alloc_frame(sizeof(Particle) * 10000);  // no free() needed
-        void* vertices  = lgx_alloc_frame(sizeof(Vertex) * 50000);
-
-        update(particles);
-        render(gpu, vertices);
-        lgx_aud_update(audio);  // Mix and output audio
-        lgx_prof_frame_end(prof);
-        // No lgx_free() needed — frame arena resets automatically
-    }
-
-    lgx_prof_destroy(prof);
-    lgx_aud_destroy(audio);
-    lgx_in_destroy(input);
-    lgx_gfx_device_destroy(gpu);
-    lgx_runtime_shutdown();
+    // next frame: the arena is reset, nothing is freed one-by-one
 }
 ```
 
-```bash
-gcc game.c -llgx_runtime -llgx_threading -llgx_graphics -llgx_input -llgx_audio -llgx_profile -llgx_net -lpthread -lvulkan -lasound -o game
-```
+No `free()` calls. No fragmentation across frames. No allocation bookkeeping in
+your game loop.
 
 ---
 
-## Performance
-
-**The "200× faster than malloc" claim previously published here is retracted.**
-This project's own benchmark does not support it.
+## Install
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
+git clone https://github.com/dream1290/LGX.git
+cd LGX
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+sudo cmake --install build
+```
+
+Then link against it:
+
+```bash
+gcc game.c -o game $(pkg-config --cflags --libs lgx_runtime)
+```
+
+Or from CMake, using what the install actually provides:
+
+```cmake
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LGX_RUNTIME REQUIRED IMPORTED_TARGET lgx_runtime)
+target_link_libraries(my_game PRIVATE PkgConfig::LGX_RUNTIME)
+```
+
+Requires Linux 5.10+ on x86_64, CMake 3.16+, GCC 11+ or Clang 10+. Vulkan and
+ALSA are optional — without them the GPU pool and audio module are skipped and
+everything else still builds.
+
+---
+
+## What's in it
+
+**Memory (v1.0)** — the core, and the only module most projects need.
+
+- **Frame arena** — bump-pointer allocation, reset per frame. Three rotating
+  buffers, so the GPU can still be reading frame N-1 while you write frame N.
+- **Persistent heap** — segregated-fit plus buddy, for data that outlives a frame.
+- **GPU pool** — Vulkan-backed buddy allocator for device-visible memory.
+- **Intent-based routing** — declare how long something lives and the allocator
+  picks the right pool:
+
+```c
+lgx_alloc_frame(n);        // frame-scoped  → frame arena
+lgx_alloc_persistent(n);   // long-lived    → persistent heap
+lgx_alloc_gpu_shared(n);   // CPU+GPU       → GPU pool
+```
+
+**Threading (v1.1)** — work-stealing job system, lock-free MPMC/SPSC queues,
+fibers, contention diagnostics.
+
+**Graphics (v1.2) · Input (v1.3) · Audio (v1.4) · Profiling (v1.5) ·
+Networking (v2.0) · Assets (v2.1) · Tooling (v2.2)** — separate libraries,
+each usable on its own. See [`docs/LGX_PLATFORM_ARCHITECTURE.md`](docs/LGX_PLATFORM_ARCHITECTURE.md).
+
+---
+
+## What it costs
+
+Measured with the benchmark in this repository, pinned to one CPU, with both
+sides actually writing their memory. Full data with provenance:
+[`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt).
+
+Per allocation, median:
+
+| Size | Frame arena | glibc malloc | Bare bump pointer |
+|------|-------------|--------------|-------------------|
+| 16B  | 26 ns | 65 ns | 2 ns |
+| 64B  | 26 ns | 34 ns | 2 ns |
+| 256B | 29 ns | 35 ns | 4 ns |
+| 1KB  | 39 ns | — | 24 ns |
+| 4KB  | 116 ns | — | 104 ns |
+
+Two honest caveats on this table:
+
+- The three columns are **not the same workload**. `malloc` is measured as a
+  single alloc/free pair; the arena and the bare bump pointer allocate 64 times
+  per frame and reset. They are close enough to compare at a glance, not close
+  enough to compute a ratio from.
+- `malloc` has no 1KB/4KB row because those sizes route to a different glibc
+  path; we did not measure them.
+
+Read the shape of it: the arena is in the same order of magnitude as glibc
+`malloc`, roughly 2–3× slower than it. It is **not faster**, and we do not claim
+it is.
+
+The last column is the point. A bare bump pointer — offset advance and nothing
+else — is another 5–10× cheaper. LGX currently sits between the two, paying
+roughly 13–25 ns per allocation for instrumentation and safety checks on top of
+the bare pointer. Locating that overhead is
+[Plan 01, Task 7](docs/superpowers/plans/2026-10-11-correctness-and-arena-performance.md).
+
+So what does the arena buy you? Not raw latency:
+
+- **No `free()` per allocation.** Reclamation is one pointer reset per frame.
+- **No fragmentation across frames.** The memory is reused, not reallocated.
+- **Stable addresses within a frame**, so structures can point at each other
+  freely.
+- **No per-allocation bookkeeping in your loop**, even when allocation stats,
+  call-site tracking, and overflow detection are compiled in.
+
+If your workload is dominated by glibc's fastbin/tcache path, `malloc` is fine
+and this library is not for you. If your frame does thousands of allocations
+that all die together, the arena is the right shape — and we will keep measuring
+until it earns the rest of the gap.
+
+Raw benchmark data, with provenance and reproducibility commands:
+[`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt).
+
+---
+
+## A retraction
+
+Earlier versions of this README claimed the frame arena was **200× faster than
+malloc**. That number was wrong, and we retract it here rather than quietly
+editing it.
+
+It came from comparing LGX against an asserted 10–30 μs `malloc` cost. The
+project's own benchmark measured glibc `malloc` at ~20 ns for a small hot
+allocation — roughly a thousand times cheaper than the figure the claim was
+built on. The "200×" was a ratio against a baseline we had not actually
+measured.
+
+Everything on this page is reproducible with:
+
+```bash
 ./build/benchmarks/benchmark_benchmark_allocation_throughput
 ```
 
-Measured per allocation, frame arena vs glibc malloc, under the real frame
-pattern (`lgx_frame_reset` plus a burst of 64 allocations per frame), in one
-process on one pinned CPU, with both sides actually writing their memory:
+---
 
-| Size | Arena / malloc | Verdict |
-|------|----------------|---------|
-| 16B  | 0.38× – 1.15× | cheaper or comparable (band not stable across CPUs) |
-| 64B  | 0.77× – 0.98× | cheaper or comparable (band not stable across CPUs) |
-| 256B | 0.85× – 1.02× | at parity |
-| 1KB  | 1.07× – 1.08× | **arena slower** |
-| 4KB  | 1.02× – 1.92× | **arena slower** |
+## Status
 
-The general `lgx_alloc` path is materially slower than malloc; the command above
-prints its `malloc_*` and `lgx_alloc_*` rows directly. Full method, stability
-data, and the machine the frame-arena figures were recorded on are in
-[`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt).
+**v1.0.1.** Builds clean from a fresh checkout with zero warnings under
+`-Wall -Wextra -Werror`, and the public header compiles and links from both C11
+and C++17.
 
-The frame arena's case is not raw throughput. It is that **there is no `free()`**
-— frame allocations are reclaimed when the frame resets — and that a bump pointer
-does not fragment. That is a design rationale. It is not a measured speedup, and
-it has not been benchmarked here.
+Honest inventory of what is and isn't done:
+
+| | |
+|---|---|
+| Clean build, no warnings | ✅ |
+| C++ consumability gate | ✅ |
+| 76 registered tests | ✅ — but see below |
+| Tests that can actually fail | **26 of 77 registered tests cannot report failure** |
+| Memory safety | ❌ 3 known defects, tracked in [Plan 01](docs/superpowers/plans/README.md) |
+| CI | ✅ 3 jobs on every push |
+
+The 26 are tests whose only failure mechanism is `assert()`, which
+`-DNDEBUG` compiles out of every Release build. We would rather tell you than
+have you find it. CI enforces a ratchet so that number can only go down.
+
+Three memory-safety defects are known and located: a use-after-free in the GPU
+pool's handle bookkeeping, pointer invalidation when the frame arena grows
+mid-frame, and a self-deadlock in chaos testing. Fixes and regression tests are
+written up in [Plan 01](docs/superpowers/plans/2026-10-11-correctness-and-arena-performance.md).
+We are not claiming production readiness until they are closed.
 
 ---
 
-## Why LGX
+## Development
 
-### vs DirectX
-- [+] Open source (community-driven, not Microsoft-controlled)
-- [+] Vulkan-native (modern, not legacy D3D)
-- [+] Runs on any Linux distro
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Debug   # ASan + UBSan
+cmake --build build -j$(nproc)
+ctest --test-dir build --output-on-failure
+```
 
-### vs Steam Runtime
-- [+] Complete platform (not just glibc + libs)
-- [+] Not Valve-controlled
-- [+] Lightweight (< 10 MB vs 200+ MB)
+```bash
+scripts/verify_test_integrity.sh     # tests that cannot fail are a defect
+scripts/count_tests.sh build         # registered / verifying / incapable
+scripts/verify_benchmark_methodology.sh
+```
 
-### vs Raw Vulkan + SDL
-- [+] Memory management (frame arena, GPU pool, intent routing)
-- [+] Threading (job system, fibers, lock-free structures)
-- [+] Observability (telemetry, counters, trace events)
-- [+] Stable ABI (version-guaranteed binary compatibility)
+Each of these is a CI gate, not a convenience. They fail closed.
 
----
-
-## Features
-
-### Memory Management
-- **Frame Arena**: Triple-buffered bump pointer — no `free()` per frame; allocations reclaimed at the frame reset
-- **GPU Pool**: Pre-allocated Vulkan memory with buddy allocator
-- **Persistent Heap**: Segregated fit + buddy (target: < 5% fragmentation over 8 hours — not yet benchmarked here)
-- **Intent-Based API**: Declare lifetime → auto-routes to optimal allocator
-
-### Threading
-- **Job System**: Work-stealing scheduler with dependency graphs
-- **Lock-Free Queues**: MPMC and SPSC, cache-line aligned
-- **Fiber System**: Cooperative user-space scheduling with fiber pool
-- **Lock-Free Stack**: ABA-safe Treiber stack
-- **Concurrent Hash Map**: Striped-lock FNV hash map
-
-### Platform Services
-- **Hardware Adaptation**: Auto-detect capabilities, graceful degradation, remediation guidance
-- **Health Monitoring**: Continuous assessment with configurable alerts
-- **Telemetry**: Separate process, privacy-preserving (target: < 0.1% overhead — not yet benchmarked here)
-- **Trace Events**: Integration with perf, Tracy, Valgrind
-- **Structured Logging**: Subsystem-tagged with runtime filtering
-- **Error Handling**: Recovery guidance with severity and actionable steps
-
-### ABI Stability
-- **Symbol versioning**: ELF `LGX_RUNTIME_1.0`, `LGX_THREADING_1.1`, `LGX_GRAPHICS_1.2`, `LGX_INPUT_1.3`, `LGX_AUDIO_1.4`, `LGX_PROFILE_1.5`, `LGX_NET_2.0`, `LGX_ASSET_2.1`, `LGX_TOOLS_2.2`
-- **Struct evolution**: `struct_size` first field, append-only
-- **Binary compatibility**: v1.0 binary runs on v1.x runtime forever
+Remediation plans, in dependency order, live in
+[`docs/superpowers/plans/`](docs/superpowers/plans/README.md).
 
 ---
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [Platform Vision](docs/LGX_PLATFORM_VISION.md) | Mission, strategy, roadmap |
-| [Platform Architecture](docs/LGX_PLATFORM_ARCHITECTURE.md) | Module design, API principles, ABI rules |
-| [Runtime API Reference](docs/02-api-reference/lgx_runtime_api.md) | All 60+ functions documented |
-| [Threading API Reference](docs/02-api-reference/lgx_threading_api.md) | Threading module API |
-| [Graphics API Reference](docs/02-api-reference/lgx_graphics_api.md) | Graphics module API (50+ functions) |
-| [Input API Reference](docs/02-api-reference/lgx_input_api.md) | Input module API (15 functions) |
-| [Audio API Reference](docs/02-api-reference/lgx_audio_api.md) | Audio module API (20 functions) |
-| [Profiling API Reference](docs/02-api-reference/lgx_profile_api.md) | Profiling module API (15 functions) |
-| [Networking API Reference](docs/02-api-reference/lgx_net_api.md) | Networking module API (25 functions) |
-| [Asset Pipeline API Reference](docs/02-api-reference/lgx_asset_api.md) | Asset Pipeline API (20 functions) |
-| [Tooling API Reference](docs/02-api-reference/lgx_tools_api.md) | Tooling API (20 functions) |
-| [Integration Guide](docs/04-integration/lgx_runtime_integration_guide.md) | Quick start, patterns, FAQ |
-| [Architecture Deep-Dive](docs/03-architecture/lgx_runtime_architecture.md) | Memory subsystem, security, internals |
-
----
-
-## Building
-
-### Prerequisites
-- Linux kernel 5.10+ (x86_64)
-- GCC 11+ or Clang 14+
-- CMake 3.16+
-- pthread
-
-### Build & Test
-```bash
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc)
-ctest --output-on-failure   # see scripts/count_tests.sh <build> for the real census
-```
-
-### Packages
-
-```bash
-# Debian/Ubuntu
-sudo dpkg -i lgx-runtime_1.1.0_amd64.deb
-
-# Fedora
-sudo rpm -i lgx-runtime-1.1.0-1.x86_64.rpm
-
-# Arch Linux
-sudo pacman -U lgx-runtime-1.1.0-1-x86_64.pkg.tar.zst
-```
-
-### CMake Integration
-```cmake
-find_package(lgx_runtime 1.0 REQUIRED)
-find_package(lgx_threading 1.1 REQUIRED)
-target_link_libraries(my_game lgx_runtime::lgx_runtime lgx_threading::lgx_threading)
-```
-
----
-
-## Contributing
-
-We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-**Key areas needing help:**
-- [WIP] **Engine Integrations** (v2.3) — Godot, Unity, Unreal plugins
-- [TODO] **Game integrations** — Port indie games to LGX
-- [TEST] **Hardware testing** — Test on diverse GPU/CPU/gamepad configs
-
----
-
-## Project Structure
-
-See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for complete project organization including:
-- Source code layout
-- Documentation structure
-- Build directories
-- Packaging infrastructure
-- Test suite organization
-
----
-
-## Roadmap
-
-**2026**: Core platform (memory [DONE], threading [DONE], graphics [DONE], input [DONE], audio [DONE], profiling [DONE], networking [DONE], assets [DONE], tooling [DONE])  
-**2027**: Ecosystem (engine integrations, distro packages, studio adoption)  
-**2028**: Industry standard (studio adoption, distro defaults, "Powered by LGX")
-
-See [docs/LGX_PLATFORM_VISION.md](docs/LGX_PLATFORM_VISION.md) for the full strategy.
+- [Platform architecture](docs/LGX_PLATFORM_ARCHITECTURE.md) — module contracts, ABI rules
+- [API reference](docs/02-api-reference/) — functions, types, error handling
+- [Integration guide](docs/04-integration/) — CMake, pkg-config, build integration
+- [Remediation plans](docs/superpowers/plans/README.md) — what is broken and the order to fix it
+- [Audit report](docs/AUDIT_REPORT.md) — the independent review that started this
 
 ---
 
 ## License
 
-Apache License 2.0 — See [LICENSE](LICENSE)
-
-Created by **Oualid Bahloul** and the LGX community.
-
-**[GitHub](https://github.com/dream1290/LGX)** · **[Documentation](docs/)** · **[Issues](https://github.com/dream1290/LGX/issues)**
+Apache 2.0 — see [LICENSE](LICENSE).
