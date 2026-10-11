@@ -110,8 +110,9 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
 ./build/benchmarks/benchmark_benchmark_allocation_throughput
 ```
 
-Measured per allocation, frame arena vs glibc malloc, one process on one pinned
-CPU, with both sides actually writing their memory:
+Measured per allocation, frame arena vs glibc malloc, under the real frame
+pattern (`lgx_frame_reset` plus a burst of 64 allocations per frame), in one
+process on one pinned CPU, with both sides actually writing their memory:
 
 | Size | Arena / malloc | Verdict |
 |------|----------------|---------|
@@ -121,8 +122,9 @@ CPU, with both sides actually writing their memory:
 | 1KB  | 1.07× – 1.08× | **arena slower** |
 | 4KB  | 1.02× – 1.92× | **arena slower** |
 
-The general `lgx_alloc` path is materially slower than malloc. Full method,
-stability data, and the machine these were recorded on are in
+The general `lgx_alloc` path is materially slower than malloc; the command above
+prints its `malloc_*` and `lgx_alloc_*` rows directly. Full method, stability
+data, and the machine the frame-arena figures were recorded on are in
 [`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt).
 
 The frame arena's case is not raw throughput. It is that **there is no `free()`**
@@ -157,7 +159,7 @@ it has not been benchmarked here.
 ### Memory Management
 - **Frame Arena**: Triple-buffered bump pointer — no `free()` per frame; allocations reclaimed at the frame reset
 - **GPU Pool**: Pre-allocated Vulkan memory with buddy allocator
-- **Persistent Heap**: Segregated fit + buddy, < 5% fragmentation over 8 hours
+- **Persistent Heap**: Segregated fit + buddy (target: < 5% fragmentation over 8 hours — not yet benchmarked here)
 - **Intent-Based API**: Declare lifetime → auto-routes to optimal allocator
 
 ### Threading
@@ -170,7 +172,7 @@ it has not been benchmarked here.
 ### Platform Services
 - **Hardware Adaptation**: Auto-detect capabilities, graceful degradation, remediation guidance
 - **Health Monitoring**: Continuous assessment with configurable alerts
-- **Telemetry**: Separate process, privacy-preserving, < 0.1% overhead
+- **Telemetry**: Separate process, privacy-preserving (target: < 0.1% overhead — not yet benchmarked here)
 - **Trace Events**: Integration with perf, Tracy, Valgrind
 - **Structured Logging**: Subsystem-tagged with runtime filtering
 - **Error Handling**: Recovery guidance with severity and actionable steps
