@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/platform-v2.2-green.svg)](https://github.com/dream1290/LGX/releases)
 [![Platform](https://img.shields.io/badge/Linux-x86__64-lightgrey.svg)]()
-[![Tests](https://img.shields.io/badge/tests-76%2F76%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-77%20registered%20%C2%B7%2026%20cannot%20report%20failure-lightgrey.svg)]()
 
 > **What DirectX is for Windows, LGX is for Linux.**
 >
@@ -26,7 +26,7 @@ Game developers don't target Linux because there's no stable platform to build a
 
 | Module | Version | Status | What It Does |
 |--------|---------|--------|--------------|
-| **Memory** | v1.0 | [PROD] | Frame arena (0.01 μs), GPU pool, persistent heap, intent routing |
+| **Memory** | v1.0 | [PROD] | Frame arena (no per-frame `free()`), GPU pool, persistent heap, intent routing |
 | **Threading** | v1.1 | [PROD] | Job system, lock-free queues, fiber scheduler, MPMC/SPSC |
 | **Graphics** | v1.2 | [PROD] | Vulkan wrapper, command recording, pipeline management, shader cache |
 | **Input** | v1.3 | [PROD] | Unified gamepad, keyboard, mouse via evdev |
@@ -36,7 +36,7 @@ Game developers don't target Linux because there's no stable platform to build a
 | **Asset Pipeline** | v2.1 | [PROD] | File loading, hot reload, compression |
 | **Tooling** | v2.2 | [PROD] | Perf analyzer, memory tracker, CSV export |
 
-Use only what you need. Start with memory for a 200× speedup. Add modules as you grow.
+Use only what you need. Start with memory: the frame arena needs no `free()` calls. Add modules as you grow.
 
 ---
 
@@ -76,7 +76,7 @@ int main(void) {
     while (running) {
         lgx_prof_frame_begin(prof);
         lgx_in_poll(input);  // Poll input devices
-        void* particles = lgx_alloc_frame(sizeof(Particle) * 10000);  // < 0.01 μs
+        void* particles = lgx_alloc_frame(sizeof(Particle) * 10000);  // no free() needed
         void* vertices  = lgx_alloc_frame(sizeof(Vertex) * 50000);
 
         update(particles);
@@ -102,15 +102,35 @@ gcc game.c -llgx_runtime -llgx_threading -llgx_graphics -llgx_input -llgx_audio 
 
 ## Performance
 
-All targets exceeded. Not by a little — by **10–200×**.
+**The "200× faster than malloc" claim previously published here is retracted.**
+This project's own benchmark does not support it.
 
-| Operation | P99 Latency | Target | Margin |
-|-----------|-------------|--------|--------|
-| Frame allocation | 0.04 μs | < 0.1 μs | **2.5×** |
-| Persistent heap | 0.09 μs | < 20 μs | **222×** |
-| GPU pool | 5.1 μs | < 10 μs | **2×** |
-| Initialize | 2.7 ms | < 500 ms | **185×** |
-| Suspend/Resume | < 1 ms | < 100 ms | **100×** |
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
+./build/benchmarks/benchmark_benchmark_allocation_throughput
+```
+
+Measured per allocation, frame arena vs glibc malloc, under the real frame
+pattern (`lgx_frame_reset` plus a burst of 64 allocations per frame), in one
+process on one pinned CPU, with both sides actually writing their memory:
+
+| Size | Arena / malloc | Verdict |
+|------|----------------|---------|
+| 16B  | 0.38× – 1.15× | cheaper or comparable (band not stable across CPUs) |
+| 64B  | 0.77× – 0.98× | cheaper or comparable (band not stable across CPUs) |
+| 256B | 0.85× – 1.02× | at parity |
+| 1KB  | 1.07× – 1.08× | **arena slower** |
+| 4KB  | 1.02× – 1.92× | **arena slower** |
+
+The general `lgx_alloc` path is materially slower than malloc; the command above
+prints its `malloc_*` and `lgx_alloc_*` rows directly. Full method, stability
+data, and the machine the frame-arena figures were recorded on are in
+[`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt).
+
+The frame arena's case is not raw throughput. It is that **there is no `free()`**
+— frame allocations are reclaimed when the frame resets — and that a bump pointer
+does not fragment. That is a design rationale. It is not a measured speedup, and
+it has not been benchmarked here.
 
 ---
 
@@ -137,9 +157,9 @@ All targets exceeded. Not by a little — by **10–200×**.
 ## Features
 
 ### Memory Management
-- **Frame Arena**: Triple-buffered bump pointer — 80% of game allocations at < 0.1 μs
+- **Frame Arena**: Triple-buffered bump pointer — no `free()` per frame; allocations reclaimed at the frame reset
 - **GPU Pool**: Pre-allocated Vulkan memory with buddy allocator
-- **Persistent Heap**: Segregated fit + buddy, < 5% fragmentation over 8 hours
+- **Persistent Heap**: Segregated fit + buddy (target: < 5% fragmentation over 8 hours — not yet benchmarked here)
 - **Intent-Based API**: Declare lifetime → auto-routes to optimal allocator
 
 ### Threading
@@ -152,7 +172,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 ### Platform Services
 - **Hardware Adaptation**: Auto-detect capabilities, graceful degradation, remediation guidance
 - **Health Monitoring**: Continuous assessment with configurable alerts
-- **Telemetry**: Separate process, privacy-preserving, < 0.1% overhead
+- **Telemetry**: Separate process, privacy-preserving (target: < 0.1% overhead — not yet benchmarked here)
 - **Trace Events**: Integration with perf, Tracy, Valgrind
 - **Structured Logging**: Subsystem-tagged with runtime filtering
 - **Error Handling**: Recovery guidance with severity and actionable steps
@@ -197,7 +217,7 @@ All targets exceeded. Not by a little — by **10–200×**.
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
-ctest --output-on-failure   # 76/76 tests pass
+ctest --output-on-failure   # see scripts/count_tests.sh <build> for the real census
 ```
 
 ### Packages

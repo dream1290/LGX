@@ -15,6 +15,30 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -fPIC \
     -Wredundant-decls \
     -Wshadow")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2")
+
+# Sanitizer flags must reach C++ too. Without this, a C++ translation unit is
+# compiled without instrumentation and then linked against an ASan-instrumented
+# C library, which aborts with "ASan runtime does not come first in initial
+# library list" -- or, worse, links and runs with C++ code silently uninstrumented.
+# The latter is the failure mode that matters: a sanitizer job that skips C++ is
+# an instrument that can lie about the code it is not instrumenting.
+#
+# NOTE: this block sets the variables unconditionally rather than guarding on
+# "is C++ enabled yet". The top-level project() declares LANGUAGES C, and C++ is
+# enabled later (tests/abi/CMakeLists.txt), so CMAKE_CXX_COMPILER_LOADED is NOT
+# set here. A guard on that variable silently skips the whole block and the
+# sanitizer job then pretends to cover C++ while instrumenting none of it.
+# Setting the variables early is harmless when C++ is never enabled.
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0 -fsanitize=address -fsanitize=undefined")
+
+# ASan must be the FIRST runtime in the link line, not merely present.
+# Without this, an instrumented C++ executable aborts at startup with
+# "ASan runtime does not come first in initial library list" because the
+# sanitizer runtime is linked after libstdc++.
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG
+    "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
+set(CMAKE_SHARED_LINKER_FLAGS_DEBUG
+    "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG -march=native")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g -DNDEBUG -march=native")
 
@@ -49,6 +73,15 @@ if(JEMALLOC_LIB)
 else()
     message(STATUS "jemalloc not found - using system malloc for fallback")
     add_definitions(-DHAVE_JEMALLOC=0)
+endif()
+
+# Optional: Find libnuma for NUMA-awareness tests.
+# The platform degrades gracefully without it -- only the NUMA test is conditional.
+find_library(NUMA_LIBRARY numa)
+if(NUMA_LIBRARY)
+    message(STATUS "Found libnuma: ${NUMA_LIBRARY} (NUMA tests enabled)")
+else()
+    message(STATUS "libnuma not found - NUMA test will skip its NUMA-specific checks")
 endif()
 
 # Include directories
@@ -294,9 +327,15 @@ install(FILES ${CMAKE_BINARY_DIR}/lgx_runtime.pc
 enable_testing()
 
 # Phase 0 tests (moved to phase0 subdirectory)
+# The NUMA test needs libnuma and its own guards, so it is excluded from the
+# generic phase0 glob below and given an explicit target in tests/phase0/CMakeLists.txt.
+set(PHASE0_TESTS_EXCLUDED test_csf2_numa_awareness)
 file(GLOB PHASE0_TESTS tests/phase0/*.c)
 foreach(test_file ${PHASE0_TESTS})
     get_filename_component(test_name ${test_file} NAME_WE)
+    if(${test_name} IN_LIST PHASE0_TESTS_EXCLUDED)
+        continue()
+    endif()
     add_executable(${test_name} ${test_file})
     target_link_libraries(${test_name} lgx_runtime m)
     
@@ -313,6 +352,9 @@ foreach(test_file ${PHASE0_TESTS})
         ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
     )
 endforeach()
+
+# NUMA test (conditional, requires libnuma)
+add_subdirectory(tests/phase0)
 
 # Phase 1 Unit Tests
 add_subdirectory(tests/unit)

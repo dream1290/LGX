@@ -1,20 +1,56 @@
-# Build artifacts
+# ===========================================================================
+# DO NOT REMOVE THE /scripts/* UN-IGNORE LINES FURTHER DOWN.
+#
+# /scripts/* is ignored so developer scratch scripts stay out of the repo. The
+# negations below exist because these scripts ARE CI gates: if they are not
+# tracked, CI cannot run them and the suite rots again without anyone noticing.
+#
+#   scripts/verify_test_integrity.sh        fails CI if a test cannot report
+#                                           failure
+#   scripts/count_tests.sh                  the registered/verifying/incapable
+#                                           census the gate is measured against
+#   scripts/verify_benchmark_methodology.sh fails CI if the benchmark stops
+#                                           measuring what it claims to
+#   scripts/check_gate_scripts_tracked.sh   fails if any of the three above is
+#                                           untracked by git, itself included
+#
+# This file was rewritten once already, in task 5 of the ground-truth plan. All
+# four negations survived it and CI runs all four. They are kept that way by a
+# run-time check rather than by trusting this comment: the gate scripts call
+# scripts/check_gate_scripts_tracked.sh on startup, and that script's default
+# list is exactly these four -- so it fails if any one of them is untracked and
+# the next wholesale rewrite breaks the build instead of quietly disarming it.
+# Keep the two lists in sync: a new gate script needs a negation here AND an
+# entry in check_gate_scripts_tracked.sh's GATES array.
+# ===========================================================================
+
+# ── Build directories ───────────────────────────────────────────────────────
+# /build/ was 1351 tracked files of stale CMake output until task 5 removed it
+# from the index; a prebuilt liblgx_runtime.so in the tree can mask a build
+# break that would otherwise fail on a clean checkout.
 /build/
 /build-*/
+/build-*-*/
+/cmake-build-*/
+
+# ── Compiled objects and libraries ──────────────────────────────────────────
+# *.so.* matters: CMake emits liblgx_runtime.so.1 and .so.1.0.1 alongside
+# liblgx_runtime.so, and a bare *.so rule leaves the versioned names unignored.
 *.o
-*.so
 *.a
+*.so
+*.so.*
 *.dylib
 *.dll
 *.exe
 
-# CMake
+# ── CMake ───────────────────────────────────────────────────────────────────
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 install_manifest.txt
 
-# Package artifacts
+# ── Package artifacts ───────────────────────────────────────────────────────
 *.deb
 *.rpm
 *.pkg.tar.zst
@@ -24,30 +60,29 @@ install_manifest.txt
 *.changes
 *.ddeb
 
-# Packaging output directory
+# Packaging output directory. Four artifacts from a 1.0.1 build are still
+# tracked here from before this rule existed; git ignores do not untrack, so
+# removing them is a separate `git rm --cached` if that is wanted.
 /packaging/output/
 
-# Security audits (CRITICAL - keep private!)
+# ── Security audits (CRITICAL - keep private!) ──────────────────────────────
+# These are deliberate, per the project's open-source strategy: a vulnerability
+# report committed to a public repository is published whether or not anyone
+# reads the commit log. Do not weaken them to tidy the file up.
 security_audit_*/
 security_audit_report/
 security_*.pdf
 audit_*.md
 vulnerability_*.txt
 
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Test artifacts
+# ── Test artifacts ──────────────────────────────────────────────────────────
 *.log
 *.tmp
+*.bak
+test_results.txt
+core
 core.*
 vgcore.*
-test_results.txt
 
 # Root-level test/bench binaries (built outputs that should not be committed)
 /test_lgx
@@ -55,41 +90,82 @@ test_results.txt
 /test_frame_debug
 /test_frame_debug_full
 /test_frame_stress
+/test_basic
+/test_alignment
+/test_statistics
+/test_overflow
 /tests/test_adaptive
 /tests/test_frame_debug
 /tests/test_frame_debug_full
 /tests/test_frame_stress
+/tests/test_basic
+/tests/test_alignment
+/tests/test_statistics
+/tests/test_overflow
 
-# Profiling
+# ── Profiling and coverage ──────────────────────────────────────────────────
+*.prof
 perf.data
 perf.data.old
 callgrind.out.*
 massif.out.*
+*.gcda
+*.gcno
+*.gcov
 
-# Sanitizer output
+# ── Sanitizer output ────────────────────────────────────────────────────────
 *.san
 
-# Personal notes
+# ── Personal notes and customer data ────────────────────────────────────────
 TODO.txt
 NOTES.md
 personal/
 lead-engineer-new-verdict/
-
-# Customer data
 customers/
 contracts/
 nda/
 
-# Temporary files
+# ── Temporary files ─────────────────────────────────────────────────────────
 test_lgx_simple
 test_lgx_simple.c
 *.out
 
-# Documentation build artifacts
+# ── Documentation build artifacts ───────────────────────────────────────────
 docs/_build/
 docs/.doctrees/
 
-# Python
+# ── Editor and IDE ──────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+# Kiro IDE configuration (user-specific)
+/.kiro/
+
+# ── Agent and tooling scratch ───────────────────────────────────────────────
+# .worktrees/ holds the git worktrees agents work in; .superpowers/ holds the
+# transient per-plan state they produce (ledgers, briefs, review packages).
+# Neither belongs in the product repository.
+#
+# docs/superpowers/plans/ is deliberately NOT ignored: those are the written
+# remediation plans for this project and are meant to be read and reviewed by
+# humans. The transient review output that lands beside them is ignored below.
+#
+# include/lgx_runtime.h.syms is a GENERATED build artifact (emitted next to the
+# header it describes), not a source file.
+.opencode/
+.superpowers/
+.worktrees/
+docs/superpowers/**/review-*.diff
+docs/superpowers/**/final-review.diff
+docs/superpowers/**/final-fix-review.diff
+docs/superpowers/**/task-*.md
+docs/superpowers/**/task-*-report.md
+include/lgx_runtime.h.syms
+
+# ── Python ──────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
@@ -97,12 +173,23 @@ __pycache__/
 venv/
 ENV/
 
-# macOS
-.DS_Store
+# ── macOS ───────────────────────────────────────────────────────────────────
 .AppleDouble
 .LSOverride
 
-# Windows
+# ── Windows ─────────────────────────────────────────────────────────────────
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# ── Development scripts (user-specific), except the ones CI gates depend on ──
+# scripts/verify_benchmark_methodology.sh fails the build if the frame-arena
+# benchmark stops exercising lgx_frame_reset(), so it must be tracked.
+# scripts/verify_test_integrity.sh fails the build if a test cannot report
+# failure; scripts/count_tests.sh produces the census it is measured against;
+# scripts/check_gate_scripts_tracked.sh is what keeps all three tracked.
+/scripts/*
+!/scripts/verify_benchmark_methodology.sh
+!/scripts/verify_test_integrity.sh
+!/scripts/count_tests.sh
+!/scripts/check_gate_scripts_tracked.sh

@@ -1,0 +1,139 @@
+# Baseline for the frame-arena benchmark under the real frame pattern
+# (lgx_frame_reset + a burst of 64 allocations per frame).
+#
+# Lines starting with '#' are metadata. Consumers MUST filter them out:
+#   grep '^FRAME_RESET_PATTERN' benchmarks/baseline_frame_arena.txt
+#
+# ============================================================================
+# GATE FOR PLAN 01 -- A SHAPE GATE. DO NOT GATE ON MAGNITUDES.
+# ============================================================================
+# The ratio approach previously prescribed here (compare lgx_frame/malloc with a
+# +/-15% band) was measured to be UNSOUND and has been deleted. Same binary, same
+# day: with the absolute spread at 0.75% at 16B, the ratio spread was 2.0x
+# (0.506-1.014). Two reasons, both inherent to dividing by malloc:
+#   * the denominator sits at ~31 ns on glibc's tcache fast path and barely moves
+#     with the CPU, so the ratio INHERITS the numerator's drift instead of
+#     cancelling it;
+#   * at 16B it divides by a coarsely quantised small-integer median, adding
+#     noise the absolute number does not have.
+# Across CPUs 0/4/7/11 the ratio spread was 1.34x-1.64x at EVERY size.
+#
+# Instead, assert these FIVE things from ONE invocation of ONE binary. Every one
+# is machine-relative, measured inside a single process on a single CPU, and has
+# margin. Nothing else is gated. The median= values at the bottom of this file
+# are a record of one run, not a threshold.
+#
+#   [1] process exit status is 0
+#   [2] "BENCH_AFFINITY cpu=<n> status=pinned"   -- and <n> is the CPU you gate
+#       on. Two runs on different CPUs are not comparable and must never be
+#       differenced. A run reading "status=UNPINNED" is invalid.
+#   [3] "FRAME_RESET_STATUS ... failures=0" AND "resets=" equals "expected_resets="
+#       (sizes x repeats x (iterations + warmup) = 5 x 5 x 11000 = 275000).
+#       If these differ, the timed region did not do the work it claims to.
+#   [4] every "FRAME_REPEATS ... spread=" is under threshold. This is the one
+#       magnitude that IS stable, because it is measured within a single process
+#       on a single CPU: observed 0%-1% on 64B/256B/1KB, and up to 42% at 16B.
+#       Use <=5% for 64B/256B/1KB; 16B and 4KB need a wider band or a re-run.
+#   [5] THE ONE ORDERING CLAIM, asserted within a single process on a single
+#       CPU: the frame arena is NOT faster than glibc malloc at 1KB or at 4KB.
+#       Measured arena/malloc at 1KB = 1.07-1.08x on CPUs 0/4/7/11, and at 4KB
+#       = 1.02x on three of four CPUs and 1.92x on the fourth. Assert ratio
+#       >= 0.90 at 1KB and >= 0.90 at 4KB. Observed minimum is 1.02, so the
+#       threshold has ~12% of margin below the worst case seen.
+#       At <=256B the arena measured CHEAPER than malloc (0.38x-1.15x), but that
+#       band is not stable across CPUs, so it is recorded here and NOT gated.
+#
+# ============================================================================
+# HOW TO REPRODUCE
+# ============================================================================
+# command   : ./benchmarks/benchmark_benchmark_allocation_throughput
+# cwd       : the CMake build directory, configured -DCMAKE_BUILD_TYPE=Release
+# build     : cmake -S . -B <dir> -DCMAKE_BUILD_TYPE=Release && cmake --build <dir>
+# No taskset, no shell redirection and no environment variable are required.
+#
+# CPU       : the harness calls sched_setaffinity itself and NARROWS to one CPU:
+#             LGX_BENCH_CPU=<n> if that CPU is inside the inherited affinity mask,
+#             otherwise the lowest CPU in the inherited mask. The mask is never
+#             widened. The chosen CPU is printed as cpu=<n>; it is not recorded
+#             implicitly and it changes with the runner's cpuset.
+#             LGX_BENCH_NO_AFFINITY=1 disables pinning; the run then self-labels
+#             status=UNPINNED and must not be gated on.
+# stderr    : muted by the harness (dup/dup2 to /dev/null) around the timed
+#             region only and restored afterwards, so the caller's stderr
+#             disposition cannot move the number (<=0.4% drift, against
+#             +10%..+33% before it existed). This works around a real runtime
+#             defect: src/runtime/lgx_frame_arena.c fprintf's on EVERY reset
+#             closer than 8 ms, which never happens at 60 FPS. That runtime fix
+#             is deferred to Plan 01 and is NOT done here; src/runtime/ is
+#             unmodified.
+# repeats   : the frame measurement runs FRAME_REPEATS=5 times in-process.
+#             median= is the MEDIAN OF THE PER-REPEAT MEDIANS. p99= is the p99
+#             of that same median repeat, not a median of p99s, so both numbers
+#             on the line describe one run. The FRAME_REPEATS line prints each
+#             run's own min/median/max/spread for gate [4].
+# resets    : every lgx_frame_reset() return value is compared to LGX_SUCCESS;
+#             main() exits non-zero if any failed, because a silently no-op
+#             reset would make this file describe the old no-reset workload.
+# touches   : every allocation is memset and the pointer is then published
+#             through a compiler barrier. Without that barrier GCC deleted the
+#             memset in bench_malloc as a dead store and the malloc rows were
+#             measured WITHOUT touching memory while the arena rows touched it.
+#             Verified in object code: bench_malloc had malloc and free
+#             relocations and no memset one. Now both sides do the same work.
+#
+# ============================================================================
+# MEASURED STABILITY (10 identical-invocation runs, pinned, this workload)
+# ============================================================================
+#   size   min    median  max     spread   outliers >5% from median
+#   16B    1685    1691    2390    1.42x    1 of 10   (9 of 10 within 1.00x)
+#   64B    1667    1676    1682    1.01x    0 of 10
+#   256B   1827    1833    1840    1.01x    0 of 10
+#   1KB    2484    2492    2516    1.01x    0 of 10
+#   4KB    7387    7395    7419    1.00x    0 of 10
+# Overall 1 outlier in 50 measurements (2%), at 16B only.
+#
+# CROSS-CPU SPREAD IS THE REAL HAZARD, and it is why [2] names the CPU:
+#   size   CPU0      CPU4      CPU7      CPU11
+#   4KB    7404 ns   10532 ns  ~10500 ns  ~10500 ns     <- 42% from the CPU alone
+# A previous revision of this file recorded 4KB = 7371 ns WITHOUT naming the CPU,
+# and a reviewer measuring on CPU 4 read 10.5 us and called the baseline "40%
+# stale". It was never stale; the record was incomplete. That is what cpu=<n> on
+# BENCH_AFFINITY is for.
+#
+# ============================================================================
+# WHAT THE MEASUREMENT ACTUALLY SAYS ABOUT THE ARENA (recorded plainly)
+# ============================================================================
+# A claim circulated that "at 4KB the arena is ~5x FASTER per allocation than
+# malloc; at >=64B it is not". IT DOES NOT REPRODUCE, and the direction is wrong.
+# Measured here, per allocation, both sides actually writing their memory, in
+# one process on one pinned CPU:
+#
+#     size    arena/malloc   verdict
+#     16B     0.38x - 1.15x  cheaper or comparable (NOT stable across CPUs)
+#     64B     0.77x - 0.98x  cheaper or comparable (NOT stable across CPUs)
+#     256B    0.85x - 1.02x  at parity
+#     1KB     1.07x - 1.08x  arena SLOWER, stable on all four CPUs
+#     4KB     1.02x - 1.92x  arena SLOWER, stable on all four CPUs
+#
+# The ~5x magnitude is real but it is the ratio the BROKEN malloc row produced:
+# before the memset fix, malloc_4KB read 34 ns/alloc with no memory written at
+# all, and the arena row read 164 ns/alloc, giving 164/34 = 4.8x -- i.e. the
+# arena 4.8x SLOWER, not faster. The number matches; the direction was inverted.
+#
+# So the honest statement is: with the real frame pattern, on this hardware, the
+# frame arena is NOT dramatically faster than glibc malloc. It is cheaper at
+# small sizes, at parity at 256B, and 1.07x-1.92x SLOWER at 1KB-4KB. Nothing
+# measured anywhere in this project supports the published "200x faster than
+# malloc" claim.
+#
+# ============================================================================
+# MACHINE
+# ============================================================================
+# Intel Core Ultra 5 235U (hybrid P-core/E-core), 14 cores, governor=powersave,
+# Linux 6.14.0-37-generic, gcc 13.3.0, cmake 3.28.3.
+# recorded: 2026-10-10T21:17:16Z, pinned to CPU 0, 275000 resets, 0 failures.
+FRAME_RESET_PATTERN size=16B median=1683ns p99=3157ns
+FRAME_RESET_PATTERN size=64B median=1670ns p99=3356ns
+FRAME_RESET_PATTERN size=256B median=1838ns p99=3474ns
+FRAME_RESET_PATTERN size=1KB median=2500ns p99=4444ns
+FRAME_RESET_PATTERN size=4KB median=7399ns p99=10317ns

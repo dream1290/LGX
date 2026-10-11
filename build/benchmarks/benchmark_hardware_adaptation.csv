@@ -1,5 +1,0 @@
-benchmark,iterations,min_ns,max_ns,mean_ns,median_ns,p95_ns,p99_ns,stddev_ns
-get_hardware_status,100000,61,225338,85.34,70.00,112.00,193.00,758.84
-has_capability,100000,30,3383,33.39,32.00,43.00,50.00,13.75
-get_version,100000,45,6217,54.90,51.00,68.00,79.00,34.27
-check_compatibility,100000,35,5125,40.18,39.00,47.00,59.00,29.96

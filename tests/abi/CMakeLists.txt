@@ -32,6 +32,29 @@ add_custom_target(run_abi_tests
     COMMENT "Running ABI compatibility tests"
 )
 
+# C++ consumability gate: the public header must compile and link as C++.
+# The top-level project() declares LANGUAGES C only, so C++ is enabled here
+# purely for this gate target.
+enable_language(CXX)
+
+add_executable(abi_test_cpp_header_compiles test_cpp_header_compiles.cpp)
+target_link_libraries(abi_test_cpp_header_compiles lgx_runtime)
+target_include_directories(abi_test_cpp_header_compiles PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+)
+set_target_properties(abi_test_cpp_header_compiles PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+)
+target_compile_options(abi_test_cpp_header_compiles PRIVATE -Wall -Wextra -Werror)
+
+add_test(NAME abi_test_cpp_header_compiles COMMAND abi_test_cpp_header_compiles)
+set_tests_properties(abi_test_cpp_header_compiles PROPERTIES
+    LABELS "abi"
+    TIMEOUT 30
+)
+
 # Install ABI test script
 install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/lgx-abi-test-matrix.sh
     DESTINATION bin

@@ -229,8 +229,8 @@ int lgx_perf_get_hot_zones(lgx_perf_analyzer_t* a,
 
     /* Copy zone data to output */
     for (int i = 0; i < count; i++) {
-        strncpy(out[i].name, a->zones[i].name, 63);
-        out[i].name[63] = '\0';
+        snprintf(out[i].name, sizeof(out[i].name), "%.*s",
+                 (int)sizeof(out[i].name) - 1, a->zones[i].name);
         out[i].total_ms = a->zones[i].total_ms;
         out[i].call_count = a->zones[i].call_count;
         out[i].avg_ms = (a->zones[i].call_count > 0)
