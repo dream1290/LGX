@@ -61,7 +61,11 @@
 
 ## Provenance of Task 7's starting point
 
-Task 7 begins from a measurement already taken while scoping this plan (out-of-tree copy, observers removed from the allocation success path only, same harness, same machine, 3 runs each, medians compared):
+Task 7 begins from two measurements taken before it was written.
+
+### Measurement 1 — cost of the three unconditional observers
+
+An out-of-tree copy with the observers removed from the allocation success path only, same harness, same machine, 3 runs each, medians compared:
 
 | size | observers present | observers removed | delta | per-allocation |
 |------|--------------------|-------------------|-------|----------------|
@@ -73,7 +77,45 @@ Task 7 begins from a measurement already taken while scoping this plan (out-of-t
 
 (64 allocations per frame, so delta/64 = cost per allocation.)
 
-Three observers run on every successful allocation: `check_high_usage_warning`, `track_allocation_histogram`, `track_allocation_call_site`. Their combined cost is **1.5-4.1 ns per allocation**. That is real overhead for a bump allocator whose budget is "a few nanoseconds", but it does **not** explain the 1.07-1.92x gap against glibc malloc observed in Plan 00. Task 7's job is to find what does.
+Three observers run on every successful allocation: `check_high_usage_warning`, `track_allocation_histogram`, `track_allocation_call_site`. Combined cost: **1.5-4.1 ns per allocation**.
+
+### Measurement 2 — the arena measured against a bare bump-pointer floor
+
+An external control established what this workload *should* cost, on a different machine. It implemented the same shape (64 allocations per frame, each genuinely touched with `memset`, then a reset) against progressively more realistic allocators. Its floor for a plain bump allocator was **~3 ns per allocation**, with a 3-buffer rotation adding nothing measurable at this working-set size, and adding one acquire load costing ~7 ns on that host.
+
+That control is not this project's code and its absolute numbers are not transferable. What it does establish is the shape of the answer: the workload permits a few nanoseconds, so the arena should be measured against that floor, not against malloc.
+
+So the permanent benchmark now carries two reference rows alongside `malloc_*` and `lgx_frame_*`:
+
+- **`bump_floor_*`** — a static bump pointer over one region: offset advance and `memset`, no atomics, no bookkeeping, no reset, no safety checks.
+- **`atomic_floor_*`** — the same, plus the acquire load of the frame index that the real arena performs once per allocation.
+
+Measured on this machine (ns per frame of 64 allocations):
+
+| size | bump floor | atomic floor | lgx_frame | vs bump | overhead per allocation |
+|------|-----------|--------------|-----------|---------|--------------------------|
+| 16B  | 305 ns | 341 ns | 1945 ns | 6.4× | 25.6 ns |
+| 64B  | 152 ns | 201 ns | 1632 ns | 10.7× | 23.1 ns |
+| 256B | 315 ns | 325 ns | 1800 ns | 5.7× | 23.2 ns |
+| 1KB  | 1515 ns | 1518 ns | 2473 ns | 1.6× | 15.0 ns |
+| 4KB  | 6632 ns | 6731 ns | 7436 ns | 1.1× | 12.6 ns |
+
+**What this already rules out.** The arena does no per-byte work on either the allocation or the reset path: every `memset`/`memcpy` in `lgx_frame_arena.c` is in an init, stats, or dump routine, and the `0xDEADBEEF` magic check is inside `#if LGX_DEBUG_BUILD`, which is 0 under `-DNDEBUG`. Poisoning on reset is therefore **not** the cause, which was the leading hypothesis before this was checked.
+
+**What this also shows.** The acquire load is free here (341 vs 305 ns at 16B) because x86-TSO does not need a fence for an acquire load; an isolated microbenchmark confirmed a zero delta between acquire and relaxed on this host. It would cost something on ARM or RISC-V, which is why `atomic_floor` is measured rather than assumed.
+
+**So the budget that remains.** ~23-25 ns per allocation unexplained at small sizes, against a floor of ~3-5 ns. The observers account for 1.5-4.1 ns of it.
+
+### Acceptance bar for Task 7
+
+Set from the control, not chosen to be convenient:
+
+- **within 2× of `bump_floor` at ≤256B**, and
+- **faster than `malloc` at every size.**
+
+Meeting the first at 16B/64B/256B requires getting from ~24 ns to under ~8 ns per allocation. If the arena cannot meet that, its design is not delivering on its own premise and Task 7 must say so plainly rather than explain the gap away.
+
+**Time-box: one task.** If the remaining ~20 ns is not identified by profiling in this task, record it as an open defect with the profile data attached, and hand it to a dedicated follow-up. Do not spend more than this task on it, and do not tune anything toward the bar without first understanding what the cost is.
 
 ---
 
@@ -1168,13 +1210,16 @@ No public signature changes."
 
 ### Task 7: Profile the frame-arena hot path
 
+**Status:** the reference floors are already merged (`bump_floor_*` / `atomic_floor_*`, commit "perf(bench): measure the arena against a bare bump-pointer floor"). This task consumes them; it does not re-add them.
+
 **Files:**
 - Create: `docs/05-performance/arena-hotpath-profile.md`
 - Modify: `src/runtime/lgx_frame_arena.c` (only if the profile identifies a defect that Task 1-6 do not cover)
+- Modify: `benchmarks/baseline_frame_arena.txt` (record the floor comparison)
 
 **Interfaces:**
-- Consumes: the measurement block at the top of this plan.
-- Produces: a written account of where the arena's per-allocation time actually goes, with commands and numbers. This document is the input to Plan 05's positioning.
+- Consumes: the two provenance measurements above, and the `FLOOR_LINE` rows the benchmark now emits.
+- Produces: a written account of where the arena's per-allocation time goes, with commands, numbers, and a pass/fail against the acceptance bar. This document is the input to Plan 05's positioning and to Plan 06's decision.
 
 - [ ] **Step 1: Confirm the measurement baseline still reproduces**
 
@@ -1188,12 +1233,22 @@ Record the three runs. If they differ wildly, stop and report — that is a Plan
 
 - [ ] **Step 2: Get a profile**
 
+**Already ruled out — do not re-investigate these; the measurements are in the provenance block above:**
+
+- **Per-byte work on allocation or reset.** No `memset`/`memcpy` appears on either hot path; all instances are in init, stats, and dump routines.
+- **Debug poisoning in Release.** The `0xDEADBEEF` magic check is inside `#if LGX_DEBUG_BUILD`, which resolves to 0 under `-DNDEBUG`.
+- **The atomic frame-index load.** `atomic_floor` measured 341 ns against `bump_floor`'s 305 ns at 16B — free on x86-TSO, confirmed by an isolated acquire-vs-relaxed microbenchmark with zero delta. (Still worth measuring on non-x86; it would cost there.)
+
+The budget to account for is ~23-25 ns per allocation at small sizes, against a floor of ~3-5 ns, with the three observers explaining 1.5-4.1 ns of it.
+
 ```bash
 perf stat -e cycles,instructions,cache-misses,branch-misses \
   /tmp/lgx-t7/benchmarks/benchmark_benchmark_allocation_throughput 2>&1 | tail -20
 ```
 
 If `perf` is unavailable or blocked by `perf_event_paranoid`, say so plainly and fall back to a `callgrind`-style approach or to manual instrumentation. Record which method was used; do not present a guess as a profile.
+
+Profile the arena row specifically, and compare against the `bump_floor` row in the same process — the difference between those two symbols is the thing to explain.
 
 ```bash
 perf record -g -- /tmp/lgx-t7/benchmarks/benchmark_benchmark_allocation_throughput > /dev/null 2>&1
@@ -1238,7 +1293,16 @@ For each of items 4-10, reach a decision and write it down:
 
 Gating must not silently disable a safety check. If an observer guards memory safety, it stays on in every configuration.
 
-- [ ] **Step 5: Measure the result of any change**
+- [ ] **Step 5: Measure the result of any change against the acceptance bar**
+
+Re-run and compare the arena row to `bump_floor` and `malloc`:
+
+```bash
+/tmp/lgx-t7/benchmarks/benchmark_benchmark_allocation_throughput 2>/dev/null \
+  | grep -E "FLOOR_LINE|FRAME_RESET_PATTERN"
+```
+
+The bar: **within 2× of `bump_floor` at ≤256B, and faster than `malloc` at every size.** Report each size as pass or fail against it. A fail at the end of this task is a legitimate and useful outcome — it means the arena is not delivering on its premise, and that finding is worth more than a tuned number. Do not weaken the bar to make it pass.
 
 If you gated or removed anything, re-run the benchmark the same way and record before/after per allocation (divide the per-frame delta by 64). If you changed nothing, record that explicitly — "no change, because each observer is required" is a legitimate outcome and must be stated.
 
