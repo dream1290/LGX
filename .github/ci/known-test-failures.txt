@@ -28,7 +28,9 @@
 # release
 # ---------------------------------------------------------------------------
 release test_telemetry_anonymization  pre-existing, not a CI regression: "Export telemetry with anonymization" returns error 1. Deterministic (every local run). Fix not scheduled.
+  Owner: Plan 03 (test recovery) -- decide whether the test or the telemetry API is wrong.
 release perf_test_frame_time_contribution  pre-existing SIGSEGV in the benchmark's own harness, not in the allocator under test. Deterministic (every local run). Fix not scheduled.
+  Owner: Plan 03 (test recovery) -- the SIGSEGV is in the test harness, not the allocator under test.
 #
 # The three below are UNFIXED INTERMITTENT DEFECTS in the threading module, not
 # tests that are "expected to fail". Measured over 30 consecutive local runs
@@ -48,9 +50,14 @@ release benchmark_threading  unfixed intermittent HANG in the threading benchmar
 # ---------------------------------------------------------------------------
 # asan
 # ---------------------------------------------------------------------------
-# Under the Debug build CMakeLists.txt adds -fsanitize=address/undefined to
-# CMAKE_C_FLAGS_DEBUG ONLY -- CMAKE_CXX_FLAGS_DEBUG is never given them
-# (CMakeLists.txt:17). So any C++ target links an uninstrumented binary against
-# an ASan-instrumented liblgx_runtime.so and aborts before main().
-asan abi_test_cpp_header_compiles  "ASan runtime does not come first in initial library list". The C++ sanitizer flags are missing from CMakeLists.txt; CI cannot fix that.
+# The C++ sanitizer gap that used to live here is FIXED. CMakeLists.txt now
+# gives CMAKE_CXX_FLAGS_DEBUG and the Debug linker flags the same
+# -fsanitize=address/undefined treatment as the C flags, so the C++ gate runs
+# genuinely instrumented instead of aborting at startup. An earlier attempt
+# guarded that block on CMAKE_CXX_COMPILER_LOADED, which is NOT set at that
+# point in the file (C++ is enabled later, in tests/abi/CMakeLists.txt), so the
+# guard silently skipped everything and the job kept pretending to cover C++
+# while instrumenting none of it. The variables are now set unconditionally.
 asan audio_test_basic  LeakSanitizer reports ~38 KB leaked from libpipewire/libasound inside snd_pcm_open (src/audio/lgx_audio.c:150). The leak is in a system library, not in this project's code, and test_audio_basic is the one test with no LSAN_OPTIONS suppression set (unlike the phase0 and threading tests).
+  Owner: Plan 03 -- add the LSAN_OPTIONS suppression the other tests already use.
+asan benchmark_threading  Same intermittent hang as the release entry; the Debug/sanitizer build is slower, so it reaches the 60s ctest timeout more often. Passes standalone and on retry. Owner: Plan 02 Task 1 (the threading flake).

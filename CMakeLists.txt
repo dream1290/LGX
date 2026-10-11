@@ -15,6 +15,30 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -fPIC \
     -Wredundant-decls \
     -Wshadow")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 -DDEBUG -fsanitize=address -fsanitize=undefined -mavx2")
+
+# Sanitizer flags must reach C++ too. Without this, a C++ translation unit is
+# compiled without instrumentation and then linked against an ASan-instrumented
+# C library, which aborts with "ASan runtime does not come first in initial
+# library list" -- or, worse, links and runs with C++ code silently uninstrumented.
+# The latter is the failure mode that matters: a sanitizer job that skips C++ is
+# an instrument that can lie about the code it is not instrumenting.
+#
+# NOTE: this block sets the variables unconditionally rather than guarding on
+# "is C++ enabled yet". The top-level project() declares LANGUAGES C, and C++ is
+# enabled later (tests/abi/CMakeLists.txt), so CMAKE_CXX_COMPILER_LOADED is NOT
+# set here. A guard on that variable silently skips the whole block and the
+# sanitizer job then pretends to cover C++ while instrumenting none of it.
+# Setting the variables early is harmless when C++ is never enabled.
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0 -fsanitize=address -fsanitize=undefined")
+
+# ASan must be the FIRST runtime in the link line, not merely present.
+# Without this, an instrumented C++ executable aborts at startup with
+# "ASan runtime does not come first in initial library list" because the
+# sanitizer runtime is linked after libstdc++.
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG
+    "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
+set(CMAKE_SHARED_LINKER_FLAGS_DEBUG
+    "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG -march=native")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g -DNDEBUG -march=native")
 
