@@ -9,10 +9,12 @@
 #include "benchmark_framework.h"
 #include "lgx_runtime.h"
 #include <sched.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 /*
@@ -210,6 +212,92 @@ static void bench_lgx_alloc(void* ctx) {
  * line emitted below for the observed spread of the repeats themselves.
  */
 #define FRAME_BURST 64
+
+/* Size of the static region the reference floors bump-allocate from. Large enough
+ * that a 10,000-iteration run never wraps it. */
+#define FLOOR_REGION_BYTES ((size_t)512 * 1024 * 1024)
+
+/*
+ * ── Reference floors ────────────────────────────────────────────────────────
+ *
+ * Every arena number is reported next to the cheapest allocator that could
+ * possibly do the same job. The project's former "200x faster than malloc"
+ * claim had no floor beneath it: it compared against an asserted 10-30us malloc
+ * baseline that this benchmark never measured (real hot malloc is ~20ns), so
+ * the ratio was not a measurement at all.
+ *
+ * Two floors are defined here:
+ *
+ *   BUMP_FLOOR   a single static bump pointer over one large region. This is the
+ *                theoretical minimum for allocate-by-advancing-an-offset, with
+ *                no atomics, no bookkeeping, no reset, and no safety checks.
+ *                Nothing the platform does can be faster than this.
+ *
+ *   ATOMIC_FLOOR the same, plus the atomic frame-index load the real arena
+ *                performs once per allocation. On x86-TSO the acquire load is
+ *                free; on weakly-ordered targets (ARM, RISC-V) it is not, so
+ *                both rows are measured rather than assumed.
+ *
+ * A frame arena that cannot approach BUMP_FLOOR is paying for something, and
+ * that something should be identified rather than accepted.
+ */
+static uint8_t* g_floor_region;
+static size_t   g_floor_capacity;
+static size_t   g_floor_offset;
+
+/* Stands in for the arena's own frame index. Same type and same access pattern
+ * (one acquire load per allocation); a local copy avoids reaching into library
+ * internals that are not exported. */
+static _Atomic uint32_t g_floor_frame_index;
+
+static int floor_init(size_t capacity) {
+    if (g_floor_region) return 0;
+    g_floor_region = (uint8_t*)mmap(NULL, capacity, PROT_READ | PROT_WRITE,
+                                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (g_floor_region == MAP_FAILED) {
+        g_floor_region = NULL;
+        return -1;
+    }
+    g_floor_capacity = capacity;
+    g_floor_offset = 0;
+    return 0;
+}
+
+static void floor_reset(void) {
+    g_floor_offset = 0;
+}
+
+/* FRAME_BURST allocations, all live until the frame is reset. */
+static void bench_bump_floor(void* ctx) {
+    alloc_context_t* actx = (alloc_context_t*)ctx;
+
+    floor_reset();
+    for (int i = 0; i < FRAME_BURST; i++) {
+        if (g_floor_offset + actx->size > g_floor_capacity) floor_reset();
+        uint8_t* p = g_floor_region + g_floor_offset;
+        g_floor_offset += actx->size;
+        memset(p, 0, actx->size);   /* same touch discipline as every other row */
+        TOUCH(p);
+    }
+}
+
+/* The atomic frame-index load the real arena performs per allocation. */
+static void bench_atomic_floor(void* ctx) {
+    alloc_context_t* actx = (alloc_context_t*)ctx;
+
+    floor_reset();
+    for (int i = 0; i < FRAME_BURST; i++) {
+        if (g_floor_offset + actx->size > g_floor_capacity) floor_reset();
+        /* Same expression as lgx_frame_alloc_internal: an acquire load of the
+         * current frame index, once per allocation. */
+        uint32_t frame_index = atomic_load(&g_floor_frame_index);
+        (void)frame_index;
+        uint8_t* p = g_floor_region + g_floor_offset;
+        g_floor_offset += actx->size;
+        memset(p, 0, actx->size);
+        TOUCH(p);
+    }
+}
 #define FRAME_REPEATS 5
 /* benchmark_run() invokes the function once per warmup iteration as well as
  * once per measured iteration, so each repeat accounts for
@@ -291,6 +379,29 @@ int main(void) {
         };
         
         // Benchmark malloc
+        /* Reference floors, measured first so every arena number has a floor
+         * beneath it. See the reference-floors comment above. */
+        if (floor_init(FLOOR_REGION_BYTES) != 0) {
+            fprintf(stderr, "SKIP: could not map the %zu MiB reference floor region\n",
+                    (size_t)(FLOOR_REGION_BYTES >> 20));
+        } else {
+            snprintf(names[result_count], 256, "bump_floor_%s", size_names[i]);
+            results[result_count] = benchmark_run(names[result_count], bench_bump_floor, &ctx, 10000, 1000);
+            printf("FLOOR_LINE %s median=%.0fns p99=%.0fns\n",
+                   names[result_count],
+                   results[result_count].median_ns,
+                   results[result_count].p99_ns);
+            result_count++;
+
+            snprintf(names[result_count], 256, "atomic_floor_%s", size_names[i]);
+            results[result_count] = benchmark_run(names[result_count], bench_atomic_floor, &ctx, 10000, 1000);
+            printf("FLOOR_LINE %s median=%.0fns p99=%.0fns\n",
+                   names[result_count],
+                   results[result_count].median_ns,
+                   results[result_count].p99_ns);
+            result_count++;
+        }
+
         snprintf(names[result_count], 256, "malloc_%s", size_names[i]);
         results[result_count] = benchmark_run(names[result_count], bench_malloc, &ctx, 10000, 1000);
         benchmark_print_result(&results[result_count]);
