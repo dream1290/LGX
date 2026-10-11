@@ -110,7 +110,7 @@ Result: Game runs on every Linux distro, guaranteed.
 ### LGX's Unfair Advantage
 
 **Performance superiority on Linux ground.** LGX is native:
-- Frame allocation: **0.01 μs** (200× faster than malloc)
+- Frame allocation: no per-frame `free()` — allocations are reclaimed at the frame reset (a previously published "200× faster than malloc" claim is retracted; see Performance in the README)
 - Lock-free job system: zero contention
 - Zero-copy GPU memory: pre-allocated Vulkan pools
 - NUMA-aware: automatic memory placement
@@ -131,7 +131,7 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 - **Observability**: Telemetry, counters, trace events (< 0.1% overhead)
 - **Security**: Guard pages, canaries, input validation, chaos testing
 
-**Test coverage**: 76/76 tests passing (100%)
+**Test coverage**: 77 registered; 26 of them cannot report failure. Do not quote a pass rate — run `scripts/count_tests.sh <build-dir>`.
 
 ### v1.1 — Threading  Production-Ready
 
@@ -244,13 +244,13 @@ No Windows compatibility layer → no overhead → faster than even DirectX on e
 
 1. **The gap exists.** No one else is building a complete, open-source gaming platform for Linux. Steam Runtime is minimal. SDL is input-only. The opportunity is wide open.
 
-2. **The foundation is solid.** v1.0 through v2.2 are production-tested, with 76 passing tests, comprehensive docs, and performance that exceeds targets by 10-200×.
+2. **The foundation is solid.** v1.0 through v2.2 are production-tested, with 77 registered tests (26 of them cannot report failure — `scripts/count_tests.sh <build-dir>` is the source of truth), comprehensive docs, and performance published as measured, including the claims we had to retract.
 
 3. **The timing is right.** Steam Deck normalized Linux gaming. Valve proved the market exists. But Proton is a compatibility layer — the market needs a native platform.
 
 4. **Open source wins.** DirectX can't run on Linux. Steam Runtime is Valve's. LGX is community-owned — every distro can ship it, every developer can contribute.
 
-5. **Incremental adoption.** Games don't need to rewrite. Start with `lgx_alloc_frame()` for a 200× speedup. Add more modules as they prove value.
+5. **Incremental adoption.** Games don't need to rewrite. Start with `lgx_alloc_frame()` and drop the per-frame `free()` calls. Add more modules as they prove value.
 
 ---
 

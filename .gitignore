@@ -147,9 +147,14 @@ docs/.doctrees/
 # ── Agent and tooling scratch ───────────────────────────────────────────────
 # .worktrees/ holds the git worktrees agents work in; .superpowers/ holds the
 # plans and reports they produce. Neither belongs in the product repository.
+# docs/superpowers/ holds this project's plans and reviews -- same rationale.
+# include/lgx_runtime.h.syms is a GENERATED build artifact (emitted next to the
+# header it describes), not a source file.
 .opencode/
 .superpowers/
 .worktrees/
+docs/superpowers/
+include/lgx_runtime.h.syms
 
 # ── Python ──────────────────────────────────────────────────────────────────
 __pycache__/

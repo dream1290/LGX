@@ -20,10 +20,13 @@ endif()
 add_test(NAME test_csf2_numa_awareness COMMAND test_csf2_numa_awareness)
 # The NUMA allocation-cost timing verdict is a benchmark observation, not a
 # correctness property, so it is opt-in and off on the default run. Functional
-# assertions always run. To enforce the timing threshold:
-#   ctest -R test_csf2_numa_awareness --overwrite
-#     Environment=LGX_NUMA_PERF=1
+# assertions always run. To enforce the timing threshold, run ctest under an
+# environment that sets the variable (ctest passes its own environment on):
+#   cmake -E env LGX_NUMA_PERF=1 ctest -R test_csf2_numa_awareness
 # or just run the binary with LGX_NUMA_PERF=1 in the environment.
+# NOTE: `ctest --overwrite Environment=...` does NOT work here. --overwrite takes
+# a CTest configuration FILE; it silently ignores this argument and runs the
+# default, unarmed path.
 set_tests_properties(test_csf2_numa_awareness PROPERTIES
     LABELS "phase0"
     TIMEOUT 300
