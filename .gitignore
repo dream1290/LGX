@@ -146,14 +146,23 @@ docs/.doctrees/
 
 # ── Agent and tooling scratch ───────────────────────────────────────────────
 # .worktrees/ holds the git worktrees agents work in; .superpowers/ holds the
-# plans and reports they produce. Neither belongs in the product repository.
-# docs/superpowers/ holds this project's plans and reviews -- same rationale.
+# transient per-plan state they produce (ledgers, briefs, review packages).
+# Neither belongs in the product repository.
+#
+# docs/superpowers/plans/ is deliberately NOT ignored: those are the written
+# remediation plans for this project and are meant to be read and reviewed by
+# humans. The transient review output that lands beside them is ignored below.
+#
 # include/lgx_runtime.h.syms is a GENERATED build artifact (emitted next to the
 # header it describes), not a source file.
 .opencode/
 .superpowers/
 .worktrees/
-docs/superpowers/
+docs/superpowers/**/review-*.diff
+docs/superpowers/**/final-review.diff
+docs/superpowers/**/final-fix-review.diff
+docs/superpowers/**/task-*.md
+docs/superpowers/**/task-*-report.md
 include/lgx_runtime.h.syms
 
 # ── Python ──────────────────────────────────────────────────────────────────
