@@ -55,12 +55,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # libvulkan-dev is required in this job. Its absence is why the first run
+      # of this workflow failed on the runner while passing everywhere local:
+      # without the headers CMake sets HAVE_VULKAN=0 and skips lgx_gpu_pool.c,
+      # but src/runtime/lgx_intent_allocator.c calls seventeen lgx_gpu_*
+      # symbols with no HAVE_VULKAN guard, so liblgx_runtime.so fails to link
+      # ("undefined reference to lgx_gpu_alloc") and nothing downstream builds.
+      # That defect is Plan 01 Task 5. The no-vulkan job below exists to keep it
+      # visible until then; installing headers here does not hide it, it makes the
+      # two jobs measure different things -- these test the code as it is
+      # actually built today (with Vulkan), that one tests the build without it
+      # and stays red on purpose.
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake pkg-config \
-            libnuma-dev libjemalloc-dev libasound2-dev
+            libnuma-dev libjemalloc-dev libasound2-dev libvulkan-dev
 
       # ubuntu-22.04 rather than ubuntu-latest on purpose: it is what the
       # previous workflow's primary jobs ran on, so this is the one environment
@@ -242,12 +253,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # libvulkan-dev is required in this job. Its absence is why the first run
+      # of this workflow failed on the runner while passing everywhere local:
+      # without the headers CMake sets HAVE_VULKAN=0 and skips lgx_gpu_pool.c,
+      # but src/runtime/lgx_intent_allocator.c calls seventeen lgx_gpu_*
+      # symbols with no HAVE_VULKAN guard, so liblgx_runtime.so fails to link
+      # ("undefined reference to lgx_gpu_alloc") and nothing downstream builds.
+      # That defect is Plan 01 Task 5. The no-vulkan job below exists to keep it
+      # visible until then; installing headers here does not hide it, it makes the
+      # two jobs measure different things -- these test the code as it is
+      # actually built today (with Vulkan), that one tests the build without it
+      # and stays red on purpose.
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake pkg-config \
-            libnuma-dev libjemalloc-dev libasound2-dev
+            libnuma-dev libjemalloc-dev libasound2-dev libvulkan-dev
 
       - name: Configure (Debug; sanitizers come from CMAKE_C_FLAGS_DEBUG)
         run: cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug
