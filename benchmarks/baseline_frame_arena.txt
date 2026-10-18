@@ -137,3 +137,21 @@ FRAME_RESET_PATTERN size=64B median=1670ns p99=3356ns
 FRAME_RESET_PATTERN size=256B median=1838ns p99=3474ns
 FRAME_RESET_PATTERN size=1KB median=2500ns p99=4444ns
 FRAME_RESET_PATTERN size=4KB median=7399ns p99=10317ns
+
+== 2026-10-18 · fix/phase1-safety@75370ec9e16854cb9c844997ab84917301ca4487 (stacked on A0; owner merges) · post A0/C2 ==
+host: Intel(R) Core(TM) Ultra 5 235U (14 CPUs, hybrid P/E-core), governor powersave, Linux 6.14.0-37-generic, gcc 13.3.0, cmake 3.28.3
+commands:
+  cmake -S . -B /tmp/opencode/lgx-build -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  cmake --build /tmp/opencode/lgx-build -j$(nproc)
+  cmake -S . -B /tmp/opencode/lgx-release -DCMAKE_BUILD_TYPE=Release
+  cmake --build /tmp/opencode/lgx-release -j$(nproc)
+  ctest --test-dir /tmp/opencode/lgx-build --output-on-failure
+  ./scripts/verify_test_integrity.sh
+  ./scripts/count_tests.sh /tmp/opencode/lgx-build
+  ./scripts/verify_benchmark_methodology.sh
+  ./scripts/check_gate_scripts_tracked.sh
+  taskset -c 2 /tmp/opencode/lgx-release/benchmarks/benchmark_benchmark_allocation_throughput   # cwd /tmp/opencode
+ctest: 76/78 passed, 2 failed: test_telemetry_anonymization (Failed), perf_test_frame_time_contribution (SEGFAULT) -- both listed in .github/ci/known-test-failures.txt
+gates: verify_test_integrity.sh=1 (by design: incapable backlog; census checked=99 verifying=68 incapable=31); count_tests.sh=0 (registered=78 verifying=51 incapable=27 unmapped=0); verify_benchmark_methodology.sh=0; check_gate_scripts_tracked.sh=0
+bench context: BENCH_AFFINITY cpu=2 status=pinned repeats=5 burst=64; FRAME_RESET_STATUS resets=275000 failures=0 expected_resets=275000
+bench medians (ns per frame): bump_floor_16B=81, atomic_floor_16B=127, lgx_frame_16B=809, lgx_frame_64B=789, lgx_frame_256B=819
