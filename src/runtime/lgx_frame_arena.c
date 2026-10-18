@@ -613,6 +613,21 @@ void* lgx_frame_alloc_internal(size_t size, const char* file, int line) {
 allocation_succeeded:
     // Update offset
     arena->offset = new_offset;
+    arena->allocations++;
+    
+    // Update peak usage
+    if (new_offset > arena->peak_usage) {
+        arena->peak_usage = new_offset;
+    }
+    
+    // Update global statistics
+    g_frame_arena_state.stats.total_allocations++;
+    g_frame_arena_state.stats.total_bytes_allocated += size;
+    g_frame_arena_state.stats.allocations_since_reset++;
+    
+    if (arena->peak_usage > g_frame_arena_state.stats.peak_usage_bytes) {
+        g_frame_arena_state.stats.peak_usage_bytes = arena->peak_usage;
+    }
     
     void* ptr = arena->base + old_offset;
     if (new_offset + CACHE_LINE_SIZE < arena->capacity) {
