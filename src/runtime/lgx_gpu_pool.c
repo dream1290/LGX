@@ -229,6 +229,22 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
     // CRITICAL: Save block index before any operations (realloc may move memory)
     size_t block_index = block - allocator->all_blocks;
     
+    // Ensure block array capacity BEFORE unlinking: realloc invalidates
+    // every pointer including free-list links, so grow first, rebuild the
+    // lists from block state, then proceed with normal unlink/split/insert.
+    if (allocator->num_blocks >= allocator->max_blocks) {
+        size_t new_max = allocator->max_blocks * 2;
+        buddy_block_t* new_blocks = (buddy_block_t*)realloc(allocator->all_blocks,
+                                                            new_max * sizeof(buddy_block_t));
+        if (!new_blocks) {
+            return NULL;  // Block is still linked and marked free; no corruption
+        }
+        allocator->all_blocks = new_blocks;
+        allocator->max_blocks = new_max;
+        buddy_rebuild_free_lists(allocator);
+        block = &allocator->all_blocks[block_index];
+    }
+
     // Remove from current free list (using index to be safe)
     block = &allocator->all_blocks[block_index];
     if (block->prev) {
@@ -241,22 +257,6 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
     }
     
     // Create buddy block
-    bool did_realloc = false;
-    if (allocator->num_blocks >= allocator->max_blocks) {
-        // Expand block array
-        size_t new_max = allocator->max_blocks * 2;
-        buddy_block_t* new_blocks = (buddy_block_t*)realloc(allocator->all_blocks, 
-                                                            new_max * sizeof(buddy_block_t));
-        if (!new_blocks) {
-            return NULL;
-        }
-        allocator->all_blocks = new_blocks;
-        allocator->max_blocks = new_max;
-        did_realloc = true;
-    }
-    
-    // Restore block pointer after potential realloc
-    block = &allocator->all_blocks[block_index];
     buddy_block_t* buddy = &allocator->all_blocks[allocator->num_blocks++];
     
     // Split into two blocks at lower level
@@ -273,16 +273,7 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
     buddy->next = NULL;
     buddy->prev = NULL;
     
-    // If we did realloc, rebuild all free lists to fix pointers
-    if (did_realloc) {
-        buddy_rebuild_free_lists(allocator);
-        
-        // Restore pointers after rebuild
-        block = &allocator->all_blocks[block_index];
-        buddy = &allocator->all_blocks[allocator->num_blocks - 1];
-    }
-    
-    // Add both blocks to lower level free list
+    // Add both blocks to lower level free list (exactly once)
     block->next = buddy;
     block->prev = NULL;
     buddy->next = allocator->free_lists[new_level];
@@ -432,6 +423,13 @@ static buddy_block_t* buddy_alloc(buddy_allocator_t* allocator, VkDeviceSize siz
     // Task 3.5.2.2: Prefetch allocator metadata (likely to be accessed)
     // Read prefetch with high temporal locality (will be accessed multiple times)
     __builtin_prefetch(&allocator->free_lists[0], 0, 3);
+    
+    // Reject requests larger than the largest representable block.
+    // size_to_level() clamps silently; without this check a request larger
+    // than MAX_BLOCK_SIZE would get a smaller block back.
+    if (size > MAX_BLOCK_SIZE || alignment > MAX_BLOCK_SIZE) {
+        return NULL;
+    }
     
     // Adjust size for alignment
     if (size < alignment) {
@@ -873,10 +871,13 @@ VkDeviceSize lgx_gpu_pool_get_memory_used(lgx_gpu_memory_type_t type) {
 
 /**
  * GPU allocation handle
+ *
+ * The block is referenced by index, not pointer: allocator->all_blocks is
+ * realloc'd by buddy_split, which invalidates any stored pointer.
  */
 struct lgx_gpu_allocation {
     lgx_gpu_memory_type_t memory_type;
-    buddy_block_t* block;
+    size_t block_index;
     VkDeviceMemory memory;
     VkDeviceSize offset;
     VkDeviceSize size;
@@ -932,10 +933,11 @@ lgx_gpu_allocation_t* lgx_gpu_alloc(VkDeviceSize size, VkDeviceSize alignment, l
     }
     
     alloc->memory_type = type;
-    alloc->block = block;
+    alloc->block_index = (size_t)(block - allocator->all_blocks);
     alloc->memory = allocator->memory;
     alloc->offset = block->offset;
     alloc->size = block->size;
+    alloc->mapped_ptr = NULL;
     
     // Set mapped pointer if host-visible
     if (allocator->mapped_ptr) {
@@ -970,15 +972,18 @@ void lgx_gpu_free(lgx_gpu_allocation_t* alloc) {
     
     buddy_allocator_t* allocator = &g_gpu_pool.allocators[type];
     
-    // Update statistics
-    g_gpu_pool.used_budget[type] -= alloc->block->size;
+    // Update statistics (alloc->size is fixed at allocation time)
+    g_gpu_pool.used_budget[type] -= alloc->size;
     g_gpu_pool.deallocation_count++;
     
-    // Free buddy block
-    buddy_free(allocator, alloc->block);
-    
-    // Update fragmentation
-    buddy_update_fragmentation(allocator);
+    // Free buddy block (index survives realloc; pointer does not)
+    if (alloc->block_index < allocator->num_blocks) {
+        buddy_block_t* block = &allocator->all_blocks[alloc->block_index];
+        buddy_free(allocator, block);
+        
+        // Update fragmentation
+        buddy_update_fragmentation(allocator);
+    }
     
     pthread_mutex_unlock(&g_gpu_pool.mutex);
     

@@ -366,6 +366,106 @@ void test_peak_usage_tracking(VkInstance instance, VkPhysicalDevice physical_dev
     printf("  Test completed\n");
 }
 
+/* Forces at least one all_blocks realloc (initial capacity is 1024 blocks)
+   and frees every handle afterwards. Pre-fix this either corrupts the free
+   lists (double insert) or dereferences freed memory (stale block pointer). */
+static void test_handle_stability_across_realloc(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device) {
+    printf("\n[TEST] handle_stability_across_realloc\n");
+
+    lgx_result_t result = lgx_gpu_pool_init(instance, physical_device, device);
+    if (result != LGX_SUCCESS) {
+        printf("  ⚠ Skipping test (GPU pool init failed)\n");
+        return;
+    }
+
+    enum { COUNT = 2000 };
+    lgx_gpu_allocation_t* handles[COUNT];
+    int allocated = 0;
+
+    for (int i = 0; i < COUNT; i++) {
+        handles[i] = lgx_gpu_alloc(4096, 256, LGX_GPU_HOST_VISIBLE);
+        if (!handles[i]) break;
+        allocated++;
+    }
+    if (allocated < 1100) {
+        printf("  SKIP: only %d allocations possible (budget too small)\n", allocated);
+        for (int i = 0; i < allocated; i++) lgx_gpu_free(handles[i]);
+        lgx_gpu_pool_shutdown();
+        return;
+    }
+
+    /* All returned offsets must be distinct: duplicates mean the free
+       lists handed out the same block twice. lgx_gpu_get_offset is the
+       B1d accessor; the handle struct itself is private. */
+    bool duplicate = false;
+    for (int i = 0; i < allocated && !duplicate; i++) {
+        for (int j = i + 1; j < allocated; j++) {
+            if (lgx_gpu_get_offset(handles[i]) == lgx_gpu_get_offset(handles[j])) {
+                printf("  FAIL: duplicate block offset %llu\n",
+                       (unsigned long long)lgx_gpu_get_offset(handles[i]));
+                duplicate = true;
+                break;
+            }
+        }
+    }
+    TEST_ASSERT(!duplicate, "All returned offsets are distinct");
+
+    /* Mapped pointers must be writable (host-visible). */
+    void* mapped = lgx_gpu_get_mapped_ptr(handles[0]);
+    if (mapped) {
+        memset(mapped, 0xAB, 4096);
+    }
+
+    for (int i = 0; i < allocated; i++) lgx_gpu_free(handles[i]);
+
+    /* Pool must still allocate after the churn. */
+    lgx_gpu_allocation_t* after = lgx_gpu_alloc(4096, 256, LGX_GPU_HOST_VISIBLE);
+    if (!after) {
+        printf("  FAIL: alloc after churn returned NULL\n");
+    }
+    TEST_ASSERT(after != NULL, "Allocation after churn succeeded");
+    if (after) lgx_gpu_free(after);
+
+    lgx_gpu_pool_shutdown();
+
+    printf("  %d allocations, %s, all freed\n", allocated,
+           duplicate ? "duplicates found" : "no duplicates");
+    printf("  Test completed\n");
+}
+
+/* Requests that exceed what the buddy tree can represent must be rejected,
+   not silently served by a smaller block. */
+static void test_size_and_alignment_bounds(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device) {
+    printf("\n[TEST] size_and_alignment_bounds\n");
+
+    lgx_result_t result = lgx_gpu_pool_init(instance, physical_device, device);
+    if (result != LGX_SUCCESS) {
+        printf("  ⚠ Skipping test (GPU pool init failed)\n");
+        return;
+    }
+
+    /* 128 MB > MAX_BLOCK_SIZE (64 MB): must return NULL, not a 64 MB block. */
+    lgx_gpu_allocation_t* too_big = lgx_gpu_alloc(128ull * 1024 * 1024, 256,
+                                                  LGX_GPU_DEVICE_LOCAL);
+    if (too_big) {
+        printf("  FAIL: oversized request was served\n");
+        lgx_gpu_free(too_big);
+    }
+    TEST_ASSERT(too_big == NULL, "Oversized request rejected");
+
+    /* Alignment > MAX_BLOCK_SIZE must return NULL, not index free_lists[19]. */
+    lgx_gpu_allocation_t* bad_align = lgx_gpu_alloc(1024, 128ull * 1024 * 1024,
+                                                    LGX_GPU_HOST_VISIBLE);
+    if (bad_align) {
+        printf("  FAIL: oversized alignment was served\n");
+        lgx_gpu_free(bad_align);
+    }
+    TEST_ASSERT(bad_align == NULL, "Oversized alignment rejected");
+
+    lgx_gpu_pool_shutdown();
+    printf("  Test completed\n");
+}
+
 int main(void) {
     printf("=== GPU Buddy Allocator Tests ===\n");
     printf("Testing buddy allocator and allocation API (Tasks 3.2.2 & 3.2.3)\n");
@@ -408,6 +508,8 @@ int main(void) {
     test_fragmentation_tracking(instance, physical_device, device);
     test_host_visible_mapping(instance, physical_device, device);
     test_peak_usage_tracking(instance, physical_device, device);
+    test_handle_stability_across_realloc(instance, physical_device, device);
+    test_size_and_alignment_bounds(instance, physical_device, device);
     
     // Cleanup
     vkDeviceWaitIdle(device);  // Wait for all operations to complete
