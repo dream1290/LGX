@@ -614,32 +614,7 @@ void* lgx_frame_alloc_internal(size_t size, const char* file, int line) {
 allocation_succeeded:
     // Update offset
     arena->offset = new_offset;
-    arena->allocations++;
     
-    // Update peak usage
-    if (new_offset > arena->peak_usage) {
-        arena->peak_usage = new_offset;
-    }
-    
-    // Task 3.4.5.2.5: Check for high usage warning (debug-only, compiled out in release)
-    // Disabled from hot path: this does floating-point division + possible fprintf
-    // on every allocation. See docs/05-performance/arena-hotpage-profile.md.
-    
-    // Track allocation patterns (Task 3.4.5.1)
-    // Disabled from hot path: histogram lookup + linear search through call sites,
-    // both executed on every allocation. See docs/05-performance/arena-hotpage-profile.md.
-    
-    // Update global statistics
-    g_frame_arena_state.stats.total_allocations++;
-    g_frame_arena_state.stats.total_bytes_allocated += size;
-    g_frame_arena_state.stats.allocations_since_reset++;  // Task 3.4.5.1.5
-    
-    if (arena->peak_usage > g_frame_arena_state.stats.peak_usage_bytes) {
-        g_frame_arena_state.stats.peak_usage_bytes = arena->peak_usage;
-    }
-    
-    // Cache optimization: Prefetch next cache line for sequential allocations
-    // This improves performance for workloads that allocate many small objects
     void* ptr = arena->base + old_offset;
     if (new_offset + CACHE_LINE_SIZE < arena->capacity) {
         prefetch(arena->base + new_offset + CACHE_LINE_SIZE);
@@ -648,7 +623,7 @@ allocation_succeeded:
     // Profiler integration (Task 3.4.5.4.4)
     record_profiler_alloc_event(size, ptr);
     
-    return ptr;
+return ptr;
 }
 
 /**
