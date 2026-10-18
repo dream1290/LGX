@@ -152,6 +152,6 @@ commands:
   ./scripts/check_gate_scripts_tracked.sh
   taskset -c 2 /tmp/opencode/lgx-release/benchmarks/benchmark_benchmark_allocation_throughput   # cwd /tmp/opencode
 ctest: 76/78 passed, 2 failed: test_telemetry_anonymization (Failed), perf_test_frame_time_contribution (SEGFAULT) -- both listed in .github/ci/known-test-failures.txt
-gates: verify_test_integrity.sh=1 (by design: incapable backlog; census checked=99 verifying=68 incapable=31); count_tests.sh=0 (registered=78 verifying=51 incapable=27 unmapped=0); verify_benchmark_methodology.sh=0; check_gate_scripts_tracked.sh=0
+gates: verify_test_integrity.sh=1 (by design: incapable backlog; census checked=99 verifying=69 incapable=30); count_tests.sh=0 (registered=78 verifying=52 incapable=26 unmapped=0); verify_benchmark_methodology.sh=0; check_gate_scripts_tracked.sh=0
 bench context: BENCH_AFFINITY cpu=2 status=pinned repeats=5 burst=64; FRAME_RESET_STATUS resets=275000 failures=0 expected_resets=275000
 bench medians (ns per frame): bump_floor_16B=81, atomic_floor_16B=127, lgx_frame_16B=809, lgx_frame_64B=789, lgx_frame_256B=819
