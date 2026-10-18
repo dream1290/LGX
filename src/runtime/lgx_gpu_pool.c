@@ -77,6 +77,7 @@ typedef struct {
     buddy_block_t* all_blocks;          // All blocks array
     size_t num_blocks;                  // Number of blocks
     size_t max_blocks;                  // Maximum blocks
+    buddy_block_t* dead_blocks;         // Slots freed by coalescing, reused by split
     
     // === ALLOCATION TRACKING ===
     VkDeviceSize allocated_bytes;       // Currently allocated
@@ -189,6 +190,9 @@ static lgx_result_t buddy_init(buddy_allocator_t* allocator, VkDeviceSize size) 
  * Rebuild all free list pointers after realloc
  * This is necessary because realloc may move the all_blocks array,
  * invalidating all pointers stored in next/prev fields.
+ *
+ * The dead-slot stack is always empty here: this runs only on the append
+ * path of buddy_split, which is only taken when no dead slot is available.
  */
 static void buddy_rebuild_free_lists(buddy_allocator_t* allocator) {
     // Clear all free lists
@@ -232,7 +236,9 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
     // Ensure block array capacity BEFORE unlinking: realloc invalidates
     // every pointer including free-list links, so grow first, rebuild the
     // lists from block state, then proceed with normal unlink/split/insert.
-    if (allocator->num_blocks >= allocator->max_blocks) {
+    // Only needed when no recycled slot is available.
+    if (allocator->dead_blocks == NULL &&
+        allocator->num_blocks >= allocator->max_blocks) {
         size_t new_max = allocator->max_blocks * 2;
         buddy_block_t* new_blocks = (buddy_block_t*)realloc(allocator->all_blocks,
                                                             new_max * sizeof(buddy_block_t));
@@ -256,8 +262,15 @@ static buddy_block_t* buddy_split(buddy_allocator_t* allocator, buddy_block_t* b
         block->next->prev = block->prev;
     }
     
-    // Create buddy block
-    buddy_block_t* buddy = &allocator->all_blocks[allocator->num_blocks++];
+    // Create buddy block: reuse a slot recycled by buddy_coalesce when
+    // available, otherwise append a new one.
+    buddy_block_t* buddy;
+    if (allocator->dead_blocks) {
+        buddy = allocator->dead_blocks;
+        allocator->dead_blocks = buddy->next;
+    } else {
+        buddy = &allocator->all_blocks[allocator->num_blocks++];
+    }
     
     // Split into two blocks at lower level
     uint8_t new_level = block->level - 1;
@@ -399,6 +412,11 @@ static void buddy_coalesce(buddy_allocator_t* allocator, buddy_block_t* block) {
         block->level++;
         block->size = level_to_size(block->level);
         buddy->is_free = false;  // Mark buddy as merged
+        // Recycle the merged-away slot: push it on the dead-slot stack so
+        // buddy_split reuses it instead of growing all_blocks forever.
+        buddy->next = allocator->dead_blocks;
+        buddy->prev = NULL;
+        allocator->dead_blocks = buddy;
         
         // Add merged block to higher level free list
         block->next = allocator->free_lists[block->level];
@@ -1046,4 +1064,20 @@ VkDeviceSize lgx_gpu_pool_get_peak_usage(lgx_gpu_memory_type_t type) {
     }
     
     return g_gpu_pool.allocators[type].peak_allocated_bytes;
+}
+
+/**
+ * Get the number of buddy-allocator slots (live and recycled) for a type.
+ * Test accessor; call only when no allocations are running concurrently.
+ */
+size_t lgx_gpu_pool_block_count(lgx_gpu_memory_type_t type) {
+    if (!g_gpu_pool.initialized || type >= LGX_GPU_MEMORY_TYPE_COUNT) {
+        return 0;
+    }
+    
+    if (!g_gpu_pool.memory_type_available[type]) {
+        return 0;
+    }
+    
+    return g_gpu_pool.allocators[type].num_blocks;
 }

@@ -466,6 +466,51 @@ static void test_size_and_alignment_bounds(VkInstance instance, VkPhysicalDevice
     printf("  Test completed\n");
 }
 
+/* Repeated same-size alloc/free cycles must recycle merged-away block
+   slots. Without recycling every cycle appends new slots (18 per cycle
+   for 256 B) and num_blocks grows without bound, turning buddy_coalesce
+   into an O(num_blocks) scan per free. */
+static void test_block_slot_reuse(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device) {
+    printf("\n[TEST] block_slot_reuse\n");
+
+    lgx_result_t result = lgx_gpu_pool_init(instance, physical_device, device);
+    if (result != LGX_SUCCESS) {
+        printf("  ⚠ Skipping test (GPU pool init failed)\n");
+        return;
+    }
+
+    enum { CYCLES = 64 };
+
+    for (int cycle = 0; cycle < CYCLES; cycle++) {
+        lgx_gpu_allocation_t* alloc = lgx_gpu_alloc(256, 256, LGX_GPU_DEVICE_LOCAL);
+        if (!alloc) {
+            printf("  FAIL: 256B allocation %d failed\n", cycle);
+            break;
+        }
+        lgx_gpu_free(alloc);
+    }
+    size_t after_first = lgx_gpu_pool_block_count(LGX_GPU_DEVICE_LOCAL);
+
+    for (int cycle = 0; cycle < CYCLES; cycle++) {
+        lgx_gpu_allocation_t* alloc = lgx_gpu_alloc(256, 256, LGX_GPU_DEVICE_LOCAL);
+        if (!alloc) {
+            printf("  FAIL: 256B allocation %d failed (second round)\n", cycle);
+            break;
+        }
+        lgx_gpu_free(alloc);
+    }
+    size_t after_second = lgx_gpu_pool_block_count(LGX_GPU_DEVICE_LOCAL);
+
+    printf("  slots after round 1: %zu, after round 2: %zu\n",
+           after_first, after_second);
+    TEST_ASSERT(after_second == after_first,
+                "slot count stable across alloc/free rounds");
+    TEST_ASSERT(after_second <= 64, "slot count bounded (<= 64)");
+
+    lgx_gpu_pool_shutdown();
+    printf("  Test completed\n");
+}
+
 int main(void) {
     printf("=== GPU Buddy Allocator Tests ===\n");
     printf("Testing buddy allocator and allocation API (Tasks 3.2.2 & 3.2.3)\n");
@@ -510,6 +555,7 @@ int main(void) {
     test_peak_usage_tracking(instance, physical_device, device);
     test_handle_stability_across_realloc(instance, physical_device, device);
     test_size_and_alignment_bounds(instance, physical_device, device);
+    test_block_slot_reuse(instance, physical_device, device);
     
     // Cleanup
     vkDeviceWaitIdle(device);  // Wait for all operations to complete

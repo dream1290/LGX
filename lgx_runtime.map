@@ -69,6 +69,7 @@ LGX_1.0 {
         lgx_gpu_get_mapped_ptr;
         lgx_gpu_pool_get_fragmentation;
         lgx_gpu_pool_get_peak_usage;
+        lgx_gpu_pool_block_count;
         
         # GPU capability detection (Task 3.5.2.3)
         lgx_gpu_detect_capabilities;
