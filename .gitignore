@@ -193,3 +193,21 @@ Desktop.ini
 !/scripts/verify_test_integrity.sh
 !/scripts/count_tests.sh
 !/scripts/check_gate_scripts_tracked.sh
+
+# Scratch files accidentally committed in bcd8b52 (untracked in A2)
+/f_str.c
+/g_dead_tern.c
+/h_cmp_only.c
+/i_cast.c
+/j_dead_shape.c
+/k_exit_var.c
+/l_helper_ret.c
+/opencode.json
+/benchmark_allocation_throughput.csv
+/tests/Makefile
+/tests/test_alignment.c
+/tests/test_basic.c
+/tests/test_framework.h
+/tests/test_overflow.c
+/tests/test_statistics.c
+/tools/lifetime-profiler/
