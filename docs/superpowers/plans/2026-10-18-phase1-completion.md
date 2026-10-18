@@ -28,6 +28,7 @@ Plan 01 is partially executed: its measurement tasks 7-8 produced commits `ceb78
 | A3 | Record honest baseline (build, tests, benchmark) | No trustworthy baseline exists | provenance file |
 | A4 | Add repo-root `AGENTS.md` with working rules | Agent behaviour not constrained | hooks/CI in B6 |
 | B1 | GPU buddy allocator: index handles, split realloc order, double-insert, alignment/size bounds | 4 memory-safety defects | extend `test_gpu_buddy_allocator.c` |
+| B1x | GPU buddy allocator: recycle merged-away block slots | Unbounded `all_blocks` growth after B1 | extend `test_gpu_buddy_allocator.c` |
 | B2 | GPU pool init order and failure cleanup | `get_memory` always NULL; leaks on init failure | extend `test_gpu_pool.c` |
 | B3 | Frame arena chained growth (no mid-frame munmap) | Use-after-free on overflow | `test_frame_arena_growth.c` (new) |
 | B4 | Chaos testing self-deadlock | First chaos decision deadlocks | `test_chaos_deadlock.c` (new, explicit target) |
@@ -951,6 +952,279 @@ Verified: requires ASan; pre-fix the new tests fail under
 -fsanitize=address,undefined with heap-use-after-free / duplicate block
 offsets. Post-fix: clean run. CI skips without a device, per existing
 convention.
+```
+
+---
+
+## Task B1x — GPU block slot recycling
+
+**Added 2026-10-18 after the B1 review.** B1 exposed a fifth defect the original brief did not know about: `buddy_coalesce` marks the merged-away buddy dead (`src/runtime/lgx_gpu_pool.c:401`) and nothing ever reuses that slot, while `buddy_split` appends unconditionally (`:260`). One same-size alloc/free cycle appends one slot per level it walks — 18 for a 256-byte allocation on a 64 MB root. Before B1 this was masked by defect 2's free-list corruption (the stale/duplicate list entries left a reusable block behind and `num_blocks` stabilised at 2049); with the corruption removed, `num_blocks` grows without bound and `buddy_coalesce`'s scan over all blocks turns every free into an O(num_blocks) walk, so `test_gpu_performance` (10000 cycles, 300 s ctest timeout) hangs on a device host. Evidence, logs, and the baseline+B1a-only reproduction are in `.superpowers/sdd/2026-10-18-phase1-completion/task-B1-report.md`.
+
+Fix: `buddy_coalesce` pushes merged-away slots on a dead-slot stack; `buddy_split` pops from it before appending. One commit. `test_gpu_performance` is not modified — it completing within its existing timeout is the observable. No performance numbers in the commit message.
+
+### B1x-a — Dead-slot recycling
+
+**Current code, `src/runtime/lgx_gpu_pool.c:76-79`:**
+
+```c
+    // === BLOCK TRACKING ===
+    buddy_block_t* all_blocks;          // All blocks array
+    size_t num_blocks;                  // Number of blocks
+    size_t max_blocks;                  // Maximum blocks
+```
+
+**Exact replacement:**
+
+```c
+    // === BLOCK TRACKING ===
+    buddy_block_t* all_blocks;          // All blocks array
+    size_t num_blocks;                  // Number of blocks
+    size_t max_blocks;                  // Maximum blocks
+    buddy_block_t* dead_blocks;         // Slots freed by coalescing, reused by split
+```
+
+**Current code, `src/runtime/lgx_gpu_pool.c:188-192`** (the rebuild doc comment):
+
+```c
+/**
+ * Rebuild all free list pointers after realloc
+ * This is necessary because realloc may move the all_blocks array,
+ * invalidating all pointers stored in next/prev fields.
+ */
+```
+
+**Exact replacement:**
+
+```c
+/**
+ * Rebuild all free list pointers after realloc
+ * This is necessary because realloc may move the all_blocks array,
+ * invalidating all pointers stored in next/prev fields.
+ *
+ * The dead-slot stack is always empty here: this runs only on the append
+ * path of buddy_split, which is only taken when no dead slot is available.
+ */
+```
+
+**Current code, `src/runtime/lgx_gpu_pool.c:229-260`** (after B1; the read is):
+
+```c
+    // CRITICAL: Save block index before any operations (realloc may move memory)
+    size_t block_index = block - allocator->all_blocks;
+    
+    // Ensure block array capacity BEFORE unlinking: realloc invalidates
+    // every pointer including free-list links, so grow first, rebuild the
+    // lists from block state, then proceed with normal unlink/split/insert.
+    if (allocator->num_blocks >= allocator->max_blocks) {
+        size_t new_max = allocator->max_blocks * 2;
+        buddy_block_t* new_blocks = (buddy_block_t*)realloc(allocator->all_blocks,
+                                                            new_max * sizeof(buddy_block_t));
+        if (!new_blocks) {
+            return NULL;  // Block is still linked and marked free; no corruption
+        }
+        allocator->all_blocks = new_blocks;
+        allocator->max_blocks = new_max;
+        buddy_rebuild_free_lists(allocator);
+        block = &allocator->all_blocks[block_index];
+    }
+
+    // Remove from current free list (using index to be safe)
+    block = &allocator->all_blocks[block_index];
+    if (block->prev) {
+        block->prev->next = block->next;
+    } else {
+        allocator->free_lists[block->level] = block->next;
+    }
+    if (block->next) {
+        block->next->prev = block->prev;
+    }
+    
+    // Create buddy block
+    buddy_block_t* buddy = &allocator->all_blocks[allocator->num_blocks++];
+```
+
+**Exact replacement (keep the file's blank-line style; the rest of the function from `// Split into two blocks at lower level` is unchanged):**
+
+```c
+    // CRITICAL: Save block index before any operations (realloc may move memory)
+    size_t block_index = block - allocator->all_blocks;
+
+    // Ensure block array capacity BEFORE unlinking: realloc invalidates
+    // every pointer including free-list links, so grow first, rebuild the
+    // lists from block state, then proceed with normal unlink/split/insert.
+    // Only needed when no recycled slot is available.
+    if (allocator->dead_blocks == NULL &&
+        allocator->num_blocks >= allocator->max_blocks) {
+        size_t new_max = allocator->max_blocks * 2;
+        buddy_block_t* new_blocks = (buddy_block_t*)realloc(allocator->all_blocks,
+                                                            new_max * sizeof(buddy_block_t));
+        if (!new_blocks) {
+            return NULL;  // Block is still linked and marked free; no corruption
+        }
+        allocator->all_blocks = new_blocks;
+        allocator->max_blocks = new_max;
+        buddy_rebuild_free_lists(allocator);
+        block = &allocator->all_blocks[block_index];
+    }
+
+    // Remove from current free list (using index to be safe)
+    block = &allocator->all_blocks[block_index];
+    if (block->prev) {
+        block->prev->next = block->next;
+    } else {
+        allocator->free_lists[block->level] = block->next;
+    }
+    if (block->next) {
+        block->next->prev = block->prev;
+    }
+
+    // Create buddy block: reuse a slot recycled by buddy_coalesce when
+    // available, otherwise append a new one.
+    buddy_block_t* buddy;
+    if (allocator->dead_blocks) {
+        buddy = allocator->dead_blocks;
+        allocator->dead_blocks = buddy->next;
+    } else {
+        buddy = &allocator->all_blocks[allocator->num_blocks++];
+    }
+```
+
+**Current code, `src/runtime/lgx_gpu_pool.c:399-401`:**
+
+```c
+        block->level++;
+        block->size = level_to_size(block->level);
+        buddy->is_free = false;  // Mark buddy as merged
+```
+
+**Exact replacement:**
+
+```c
+        block->level++;
+        block->size = level_to_size(block->level);
+        buddy->is_free = false;  // Mark buddy as merged
+        // Recycle the merged-away slot: push it on the dead-slot stack so
+        // buddy_split reuses it instead of growing all_blocks forever.
+        buddy->next = allocator->dead_blocks;
+        buddy->prev = NULL;
+        allocator->dead_blocks = buddy;
+```
+
+Invariants this relies on (verify by reading, do not add extra code):
+- Slots are pushed exactly once (each merge marks one distinct buddy dead; a dead slot has `is_free == false` and is never matched by any free-list or coalesce scan), and popped slots have every field overwritten by `buddy_split` before any later scan can see them.
+- `buddy_rebuild_free_lists` never wipes the stack: it runs only on the append path, which is only taken when `dead_blocks == NULL`.
+- `buddy_init`'s `memset` zeroes `dead_blocks`, so re-init needs no change.
+
+### B1x-b — Block-count accessor (test scaffolding)
+
+Add to `include/lgx/lgx_runtime_internal.h` after `lgx_gpu_pool_get_peak_usage` (line 296):
+
+```c
+size_t lgx_gpu_pool_block_count(lgx_gpu_memory_type_t type);
+```
+
+Add to `src/runtime/lgx_gpu_pool.c` after `lgx_gpu_pool_get_peak_usage` (end of file):
+
+```c
+/**
+ * Get the number of buddy-allocator slots (live and recycled) for a type.
+ * Test accessor; call only when no allocations are running concurrently.
+ */
+size_t lgx_gpu_pool_block_count(lgx_gpu_memory_type_t type) {
+    if (!g_gpu_pool.initialized || type >= LGX_GPU_MEMORY_TYPE_COUNT) {
+        return 0;
+    }
+    
+    if (!g_gpu_pool.memory_type_available[type]) {
+        return 0;
+    }
+    
+    return g_gpu_pool.allocators[type].num_blocks;
+}
+```
+
+### B1x-c — Regression test
+
+Add to `tests/phase0/test_gpu_buddy_allocator.c` (before `main`, following the file's harness: `[TEST]` heading, per-test pool init/shutdown, `TEST_ASSERT` counters):
+
+```c
+/* Repeated same-size alloc/free cycles must recycle merged-away block
+   slots. Without recycling every cycle appends new slots (18 per cycle
+   for 256 B) and num_blocks grows without bound, turning buddy_coalesce
+   into an O(num_blocks) scan per free. */
+static void test_block_slot_reuse(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device) {
+    printf("\n[TEST] block_slot_reuse\n");
+
+    lgx_result_t result = lgx_gpu_pool_init(instance, physical_device, device);
+    if (result != LGX_SUCCESS) {
+        printf("  ⚠ Skipping test (GPU pool init failed)\n");
+        return;
+    }
+
+    enum { CYCLES = 64 };
+
+    for (int cycle = 0; cycle < CYCLES; cycle++) {
+        lgx_gpu_allocation_t* alloc = lgx_gpu_alloc(256, 256, LGX_GPU_DEVICE_LOCAL);
+        if (!alloc) {
+            printf("  FAIL: 256B allocation %d failed\n", cycle);
+            break;
+        }
+        lgx_gpu_free(alloc);
+    }
+    size_t after_first = lgx_gpu_pool_block_count(LGX_GPU_DEVICE_LOCAL);
+
+    for (int cycle = 0; cycle < CYCLES; cycle++) {
+        lgx_gpu_allocation_t* alloc = lgx_gpu_alloc(256, 256, LGX_GPU_DEVICE_LOCAL);
+        if (!alloc) {
+            printf("  FAIL: 256B allocation %d failed (second round)\n", cycle);
+            break;
+        }
+        lgx_gpu_free(alloc);
+    }
+    size_t after_second = lgx_gpu_pool_block_count(LGX_GPU_DEVICE_LOCAL);
+
+    printf("  slots after round 1: %zu, after round 2: %zu\n",
+           after_first, after_second);
+    TEST_ASSERT(after_second == after_first,
+                "slot count stable across alloc/free rounds");
+    TEST_ASSERT(after_second <= 64, "slot count bounded (<= 64)");
+
+    lgx_gpu_pool_shutdown();
+    printf("  Test completed\n");
+}
+```
+
+Call it from `main` after `test_size_and_alignment_bounds(instance, physical_device, device);`:
+
+```c
+    test_block_slot_reuse(instance, physical_device, device);
+```
+
+**Verification (order matters):**
+1. Pre-fix on a scratch worktree at `f55a3b9` (the B1 commit): apply only B1x-b and B1x-c (accessor + test are scaffolding, not the fix). Build normally, run `test_gpu_buddy_allocator`: `test_block_slot_reuse` must fail — expect slot counts `1 + 18 * 64 = 1153` after round 1 and `2305` after round 2 (empirically confirmed growth is exactly 18 slots per cycle; B1 measured `num_blocks = 36001` at free #10000). Record the exact output in your report. Remove the worktree afterwards.
+2. Apply B1x-a on the branch; rebuild normal and ASan/UBSan: new test passes with stable slot counts; `test_gpu_performance` completes within the ctest 300 s timeout on this device host (record wall time in the report, not the commit); full `ctest -R test_gpu` green on this host; ASan clean, no LSan output.
+3. Fresh clone per AGENTS.md rule 2, same runs.
+
+**Commit message:**
+```
+fix(gpu): recycle merged-away buddy slots
+
+buddy_coalesce marked the merged-away buddy dead and nothing reused the
+slot; buddy_split appended unconditionally, so every split grew
+all_blocks by one slot. A same-size alloc/free cycle appends one slot
+per level it walks; with the free lists repaired in the previous commit
+this made num_blocks grow without bound and turned every free into an
+O(num_blocks) scan.
+
+Merged-away slots are now pushed on a dead-slot stack (intrusive through
+next) and buddy_split pops from it before appending. The stack is empty
+whenever the array is grown, because the append path is only taken when
+no dead slot exists, so buddy_rebuild_free_lists is unaffected.
+
+Verified: pre-fix the new test fails (slot count grows every round);
+post-fix it is stable across rounds, test_gpu_performance completes on a
+device host, and the ASan/UBSan run is clean. CI skips without a device,
+per existing convention.
 ```
 
 ---
