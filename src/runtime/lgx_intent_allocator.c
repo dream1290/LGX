@@ -267,7 +267,7 @@ void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent) {
     
     if (likely(intent->lifetime == LGX_LIFETIME_FRAME)) {
         // Frame-scoped allocation → Frame arena (MOST COMMON PATH)
-        ptr = lgx_frame_alloc_internal(intent->size, "unknown", 0);
+        ptr = lgx_frame_alloc(intent->size);
         
         // Thread-local statistics (no mutex) (Task 12.1.2)
         tls_intent_stats.frame_allocations++;
