@@ -228,7 +228,7 @@ uint64_t lgx_time_measure_overhead_ns(void) {
  * Configuration API implementation
  */
 lgx_runtime_config_t* lgx_config_create(void) {
-    lgx_runtime_config_t* config = malloc(sizeof(lgx_runtime_config_t));
+    lgx_runtime_config_t* config = calloc(1, sizeof(lgx_runtime_config_t));
     if (!config) {
         return NULL;
     }

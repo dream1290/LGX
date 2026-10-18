@@ -9,6 +9,7 @@ set(UNIT_TEST_SOURCES
     test_error_handler.c
     test_health_monitor.c
     test_resource_limits.c
+    test_config_init.c
     # test_memory_protection.c      # DISABLED: Compilation errors
 )
 
