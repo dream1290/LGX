@@ -1,8 +1,16 @@
 # LGX Remediation Plan Index
 
-**Created:** 2026-10-10 · **Revised:** 2026-10-11 (after Plan 00's measurements)
+**Created:** 2026-10-10 · **Revised:** 2026-10-18 (Plan 01 partially executed on main; completion re-homed)
 **Source:** `docs/AUDIT_REPORT.md`
 **Method:** Every plan below assumes Plan 00 has been merged. Plan 00 restores the ability to build, compile, measure, and gate. No other plan is trustworthy without it.
+
+---
+
+## Revision note — 2026-10-18
+
+Plan 01's measurement tasks were executed directly on `main` (`ceb7855`, `3abeb60`, `40a4721`, `b6c5ab7`, `bcd8b52`). That left `main` **not building** (header regression in `b6c5ab7`), swept 22 junk files into git (`bcd8b52`), and removed frame-arena statistics that tests still assert (`3abeb60`). A full re-investigation confirmed six Plan 01 defects, found four additional GPU buddy-allocator memory-safety defects, a config initialisation bug, and three small defects in modules.
+
+**`2026-10-18-phase1-completion.md` supersedes Plan 01.** It restores the baseline (A0–A4, C2), executes the correctness tasks with reproducing tests (B1–B8), and completes the arena measurement work under the disassembly-first discipline (D1–D4). Rev 2 incorporates the repository review response: A0 fixes `main` via three reverts on a branch (the build breaker is `b6c5ab7`, not `bcd8b52`), branch/PR workflow replaces direct-to-main commits, AGENTS.md working rules, CI hygiene guards (gitleaks, tracked-binary check), and the no-numbers-in-commit-messages rule for measurements. Status: **WRITTEN, NOT YET EXECUTED.**
 
 ---
 
@@ -30,7 +38,8 @@ Plans are ordered by dependency, not by severity. Severity ordering is preserved
 | Plan | Scope | Depends on | Blocks |
 |---|---|---|---|
 | **00 — Ground Truth** | Build, C++ header, benchmark methodology, test-integrity contract, CI gate | — | everything |
-| **01 — Correctness & Arena Perf** | Memory-safety defects, intent routing, non-Vulkan link, net timeout, **arena hot-path profile**, **unbiased workload** | 00 | 05, 06 |
+| **01 — Correctness & Arena Perf** | **superseded by `2026-10-18-phase1-completion.md`** (partially executed; see revision note) | 00 | 05, 06 |
+| **01b — Phase 1 Completion (2026-10-18)** | Baseline restore, 14 verified defects with reproducing tests, disassembly-first arena perf, claims table + ratio gate | 00 | 02, 03, 05, 06 |
 | **02 — Modules** | Threading flake, fiber bugs, graphics extension pointers, leak detector, health monitor | 00, 01 | 05 |
 | **03 — Test Recovery** | The 25 assert-only tests and 12 disabled tests | 00 | 05 |
 | **04 — Repository Truth** | Remaining doc reconciliation, the 8 unrepaired workflows, git history | 00 | 05 |
