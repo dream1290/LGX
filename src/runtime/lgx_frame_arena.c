@@ -196,7 +196,6 @@ static struct {
 static void* allocate_huge_page_arena(size_t size);
 static void free_huge_page_arena(void* ptr, size_t size);
 static void write_chrome_trace_event(const char* name, const char* phase, uint64_t timestamp_us, uint64_t duration_us, const char* category);
-static void record_profiler_alloc_event(size_t size, void* ptr);
 static void record_profiler_reset_event(uint32_t frame_index, size_t peak_usage);
 static bool grow_arena(lgx_frame_arena_t* arena, size_t new_capacity);  // Task 3.4.5.2.2
 static void update_rolling_average(lgx_frame_arena_t* arena);           // Task 3.4.5.2.4
@@ -620,10 +619,7 @@ allocation_succeeded:
         prefetch(arena->base + new_offset + CACHE_LINE_SIZE);
     }
     
-    // Profiler integration (Task 3.4.5.4.4)
-    record_profiler_alloc_event(size, ptr);
-    
-return ptr;
+    return ptr;
 }
 
 /**
@@ -1323,31 +1319,7 @@ static void write_chrome_trace_event(const char* name, const char* phase,
     fflush(g_frame_arena_state.chrome_trace_file);
 }
 
-/**
- * Record frame arena allocation event for profilers (internal helper)
- */
-static void record_profiler_alloc_event(size_t size, void* ptr) {
-    // Tracy integration
-    if (g_frame_arena_state.tracy_enabled) {
-        FRAME_ARENA_TRACY_ALLOC(ptr, size);
-    }
-    
-    // Optick integration
-    if (g_frame_arena_state.optick_enabled) {
-        FRAME_ARENA_OPTICK_TAG("alloc_size", size);
-    }
-    
-    // Chrome Tracing
-    if (g_frame_arena_state.chrome_trace_enabled) {
-        uint64_t timestamp_us = lgx_time_now_ns() / 1000;
-        char event_name[64];
-        snprintf(event_name, sizeof(event_name), "frame_alloc_%zu", size);
-        write_chrome_trace_event(event_name, "i", timestamp_us, 0, "frame_arena");
-    }
-    
-    // Suppress unused parameter warning when profilers are disabled
-    (void)ptr;
-}
+
 
 /**
  * Record frame reset event for profilers (internal helper)
