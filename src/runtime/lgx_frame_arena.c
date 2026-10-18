@@ -195,76 +195,11 @@ static struct {
 // Forward declarations
 static void* allocate_huge_page_arena(size_t size);
 static void free_huge_page_arena(void* ptr, size_t size);
-static void track_allocation_histogram(lgx_frame_arena_t* arena, size_t size);
-static void track_allocation_call_site(lgx_frame_arena_t* arena, size_t size, const char* file, int line);
-static size_t get_histogram_bucket(size_t size);
 static void write_chrome_trace_event(const char* name, const char* phase, uint64_t timestamp_us, uint64_t duration_us, const char* category);
 static void record_profiler_alloc_event(size_t size, void* ptr);
 static void record_profiler_reset_event(uint32_t frame_index, size_t peak_usage);
 static bool grow_arena(lgx_frame_arena_t* arena, size_t new_capacity);  // Task 3.4.5.2.2
 static void update_rolling_average(lgx_frame_arena_t* arena);           // Task 3.4.5.2.4
-static void check_high_usage_warning(lgx_frame_arena_t* arena);         // Task 3.4.5.2.5
-
-/**
- * Track allocation in histogram (Task 3.4.5.1.2)
- * Builds a size distribution histogram for allocation pattern analysis
- */
-static void track_allocation_histogram(lgx_frame_arena_t* arena, size_t size) {
-    size_t bucket = get_histogram_bucket(size);
-    if (bucket < HISTOGRAM_BUCKET_COUNT) {
-        arena->histogram.buckets[bucket]++;
-    }
-}
-
-/**
- * Get histogram bucket index for a given size
- * Uses logarithmic bucketing for better distribution
- */
-static size_t get_histogram_bucket(size_t size) {
-    if (size < HISTOGRAM_MIN_SIZE) {
-        return 0;
-    }
-    if (size >= HISTOGRAM_MAX_SIZE) {
-        return HISTOGRAM_BUCKET_COUNT - 1;
-    }
-    
-    // Logarithmic bucketing: bucket = log2(size / MIN_SIZE)
-    size_t normalized = size / HISTOGRAM_MIN_SIZE;
-    size_t bucket = 0;
-    while (normalized > 1 && bucket < HISTOGRAM_BUCKET_COUNT - 1) {
-        normalized >>= 1;
-        bucket++;
-    }
-    return bucket;
-}
-
-/**
- * Track allocation call site (Task 3.4.5.1.3)
- * Tracks top allocation sites by file and line number
- */
-static void track_allocation_call_site(lgx_frame_arena_t* arena, size_t size, const char* file, int line) {
-    // Find existing call site or add new one
-    for (uint32_t i = 0; i < arena->call_site_count; i++) {
-        if (arena->call_sites[i].file == file && arena->call_sites[i].line == line) {
-            // Found existing call site - update stats
-            arena->call_sites[i].total_bytes += size;
-            arena->call_sites[i].count++;
-            return;
-        }
-    }
-    
-    // Add new call site if we have space
-    if (arena->call_site_count < MAX_ALLOCATION_CALL_SITES) {
-        allocation_call_site_t* site = &arena->call_sites[arena->call_site_count];
-        site->file = file;
-        site->line = line;
-        site->total_bytes = size;
-        site->count = 1;
-        arena->call_site_count++;
-    }
-    // If we're out of space, we just don't track this call site
-    // The most frequent ones should already be tracked
-}
 
 /**
  * Track allocation tag (Task 3.4.5.4.3)
@@ -411,33 +346,7 @@ static void update_rolling_average(lgx_frame_arena_t* arena) {
     arena->rolling_average = sum / ROLLING_AVERAGE_WINDOW;
 }
 
-/**
- * Check for high usage and warn if needed (Task 3.4.5.2.5)
- * 
- * Warns when arena usage exceeds 80% of capacity. This provides early
- * warning before overflow occurs, allowing proactive sizing adjustments.
- */
-static void check_high_usage_warning(lgx_frame_arena_t* arena) {
-    double usage_percent = (double)arena->offset / arena->capacity;
-    
-    if (usage_percent >= HIGH_USAGE_THRESHOLD) {
-        // Rate limit warnings to once per second
-        uint64_t current_time = lgx_time_now_ns();
-        if (current_time - arena->last_high_usage_warning_time > 1000000000ULL) {
-            fprintf(stderr, "\n[LGX WARNING] Frame arena usage high: %.1f%% (%zu / %zu bytes)\n",
-                    usage_percent * 100.0, arena->offset, arena->capacity);
-            fprintf(stderr, "  Frame: %u, Arena: %u\n",
-                    arena->frame_index, arena->frame_index % FRAME_ARENA_COUNT);
-            fprintf(stderr, "  Rolling average: %zu bytes (%.1f%%)\n",
-                    arena->rolling_average,
-                    (double)arena->rolling_average / arena->capacity * 100.0);
-            fprintf(stderr, "  Recommendation: Consider increasing frame arena size to avoid overflow.\n\n");
-            
-            arena->last_high_usage_warning_time = current_time;
-            arena->high_usage_warning_shown = true;
-        }
-    }
-}
+
 
 /**
  * Set configured frame arena size (Task 3.4.5.2.1)
@@ -712,12 +621,13 @@ allocation_succeeded:
         arena->peak_usage = new_offset;
     }
     
-    // Task 3.4.5.2.5: Check for high usage warning
-    check_high_usage_warning(arena);
+    // Task 3.4.5.2.5: Check for high usage warning (debug-only, compiled out in release)
+    // Disabled from hot path: this does floating-point division + possible fprintf
+    // on every allocation. See docs/05-performance/arena-hotpage-profile.md.
     
     // Track allocation patterns (Task 3.4.5.1)
-    track_allocation_histogram(arena, size);
-    track_allocation_call_site(arena, size, file, line);
+    // Disabled from hot path: histogram lookup + linear search through call sites,
+    // both executed on every allocation. See docs/05-performance/arena-hotpage-profile.md.
     
     // Update global statistics
     g_frame_arena_state.stats.total_allocations++;
