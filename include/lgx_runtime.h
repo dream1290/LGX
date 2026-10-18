@@ -54,14 +54,7 @@ lgx_result_t lgx_alloc_validate_intent(void* ptr);  // Manually trigger validati
 extern "C++" {
 
 static inline void* lgx_alloc_frame(size_t size) {
-    lgx_allocation_intent_base_t intent;
-    intent.struct_size = sizeof(lgx_allocation_intent_base_t);
-    intent.size = size;
-    intent.access_pattern = LGX_ACCESS_SEQUENTIAL;
-    intent.lifetime = LGX_LIFETIME_FRAME;
-    intent.hint = LGX_HINT_CRITICAL_PATH;
-    intent.validation_policy = LGX_INTENT_TRUST;
-    return lgx_alloc_with_intent(&intent);
+    return lgx_frame_alloc_internal(size, "unknown", 0);
 }
 
 static inline void* lgx_alloc_level(size_t size) {
@@ -100,15 +93,7 @@ static inline void* lgx_alloc_gpu_shared(size_t size) {
 #else
 // C version with designated initializers
 static inline void* lgx_alloc_frame(size_t size) {
-    lgx_allocation_intent_base_t intent = {
-        .struct_size = sizeof(lgx_allocation_intent_base_t),
-        .size = size,
-        .access_pattern = LGX_ACCESS_SEQUENTIAL,
-        .lifetime = LGX_LIFETIME_FRAME,
-        .hint = LGX_HINT_CRITICAL_PATH,
-        .validation_policy = LGX_INTENT_TRUST
-    };
-    return lgx_alloc_with_intent(&intent);
+    return lgx_frame_alloc_internal(size, "unknown", 0);
 }
 
 static inline void* lgx_alloc_level(size_t size) {
