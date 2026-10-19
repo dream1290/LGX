@@ -89,7 +89,16 @@ is in
 ("Final measurement") and duplicately in
 [`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt);
 `scripts/verify_arena_ratios.sh` fails CI when a fresh run deviates from that
-snapshot or the size ladder grows non-linearly.
+snapshot or the size ladder grows non-linearly. What the gate checks, exactly:
+(1) always, a structural cliff on the fresh run itself - the 256B median must
+be at most 1.5x the 16B median; (2) only when the runner's host CPU matches
+the snapshot's recorded host and the machine is not loaded, fixed-factor bands
+of fresh-vs-snapshot medians: [0.6x, 1.5x] on the frame-arena 16/64/256B
+lines, [0.6x, 1.6x] on the mixed-size line, [0.5x, 2.5x] on the bump-pointer
+floor line. On a different host the band checks skip by design and only the
+cliff runs. It is a regression detector against the recorded run, not an
+absolute speed guarantee, and the absolute times on this page come from one
+specific commit's run, printed and linked below.
 
 | Claim | Status | Evidence (command) | Commit |
 |---|---|---|---|
