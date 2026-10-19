@@ -138,7 +138,10 @@ LGX_1.0 {
         # Hardware adapter (internal but needed by tests)
         lgx_hardware_adapter_init;
         lgx_hardware_adapter_shutdown;
+        lgx_hardware_adapter_has_huge_pages;
+        lgx_hardware_adapter_has_numa;
         lgx_hardware_adapter_has_gpu;
+        lgx_hardware_adapter_get_cpu_count;
         lgx_hardware_adapter_get_gpu_vendor;
         lgx_hardware_adapter_get_driver_version;
         lgx_hardware_adapter_get_status;
