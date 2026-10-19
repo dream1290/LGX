@@ -58,13 +58,13 @@ void test_gpu_detection(void) {
                         strcmp(vendor, "AMD/Intel") == 0 ||
                         strcmp(vendor, "Unknown") == 0);
     TEST_ASSERT(valid_vendor, "GPU vendor is a known value");
-    
-    // If GPU is available, vendor should not be "Unknown"
-    if (has_gpu) {
-        TEST_ASSERT(strcmp(vendor, "Unknown") != 0, 
-                   "GPU available implies vendor is detected");
-    }
-    
+
+    // A GPU node does not imply an identified vendor: a /dev/dri device whose
+    // PCI vendor id is outside the detection table legitimately reports
+    // "Unknown" (GitHub runners expose one; the old "GPU available implies
+    // vendor is detected" assertion failed there). The contracted value set
+    // above is the full assertion.
+
     // Driver version should not be empty
     TEST_ASSERT(strlen(driver) > 0, "Driver version is not empty");
     
