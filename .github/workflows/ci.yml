@@ -137,6 +137,16 @@ jobs:
       - name: Benchmark methodology gate
         run: scripts/verify_benchmark_methodology.sh
 
+      # Runs the built benchmark once, pinned, and compares its medians against
+      # the snapshot committed in docs/05-performance/arena-hotpath-profile.md
+      # plus one structural property: the size ladder must grow linearly
+      # (256B <= 1.5 * 16B). Bands are per-row-class and wide enough for
+      # recorded run-to-run noise; the ladder band is additionally narrow
+      # enough to catch the D2 regression state. Needs the Release build
+      # produced above.
+      - name: Arena ratio gate
+        run: scripts/verify_arena_ratios.sh build/benchmarks/benchmark_benchmark_allocation_throughput
+
       # Blocking, and safe to block. count_tests.sh exits 0 on a complete census
       # and non-zero only for real infrastructure faults: an unconfigured tree
       # (2), or a registered test that cannot be tied to any source (3). It

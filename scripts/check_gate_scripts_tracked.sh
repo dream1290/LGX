@@ -15,11 +15,14 @@
 # The gate scripts call this on startup. If any one of them is untracked, they
 # fail loudly instead of quietly losing their own enforcement.
 #
-# The four scripts that must stay tracked:
+# The scripts that must stay tracked:
 #   scripts/verify_test_integrity.sh        - the test-integrity gate itself
 #   scripts/count_tests.sh                  - the census it is measured against
 #   scripts/verify_benchmark_methodology.sh - fails if the benchmark stops
 #                                             measuring what it claims to
+#   scripts/verify_arena_ratios.sh          - fails if the arena regresses
+#                                             against its snapshot or grows
+#                                             non-linearly across its ladder
 #   scripts/check_gate_scripts_tracked.sh   - this script. It is in the list
 #                                             deliberately: a self-check that
 #                                             exempts itself is exactly the
@@ -54,6 +57,7 @@ else
         scripts/verify_test_integrity.sh
         scripts/count_tests.sh
         scripts/verify_benchmark_methodology.sh
+        scripts/verify_arena_ratios.sh
         scripts/check_gate_scripts_tracked.sh
     )
 fi

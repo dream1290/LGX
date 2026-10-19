@@ -10,8 +10,11 @@
 #   scripts/count_tests.sh                  the registered/verifying/incapable
 #                                           census the gate is measured against
 #   scripts/verify_benchmark_methodology.sh fails CI if the benchmark stops
-#                                           measuring what it claims to
-#   scripts/check_gate_scripts_tracked.sh   fails if any of the three above is
+#                                             measuring what it claims to
+#   scripts/verify_arena_ratios.sh          fails CI if the arena regresses
+#                                             against its snapshot or grows
+#                                             non-linearly across its ladder
+#   scripts/check_gate_scripts_tracked.sh   fails if any of the four above is
 #                                           untracked by git, itself included
 #
 # This file was rewritten once already, in task 5 of the ground-truth plan. All
@@ -185,11 +188,14 @@ Desktop.ini
 # ── Development scripts (user-specific), except the ones CI gates depend on ──
 # scripts/verify_benchmark_methodology.sh fails the build if the frame-arena
 # benchmark stops exercising lgx_frame_reset(), so it must be tracked.
+# scripts/verify_arena_ratios.sh fails the build if the arena regresses
+# against its committed snapshot or grows non-linearly across the size ladder.
 # scripts/verify_test_integrity.sh fails the build if a test cannot report
 # failure; scripts/count_tests.sh produces the census it is measured against;
-# scripts/check_gate_scripts_tracked.sh is what keeps all three tracked.
+# scripts/check_gate_scripts_tracked.sh is what keeps all of them tracked.
 /scripts/*
 !/scripts/verify_benchmark_methodology.sh
+!/scripts/verify_arena_ratios.sh
 !/scripts/verify_test_integrity.sh
 !/scripts/count_tests.sh
 !/scripts/check_gate_scripts_tracked.sh

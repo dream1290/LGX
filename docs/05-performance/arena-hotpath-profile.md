@@ -194,3 +194,39 @@ plain bump pointer by reasons the observer removals do not fully explain
 check and fallback machinery recorded in the D1 listing). Recorded
 honestly here and in D4's claims table; no further iteration without new
 evidence. The "200× faster than malloc" claim stays retracted.
+
+## Final measurement (2026-10-19)
+
+This is the snapshot `scripts/verify_arena_ratios.sh` parses. It quotes the
+D2/D3-final benchmark stdout verbatim (the machine-readable lines only; the
+full 11k-line run output was not committed, per the no-generated-output rule —
+the number-source lines below are complete and are what any consumer parses).
+The same block is appended, in the same format, to
+`benchmarks/baseline_frame_arena.txt`, which the README cites.
+
+```text
+host: Intel(R) Core(TM) Ultra 5 235U (14 CPUs, hybrid P/E-core), governor powersave, Linux 6.14.0-37-generic, gcc 13.3.0, cmake 3.28.3
+command: taskset -c 2 /tmp/opencode/lgx-release/benchmarks/benchmark_benchmark_allocation_throughput   # cwd /tmp/opencode, fresh Release tree
+binary commit at capture: fix/phase1-safety@f839501 (D3 tip)
+BENCH_AFFINITY cpu=2 status=pinned repeats=5 burst=64
+FLOOR_LINE bump_floor_16B median=81ns p99=83ns
+FRAME_RESET_PATTERN size=16B median=470ns p99=803ns
+FRAME_REPEATS size=16B n=5 min=460ns median=470ns max=471ns spread=2%
+FRAME_RESET_PATTERN size=64B median=454ns p99=800ns
+FRAME_REPEATS size=64B n=5 min=453ns median=454ns max=455ns spread=0%
+FRAME_RESET_PATTERN size=256B median=532ns p99=715ns
+FRAME_REPEATS size=256B n=5 min=529ns median=532ns max=534ns spread=1%
+FRAME_RESET_PATTERN size=1KB median=1021ns p99=1414ns
+FRAME_REPEATS size=1KB n=5 min=1020ns median=1021ns max=1024ns spread=0%
+FRAME_RESET_PATTERN size=4KB median=3645ns p99=4517ns
+FRAME_REPEATS size=4KB n=5 min=3644ns median=3645ns max=3646ns spread=0%
+MIXED_LINE median=80394ns p99=102681ns objects=64
+MALLOCMIXED_LINE median=70602ns p99=79306ns objects=64
+MIXED_RATIO arena_frame_ns=80394 malloc_ns=70602 ratio=1.139
+FRAME_RESET_STATUS resets=330000 failures=0 stderr=not_muted expected_resets=330000 sizes=5 repeats=5 iterations=10000
+```
+
+Cross-run context (medians of the 3 recorded post-D3 runs, taskset -c 2):
+`MIXED_LINE` 90806/90656/91801ns in the D3 record vs 80394ns here — the
+mixed row moves ±13% across invocations, which is why the ratio gate's
+mixed band is wide. Single-size rows moved <5%.
