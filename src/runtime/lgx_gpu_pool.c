@@ -751,6 +751,10 @@ lgx_result_t lgx_gpu_pool_init(VkInstance instance, VkPhysicalDevice physical_de
         g_gpu_pool.used_budget[i] = 0;
     }
     
+    // From here on, all failures are cleaned up by lgx_gpu_pool_shutdown(),
+    // which frees partial state, destroys the mutex, and clears this flag.
+    g_gpu_pool.initialized = true;
+    
     // Allocate Vulkan memory and initialize buddy allocators
     for (int i = 0; i < LGX_GPU_MEMORY_TYPE_COUNT; i++) {
         if (!g_gpu_pool.memory_type_available[i]) {
@@ -759,6 +763,18 @@ lgx_result_t lgx_gpu_pool_init(VkInstance instance, VkPhysicalDevice physical_de
         
         buddy_allocator_t* allocator = &g_gpu_pool.allocators[i];
         VkDeviceSize alloc_size = g_gpu_pool.total_budget[i];
+        
+        // Initialize buddy allocator FIRST: buddy_init() memsets the
+        // allocator struct, which would wipe memory/mapped_ptr if the
+        // Vulkan calls below ran first.
+        result = buddy_init(allocator, alloc_size);
+        if (result != LGX_SUCCESS) {
+            fprintf(stderr, "[LGX ERROR] Failed to initialize buddy allocator for type %d\n", i);
+            lgx_gpu_pool_shutdown();
+            return result;
+        }
+        allocator->memory = VK_NULL_HANDLE;
+        allocator->mapped_ptr = NULL;
         
         // Allocate Vulkan memory
         VkMemoryAllocateInfo alloc_info = {
@@ -770,8 +786,8 @@ lgx_result_t lgx_gpu_pool_init(VkInstance instance, VkPhysicalDevice physical_de
         VkResult vk_result = vkAllocateMemory(g_gpu_pool.device, &alloc_info, NULL, &allocator->memory);
         if (vk_result != VK_SUCCESS) {
             fprintf(stderr, "[LGX ERROR] Failed to allocate Vulkan memory for type %d: %d\n", i, vk_result);
+            allocator->memory = VK_NULL_HANDLE;
             lgx_gpu_pool_shutdown();
-            pthread_mutex_destroy(&g_gpu_pool.mutex);
             return LGX_ERROR_OUT_OF_MEMORY;
         }
         
@@ -785,18 +801,7 @@ lgx_result_t lgx_gpu_pool_init(VkInstance instance, VkPhysicalDevice physical_de
         } else {
             allocator->mapped_ptr = NULL;
         }
-        
-        // Initialize buddy allocator
-        result = buddy_init(allocator, alloc_size);
-        if (result != LGX_SUCCESS) {
-            fprintf(stderr, "[LGX ERROR] Failed to initialize buddy allocator for type %d\n", i);
-            lgx_gpu_pool_shutdown();
-            pthread_mutex_destroy(&g_gpu_pool.mutex);
-            return result;
-        }
     }
-    
-    g_gpu_pool.initialized = true;
     
     printf("[LGX INFO] GPU Memory Pool initialized\n");
     printf("  Device-local: %s (%llu MB)\n",
