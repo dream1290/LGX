@@ -31,6 +31,11 @@ LGX_1.0 {
         lgx_free;
         lgx_memory_stats;
         lgx_alloc_get_usage_stats;
+        lgx_memory_manager_init;
+        lgx_memory_manager_shutdown;
+        lgx_memory_manager_alloc;
+        lgx_memory_manager_free;
+        lgx_memory_manager_get_usage_stats;
         
         # Frame arena allocator (Month 1 - Specialized Allocators)
         lgx_frame_arena_init;

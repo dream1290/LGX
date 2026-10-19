@@ -141,6 +141,8 @@ typedef struct allocation_header {
   uint32_t magic;
   lgx_allocation_intent_base_t intent;
   uint64_t allocation_time;
+  void *user_ptr; /* the allocation's user pointer (Task B8c: the tracking
+                     slot address is not comparable to it) */
 } allocation_header_t;
 
 // Memory manager state
@@ -1792,8 +1794,7 @@ static void adapt_thread_cache(thread_cache_t* cache) {
 }
 */
 
-static void track_allocation(lgx_memory_manager_t *manager,
-                             void *ptr __attribute__((unused)), size_t size,
+static void track_allocation(lgx_memory_manager_t *manager, void *ptr, size_t size,
                              const lgx_allocation_intent_base_t *intent) {
   if (!intent)
     return;
@@ -1823,6 +1824,7 @@ static void track_allocation(lgx_memory_manager_t *manager,
   entry->magic = 0xDEADBEEF;
   entry->intent = *intent;
   entry->allocation_time = lgx_time_now_ns();
+  entry->user_ptr = ptr;
 
   pthread_mutex_unlock(&manager->intent_mutex);
 }
@@ -1908,7 +1910,7 @@ lgx_result_t lgx_memory_manager_get_usage_stats(lgx_memory_manager_t *manager,
 
   // Find the allocation in tracked allocations
   for (size_t i = 0; i < manager->tracked_count; i++) {
-    if ((void *)&manager->tracked_allocations[i] == ptr) {
+    if (manager->tracked_allocations[i].user_ptr == ptr) {
       allocation_header_t *entry = &manager->tracked_allocations[i];
 
       usage->struct_size = sizeof(lgx_allocation_usage_t);
@@ -1958,7 +1960,7 @@ static void untrack_allocation(lgx_memory_manager_t *manager, void *ptr) {
 
   // Find and remove tracking entry
   for (size_t i = 0; i < manager->tracked_count; i++) {
-    if ((void *)&manager->tracked_allocations[i] == ptr) {
+    if (manager->tracked_allocations[i].user_ptr == ptr) {
       // Move last entry to this position
       if (i < manager->tracked_count - 1) {
         manager->tracked_allocations[i] =
