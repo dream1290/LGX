@@ -338,6 +338,12 @@ foreach(test_file ${PHASE0_TESTS})
     if(${test_name} IN_LIST PHASE0_TESTS_EXCLUDED)
         continue()
     endif()
+    # GPU tests include <vulkan/vulkan.h> unguarded; without Vulkan they
+    # cannot compile (Task B6). test_gpu_detection and test_intent_allocator
+    # keep their Vulkan use behind #if HAVE_VULKAN and stay registered.
+    if(NOT Vulkan_FOUND AND test_name MATCHES "^test_gpu_(buddy_allocator|capability|performance|pool)$")
+        continue()
+    endif()
     add_executable(${test_name} ${test_file})
     target_link_libraries(${test_name} lgx_runtime m)
     

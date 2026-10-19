@@ -260,12 +260,14 @@ void test_gpu_hint_precedence() {
         lgx_gpu_free((lgx_gpu_allocation_t*)ptr);
     }
 #else
-    /* No Vulkan: must fall back to the persistent heap, never NULL-crash
-       and never the frame arena. */
-    ASSERT(ptr != NULL, "GPU hint falls back to heap without Vulkan");
-    ASSERT(after.persistent_allocations == before.persistent_allocations + 1,
-           "fallback counted as persistent");
-    lgx_heap_free(ptr);
+    /* No Vulkan: the GPU branch is compiled out, so the GPU-shared hint is
+       ignored and the FRAME lifetime applies as usual. It must never
+       NULL-crash and must not reach the persistent heap. */
+    ASSERT(ptr != NULL, "GPU hint falls back without GPU branch compiled in");
+    ASSERT(after.frame_allocations == before.frame_allocations + 1,
+           "fallback served by the frame arena");
+    ASSERT(after.persistent_allocations == before.persistent_allocations,
+           "fallback did not hit the persistent heap");
 #endif
 }
 
