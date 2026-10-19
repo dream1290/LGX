@@ -139,6 +139,8 @@ typedef enum lgx_log_subsystem {
     LGX_SUBSYSTEM_LIFECYCLE,      // Lifecycle management
     LGX_SUBSYSTEM_HARDWARE,       // Hardware adaptation
     LGX_SUBSYSTEM_SECURITY,       // Security operations
+    LGX_SUBSYSTEM_NET,            // Networking (appended in Task B7; never
+                                  // reorder existing values -- ABI)
     LGX_SUBSYSTEM_COUNT           // Number of subsystems
 } lgx_log_subsystem_t;
 
