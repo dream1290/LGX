@@ -56,6 +56,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Plan B6 Part 4: machine guards, not pre-commit hooks (local hooks are
+      # skippable; the merged-away bcd8b52 junk sweep shipped 22 files with
+      # nothing noticing). A secrets scan and mechanical rejections for tracked
+      # binaries and oversized files make that class of commit fail CI
+      # regardless of who makes it. gitleaks needs no license key on public
+      # repositories; a private repo needs the owner (not the agent) to set
+      # GITLEAKS_LICENSE.
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Reject tracked binaries and oversized files
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            [ -f "$f" ] || continue
+            if [ "$(head -c 4 "$f" | od -An -tx1 | tr -d ' \n')" = "7f454c46" ]; then
+              echo "ELF binary tracked: $f"; fail=1
+            fi
+            size=$(stat -c%s "$f")
+            if [ "$size" -gt 5242880 ]; then
+              echo "File larger than 5 MB tracked: $f ($size bytes)"; fail=1
+            fi
+          done < <(git ls-files)
+          exit $fail
+
       # libvulkan-dev is required in this job so this job and no-vulkan
       # measure different configurations on purpose (with and without
       # Vulkan). HAVE_VULKAN guards (Plan 01 A, Tasks B5/B6) keep the
