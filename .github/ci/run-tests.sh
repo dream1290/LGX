@@ -236,8 +236,8 @@ if [ "$unlisted" -gt 0 ]; then
         # below prints the block from a target Start until the next one.
         awk -v t="$t" '
             index($0, "    Start ") == 1 {
-                name = substr($0, 5)
-                sub(/^[0-9]+: /, "", name)
+                name = substr($0, 11)      # drop the four-space "    Start " prefix
+                sub(/^[0-9]+: /, "", name) # drop "N: "
                 in_target = (name == t)
             }
             in_target { print }
