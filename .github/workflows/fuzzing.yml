@@ -66,13 +66,13 @@ jobs:
     
     - name: Upload crashes
       if: steps.check_crashes.outputs.CRASHES_FOUND == 'true'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: crashes-${{ matrix.target }}
         path: tests/fuzzing/crash-*
     
     - name: Upload corpus
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: corpus-${{ matrix.target }}
         path: tests/fuzzing/corpus_${{ matrix.target }}
@@ -139,7 +139,7 @@ jobs:
         fi
     
     - name: Upload findings
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: afl-findings-${{ matrix.target }}
         path: tests/fuzzing/findings_${{ matrix.target }}
