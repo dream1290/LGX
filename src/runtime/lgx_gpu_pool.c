@@ -657,41 +657,35 @@ static lgx_result_t detect_memory_types(void) {
 
 /**
  * Query GPU memory budget limits
+ *
+ * Budgets derive from VK heap sizes (core 1.0 path). The core-1.1 entrypoint
+ * vkGetPhysicalDeviceMemoryProperties2 (real heapBudget reporting) is not
+ * used here by design: the pool is handed an instance created by the caller
+ * and has no way to learn that instance's API version. On Ubuntu 22.04's
+ * loader (libvulkan 1.3.204) a Vulkan 1.0 instance plus either a direct
+ * link-time call or a vkGetInstanceProcAddr-fetched pointer to that 1.1
+ * entrypoint resolves into a NULL dispatch slot and SIGSEGVs (PC 0). That
+ * crashed all four GPU-adjacent tests on the 22.04 GPU CI runners with
+ * lavapipe, while the same call were fine on the 24.04 loader. Rather than
+ * gate an unobservable instance version, budgets stay heap-size based and
+ * the 80% capping applies to heap size; bringing back memory-budget
+ * reporting needs an instance-version-annotated init surface first.
  */
 static lgx_result_t query_memory_budget(void) {
-    // Check if budget extension is available
-    VkPhysicalDeviceMemoryBudgetPropertiesEXT budget_props = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_BUDGET_PROPERTIES_EXT,
-        .pNext = NULL
-    };
-    
-    VkPhysicalDeviceMemoryProperties2 memory_props2 = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2,
-        .pNext = &budget_props
-    };
-    
-    // Try to get budget information (may not be supported)
-    vkGetPhysicalDeviceMemoryProperties2(g_gpu_pool.physical_device, &memory_props2);
-    
-    // Adjust budgets based on actual available memory
     for (int i = 0; i < LGX_GPU_MEMORY_TYPE_COUNT; i++) {
         if (g_gpu_pool.memory_type_available[i]) {
             uint32_t heap_index = g_gpu_pool.memory_properties.memoryTypes[
                 g_gpu_pool.memory_type_indices[i]
             ].heapIndex;
-            
+
             VkDeviceSize heap_size = g_gpu_pool.memory_properties.memoryHeaps[heap_index].size;
-            VkDeviceSize heap_budget = budget_props.heapBudget[heap_index];
-            
-            // Use budget if available, otherwise use heap size
-            VkDeviceSize available = (heap_budget > 0) ? heap_budget : heap_size;
-            
-            // Cap our budget to 80% of available to leave room for other allocations
-            VkDeviceSize max_budget = (VkDeviceSize)(available * 0.8);
-            
+
+            // Cap our budget to 80% of the heap to leave room for other allocations
+            VkDeviceSize max_budget = (VkDeviceSize)(heap_size * 0.8);
+
             if (g_gpu_pool.total_budget[i] > max_budget) {
                 fprintf(stderr, "[LGX INFO] Capping memory type %d budget from %llu MB to %llu MB\n",
-                       i, 
+                       i,
                        (unsigned long long)(g_gpu_pool.total_budget[i] / (1024 * 1024)),
                        (unsigned long long)(max_budget / (1024 * 1024)));
                 g_gpu_pool.total_budget[i] = max_budget;
