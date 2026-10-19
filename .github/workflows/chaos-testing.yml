@@ -33,7 +33,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: chaos-memory-results
         path: build/test_results_memory.json
@@ -63,7 +63,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: chaos-latency-results
         path: build/test_results_latency.json
@@ -93,7 +93,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: chaos-io-results
         path: build/test_results_io.json
@@ -123,7 +123,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: chaos-combined-results
         path: build/test_results_combined.json
