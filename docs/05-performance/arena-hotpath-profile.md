@@ -91,5 +91,85 @@ keep them is recorded here and is re-justified by the D2 benchmark deltas
 
 ## Benchmark section (D2: per-change record)
 
-Filled per D2 step, each with the exact commands (both before and after),
-the raw per-run prints, run-to-run spread, and the keep/revert verdict.
+Methodology for every row: `taskset -c 2` (verified the binary pins itself to
+CPU 2 via `BENCH_AFFINITY cpu=2`), 3 runs per state, median-of-3 of the
+`FRAME_RESET_PATTERN` medians. The binary is
+`/tmp/opencode/lgx-release/benchmarks/benchmark_benchmark_allocation_throughput`
+(CMake names it `benchmark_benchmark_<source>`).
+
+**Baseline (pre-D2, stderr still unmuted code present + mute workaround
+in harness):**
+
+```text
+taskset -c 2 ./benchmark_benchmark_allocation_throughput   # 3x, 2026-10-19
+FRAME_RESET_PATTERN size=16B  median=770ns (768..772)
+FRAME_RESET_PATTERN size=64B  median=741ns (736..741)
+FRAME_RESET_PATTERN size=256B median=810ns (801..814)
+FRAME_RESET_PATTERN size=1KB  median=1307ns
+FRAME_RESET_PATTERN size=4KB  median=3889ns
+FLOOR_LINE bump_floor_16B median=82ns   (81..154, first run cold)
+FLOOR_LINE bump_floor_64B median=85ns
+FLOOR_LINE bump_floor_256B median=153ns
+```
+Run spread 0.5–2%; the baseline's absolute numbers remained invocation-
+dependent because the runtime printed to the caller's stderr (that is the
+defect D2-1 fixes).
+
+**D2-1 (gate reset-frequency warnings behind `LGX_DEBUG_BUILD`; remove the
+harness stderr-mute workaround):** kept.
+
+```text
+taskset -c 2 ./benchmark_benchmark_allocation_throughput   # 3x, post-D2-1
+FRAME_RESET_PATTERN size=16B  median=493ns (491..493)
+FRAME_RESET_PATTERN size=64B  median=476ns (475..476)
+FRAME_RESET_PATTERN size=256B median=531ns (529..539)
+FRAME_RESET_PATTERN size=1KB  median=1014ns
+FRAME_RESET_PATTERN size=4KB  median=3669ns
+```
+Delta far outside run spread at every size; the invocation-dependence is
+gone (stderr content is now a caller property, the timing path is quiet).
+`verify_benchmark_methodology.sh` updated: it now FAILS if any stderr-mute
+call exists in the harness (the runtime owns diagnostics gating; a mute
+would hide future debug output and re-introduce invocation dependence).
+
+**D2-2 (O(1) rolling-average insert instead of the 60-iteration loop):
+kept.** Semantics preserved: eviction of the outgoing sample, insertion of
+the incoming one, same division-by-window once per reset; zeroed on arena
+init. `test_frame_arena_polish` green after the change.
+
+```text
+taskset -c 2 ./benchmark_benchmark_allocation_throughput   # 3x, post-D2-2
+FRAME_RESET_PATTERN size=16B  median=468ns (459..469)
+FRAME_RESET_PATTERN size=64B  median=453ns (452..458)
+FRAME_RESET_PATTERN size=256B median=522ns (522..527)
+FRAME_RESET_PATTERN size=1KB  median=1016ns (1004..1017)
+FRAME_RESET_PATTERN size=4KB  median=3643ns (3622..3646)
+```
+
+**D2-3 (per-arena counters on the alloc success path): kept, measured.**
+Throwaway build with the counter stores neutralized on the alloc success
+path measured 432/441ns (16B), 426/440ns (64B), 487/497ns (256B) — a
+consistent ~±5–6% drop at 16B (≈30ns), above run spread. Decision: KEEP
+(option a) — the counters are public API (`lgx_frame_get_stats`,
+`lgx_frame_arena_print_report`, health monitor consumption), and D2-3
+forbids deleting asserted behaviour without changing tests first. The
+honest note: eliminating them would buy ≈30ns at 16B; that difference is
+smaller than the machine's full-run variance at 4KB and does not change
+any ratio conclusion below. Revisit only with a config-flag design.
+
+**D2-4 (`record_profiler_reset_event`): no action, evidenced.** The D2
+disassembly of `lgx_frame_reset` (same Release tree) shows the helper
+fully inlined: the only thing left of it on the reset path are the three
+flag tests (`cmpb`s near `c1bd`/`c1e8`), and profiler calls
+(`lgx_time_now_ns` + `write_chrome_trace_event` at `c2c0`/`c2e7`) are
+reached only when a profiler is enabled. No out-of-line call exists.
+
+**Stop-rule verdict (D2):** after D2-1/D2-2,
+`lgx_frame_16B median 468ns` vs `bump_floor_16B median 82ns` = **>2×
+ratio (5.7×)**. Per the Plan 01 stop rule the arena is slower than a
+plain bump pointer by reasons the observer removals do not fully explain
+(the measured counter cost is ~30ns of the ~386ns gap; the remaining
+~350ns sits in the per-thread arena indexing, alignment math, bounds
+check and fallback machinery recorded in the D1 listing). Recorded
+honestly here and in D4's claims table; no further iteration without new
+evidence. The "200× faster than malloc" claim stays retracted.
