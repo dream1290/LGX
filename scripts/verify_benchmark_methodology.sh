@@ -91,6 +91,22 @@ frame_run_line="$(printf '%s\n' "$CODE" | grep -nE 'benchmark_run[[:space:]]*\([
 [ -n "$frame_run_line" ] || fail "$BENCH does not run the frame benchmark (bench_lgx_frame)" \
     "The methodology gate needs the timed frame benchmark present."
 
+# 3b. The mixed-size, many-live-objects scenario (Task D3) must stay present:
+#     the single-size ladder is malloc's best case, and the D3 MIXED_LINE /
+#     MALLOCMIXED_LINE / MIXED_RATIO rows are the ones the mixed-claims table
+#     cites. Emission lines and the bench functions are all required.
+grep -q "MIXED_LINE" "$BENCH" || fail "$BENCH does not emit MIXED_LINE" \
+    "The mixed-size scenario (70/20/10 small/medium/large, 64 live objects)" \
+    "is the honest frame-shaped workload; its absence would let gates" \
+    "run only on the single-size pattern."
+grep -q "MALLOCMIXED_LINE" "$BENCH" || fail "$BENCH does not emit MALLOCMIXED_LINE" \
+    "The malloc comparator row of the same scenario, same process, same run." \
+grep -q "MIXED_RATIO" "$BENCH" || fail "$BENCH does not emit MIXED_RATIO" \
+    "The same-run arena/malloc ratio row."
+mixed_frame_line="$(printf '%s\n' "$CODE" | grep -nE 'benchmark_run[[:space:]]*\([^;]*bench_lgx_frame_mixed' | head -1 | cut -d: -f1 || true)"
+[ -n "$mixed_frame_line" ] || fail "$BENCH does not run the mixed frame benchmark (bench_lgx_frame_mixed)" \
+    "A MIXED_LINE row without the timed call is decoration."
+
 # 4. The reset result is compared against LGX_SUCCESS, on the call line or
 #    within the next two lines (for the `rc = lgx_frame_reset(); if (rc != ...)`
 #    shape).

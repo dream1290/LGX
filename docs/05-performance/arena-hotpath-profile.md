@@ -164,6 +164,27 @@ flag tests (`cmpb`s near `c1bd`/`c1e8`), and profiler calls
 (`lgx_time_now_ns` + `write_chrome_trace_event` at `c2c0`/`c2e7`) are
 reached only when a profiler is enabled. No out-of-line call exists.
 
+**D3 (MIXED_LINE: 64 mixed-size live objects per frame):** measured; the
+ratio is a same-run, same-process comparison. Recorded 2026-10-19,
+`taskset -c 2`:
+
+```text
+run1  MIXED_LINE median=90806ns p99=124811ns   MALLOCMIXED median=71470ns   ratio=1.271
+run2  MIXED_LINE median=90656ns p99=123726ns   MALLOCMIXED median=70577ns   ratio=1.284
+run3  MIXED_LINE median=91801ns p99=132074ns   MALLOCMIXED median=78423ns   ratio=1.171
+MIXED_RATIO arena_frame_ns=90806 malloc_ns=71470 ratio=1.271 (median of 3 runs)
+FRAME_RESET_STATUS resets=330000 failures=0 expected_resets=330000
+```
+
+Honest negative: for the game-frame-shaped workload the arena is ~1.27×
+SLOWER than glibc malloc. The 10% large-object band (0.125–1 MB, ~3.5 MB
+touched per frame) dominates: glibc serves large sizes via mmap-backed
+allocations and free() drops pages without walking them, while both
+paths here must actually touch every cache line of the live objects.
+The arena's advantage is the free() elision of many small objects, which
+the same run's small-size rows still show. This ratio is the number the
+README must quote; it does not support a blanket speed claim.
+
 **Stop-rule verdict (D2):** after D2-1/D2-2,
 `lgx_frame_16B median 468ns` vs `bump_floor_16B median 82ns` = **>2×
 ratio (5.7×)**. Per the Plan 01 stop rule the arena is slower than a

@@ -277,6 +277,91 @@ static void bench_lgx_frame(void* ctx) {
      * reclaiming the whole frame is included in the measured interval. */
 }
 
+/*
+ * ── MIXED_LINE scenario (Task D3) ───────────────────────────────────────────
+ *
+ * The single-size tight loop above is glibc malloc's best case; a game frame
+ * allocates mixed sizes and keeps objects live. One "frame" here:
+ *
+ *   - 64 objects, distribution 70/20/10 across small/medium/large:
+ *       44 small   from the fixed list {16,32,48,64,96,128,256}
+ *       13 medium  1..8 KB
+ *        7 large   0.125..1 MB
+ *   - every object is touched once per cache line (live, touched memory),
+ *     all 64 stay live until the reclamation point, which for the arena is
+ *     lgx_frame_reset() (its cost is inside the measured interval, exactly
+ *     like the rows above) and for malloc is the reverse-order free loop.
+ *   - both allocators do the same work in the same process on the same
+ *     pinned CPU, so the ratio is computed from one binary, same machine,
+ *     same run.
+ */
+#define MIXED_OBJECTS 64
+#define MIXED_SMALL_COUNT 44          /* 70% */
+#define MIXED_MEDIUM_COUNT 13         /* 20% */
+#define MIXED_LARGE_COUNT 7           /* 10% */
+
+static size_t mixed_sizes[MIXED_OBJECTS];
+
+static void mixed_scenario_init(void) {
+    static const size_t small_list[] = {16, 32, 48, 64, 96, 128, 256};
+    int i = 0;
+    for (int j = 0; i < MIXED_SMALL_COUNT; i++, j++) {
+        mixed_sizes[i] = small_list[j % 7];
+    }
+    for (int j = 0; i - MIXED_SMALL_COUNT < MIXED_MEDIUM_COUNT; i++, j++) {
+        mixed_sizes[i] = (size_t)1024 * (1 + (j % 8));
+    }
+    for (int j = 0; i < MIXED_OBJECTS; i++, j++) {
+        mixed_sizes[i] = (size_t)64 * 1024 + (size_t)147456 * (j % 7);
+    }
+}
+
+static void mixed_touch_one_byte_per_line(void* p, size_t size) {
+    uint8_t* bytes = (uint8_t*)p;
+    for (size_t off = 0; off < size; off += 64) {
+        bytes[off] = (uint8_t)off;
+    }
+    TOUCH(p);
+}
+
+static void bench_lgx_frame_mixed(void* ctx) {
+    (void)ctx;
+
+    if (lgx_frame_reset() != LGX_SUCCESS) {
+        g_frame_reset_failures++;
+    }
+    g_frame_resets++;
+
+    for (int i = 0; i < MIXED_OBJECTS; i++) {
+        void* ptr = lgx_alloc_frame(mixed_sizes[i]);
+        if (ptr) {
+            mixed_touch_one_byte_per_line(ptr, mixed_sizes[i]);
+        }
+    }
+    /* The reset happens at the top of the next call: the reclaim cost is in
+     * the measured interval, matching the single-size frame rows. */
+}
+
+static void bench_malloc_mixed(void* ctx) {
+    (void)ctx;
+    void* ptrs[MIXED_OBJECTS];
+
+    for (int i = 0; i < MIXED_OBJECTS; i++) {
+        ptrs[i] = malloc(mixed_sizes[i]);
+        if (ptrs[i]) {
+            mixed_touch_one_byte_per_line(ptrs[i], mixed_sizes[i]);
+        }
+    }
+    /* Live until reclamation: free in reverse order, cost of the free loop
+     * included in the measured interval. */
+    for (int i = MIXED_OBJECTS - 1; i >= 0; i--) {
+        if (ptrs[i]) {
+            free(ptrs[i]);
+        }
+    }
+}
+/* ─────────────────────────── end MIXED_LINE scenario ─────────────────────── */
+
 static void bench_lgx_persistent(void* ctx) {
     alloc_context_t* actx = (alloc_context_t*)ctx;
     void* ptr = lgx_alloc_persistent(actx->size);
@@ -421,6 +506,58 @@ int main(void) {
         result_count++;
     }
     
+    /* MIXED_LINE scenario (Task D3): runs after the size ladder so the CSV
+     * rows above stay in their original order. */
+    mixed_scenario_init();
+    {
+        printf("\nMIXED scenario: 64 objects/frame, 70%% small {16..256B}, "
+               "20%% medium 1..8KB, 10%% large 128KB..1MB\n");
+        /* Median-of-FRAME_REPEATS machinery, rows emitted in the same provenance
+         * format as the size ladder (D3). */
+        benchmark_result_t mixed_frame_reps[FRAME_REPEATS];
+        char mixed_name[256];
+        snprintf(mixed_name, sizeof(mixed_name), "lgx_frame_mixed_64obj");
+        for (int r = 0; r < FRAME_REPEATS; r++) {
+            mixed_frame_reps[r] = benchmark_run(mixed_name, bench_lgx_frame_mixed, NULL,
+                                                FRAME_ITERATIONS, FRAME_WARMUP);
+        }
+        for (int a = 1; a < FRAME_REPEATS; a++) {
+            benchmark_result_t key = mixed_frame_reps[a];
+            int b = a - 1;
+            while (b >= 0 && mixed_frame_reps[b].median_ns > key.median_ns) {
+                mixed_frame_reps[b + 1] = mixed_frame_reps[b];
+                b--;
+            }
+            mixed_frame_reps[b + 1] = key;
+        }
+        const benchmark_result_t* mf = &mixed_frame_reps[FRAME_REPEATS / 2];
+
+        benchmark_result_t mixed_malloc_reps[FRAME_REPEATS];
+        snprintf(mixed_name, sizeof(mixed_name), "malloc_mixed_64obj");
+        for (int r = 0; r < FRAME_REPEATS; r++) {
+            mixed_malloc_reps[r] = benchmark_run(mixed_name, bench_malloc_mixed, NULL,
+                                                 FRAME_ITERATIONS, FRAME_WARMUP);
+        }
+        for (int a = 1; a < FRAME_REPEATS; a++) {
+            benchmark_result_t key = mixed_malloc_reps[a];
+            int b = a - 1;
+            while (b >= 0 && mixed_malloc_reps[b].median_ns > key.median_ns) {
+                mixed_malloc_reps[b + 1] = mixed_malloc_reps[b];
+                b--;
+            }
+            mixed_malloc_reps[b + 1] = key;
+        }
+        const benchmark_result_t* mm = &mixed_malloc_reps[FRAME_REPEATS / 2];
+
+        printf("MIXED_LINE median=%.0fns p99=%.0fns objects=%d\n",
+               mf->median_ns, mf->p99_ns, MIXED_OBJECTS);
+        printf("MALLOCMIXED_LINE median=%.0fns p99=%.0fns objects=%d\n",
+               mm->median_ns, mm->p99_ns, MIXED_OBJECTS);
+        printf("MIXED_RATIO arena_frame_ns=%.0f malloc_ns=%.0f ratio=%.3f\n",
+               mf->median_ns, mm->median_ns,
+               mm->median_ns > 0.0 ? mf->median_ns / mm->median_ns : 0.0);
+    }
+
     // Save results
     benchmark_save_results("benchmark_allocation_throughput.csv", results, result_count);
     
@@ -437,8 +574,8 @@ int main(void) {
            " expected_resets=%llu sizes=%d repeats=%d iterations=%u\n",
            (unsigned long long)g_frame_resets,
            (unsigned long long)g_frame_reset_failures,
-           (unsigned long long)((uint64_t)num_sizes * FRAME_REPEATS
-                                * (FRAME_ITERATIONS + FRAME_WARMUP)),
+           (unsigned long long)((uint64_t)(num_sizes + 1) * FRAME_REPEATS
+                                 * (FRAME_ITERATIONS + FRAME_WARMUP)),
            (int)num_sizes, FRAME_REPEATS,
            (unsigned)FRAME_ITERATIONS);
     if (g_frame_reset_failures > 0) {
