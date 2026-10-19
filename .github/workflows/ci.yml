@@ -93,17 +93,20 @@ jobs:
           done < <(git ls-files)
           exit $fail
 
-      # libvulkan-dev is required in this job so this job and no-vulkan
-      # measure different configurations on purpose (with and without
-      # Vulkan). HAVE_VULKAN guards (Plan 01 A, Tasks B5/B6) keep the
-      # library linking and the GPU test sources out of the build when
-      # CMake does not find Vulkan.
+      # libvulkan-dev gives the loader and headers; mesa-vulkan-drivers gives
+      # the runner a device (lavapipe, the same software device this suite is
+      # developed and verified against locally). Without it the GPU/graphics
+      # tests are registered (Vulkan_FOUND is true) but fail at runtime for
+      # want of any physical device -- measured on PR #1's first CI runs:
+      # test_gpu_capability, test_gpu_detection, graphics_test_basic.
+      # The no-vulkan job stays deliberately deviceless and headerless.
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake pkg-config \
-            libnuma-dev libjemalloc-dev libasound2-dev libvulkan-dev
+            libnuma-dev libjemalloc-dev libasound2-dev libvulkan-dev \
+            mesa-vulkan-drivers
 
       # ubuntu-22.04 rather than ubuntu-latest on purpose: it is what the
       # previous workflow's primary jobs ran on, so this is the one environment
@@ -299,13 +302,16 @@ jobs:
       # no-vulkan job measure different environments on purpose. The library
       # links either way since the HAVE_VULKAN guards (Plan 01 A, Tasks
       # B5/B6), but the GPU test behaviour under sanitizers is what this job
-      # covers, so install the headers.
+      # covers, so install the headers. mesa-vulkan-drivers gives the runner
+      # a lavapipe device for the same reason as the build-and-test job; the
+      # GPU tests fail at runtime on a header-only environment.
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake pkg-config \
-            libnuma-dev libjemalloc-dev libasound2-dev libvulkan-dev
+            libnuma-dev libjemalloc-dev libasound2-dev libvulkan-dev \
+            mesa-vulkan-drivers
 
       - name: Configure (Debug; sanitizers come from CMAKE_C_FLAGS_DEBUG)
         run: cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug
