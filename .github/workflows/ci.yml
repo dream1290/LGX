@@ -55,6 +55,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        # gitleaks-action (first step after checkout) scans a commit range, so
+        # it needs the full history: with the default fetch-depth=1 the range
+        # can contain commits the shallow clone cannot resolve, git writes a
+        # warning to stderr, and gitleaks 8.24 aborts with
+        # "failed to scan Git repository error='stderr is not empty'" with
+        # zero SARIF results (measured on PR #1's first CI run; the identical
+        # command over the same range on the full local clone is clean:
+        # 29 commits, no leaks).
+        with:
+          fetch-depth: 0
 
       # Plan B6 Part 4: machine guards, not pre-commit hooks (local hooks are
       # skippable; the merged-away bcd8b52 junk sweep shipped 22 files with
