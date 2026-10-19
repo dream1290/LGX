@@ -129,26 +129,26 @@ plainly at what latency.
 `-Wall -Wextra -Werror`, and the public header compiles and links from both C11
 and C++17.
 
-Honest inventory of what is and isn't done:
+Honest inventory of what is and isn't done (census: fresh clone, 2026-10-19,
+`scripts/count_tests.sh build`):
 
 | | |
 |---|---|
 | Clean build, no warnings | ✅ |
 | C++ consumability gate | ✅ |
-| 76 registered tests | ✅ — but see below |
-| Tests that can actually fail | **26 of 77 registered tests cannot report failure** |
-| Memory safety | ❌ 3 known defects, tracked in [Plan 01](docs/superpowers/plans/README.md) |
-| CI | ✅ 3 jobs on every push |
+| 82 registered tests / 81/82 pass in RelWithDebInfo | ✅ — the 1 failure is the known `test_telemetry_anonymization` NDEBUG-only assert gap (allowlist) |
+| Tests that can actually fail | **26 of 82 registered tests cannot report failure** (NDEBUG assert-only; Plan 03's backlog) |
+| Memory safety | ✅ the 14 defects from the completion plan are fixed on `fix/phase1-safety` (GPU pool ×4 + intent routing, frame-arena growth, chaos self-deadlock, net recv timeout, leak-detector init, adapter status, usage stats), each with a test that failed before the fix |
+| CI | ✅ 3 jobs on every push (build-and-test incl. the arena ratio gate, asan-ubsan, no-vulkan) |
 
 The 26 are tests whose only failure mechanism is `assert()`, which
 `-DNDEBUG` compiles out of every Release build. We would rather tell you than
 have you find it. CI enforces a ratchet so that number can only go down.
 
-Three memory-safety defects are known and located: a use-after-free in the GPU
-pool's handle bookkeeping, pointer invalidation when the frame arena grows
-mid-frame, and a self-deadlock in chaos testing. Fixes and regression tests are
-written up in [Plan 01](docs/superpowers/plans/2026-10-11-correctness-and-arena-performance.md).
-We are not claiming production readiness until they are closed.
+Those defects and their fixes are written up in
+[`2026-10-18-phase1-completion.md`](docs/superpowers/plans/2026-10-18-phase1-completion.md),
+which superseded Plan 01 and was executed on `fix/phase1-safety` (2026-10-19).
+We are still not claiming production readiness.
 
 ---
 
