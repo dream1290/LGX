@@ -229,7 +229,23 @@ if [ "$unlisted" -gt 0 ]; then
         [ -n "$t" ] || continue
         note ""
         note "── $t"
-        sed -n "/^Test #[0-9]*: $t$/,/-- process returned/p" "$LOG" | tail -n 200
+        # ctest --output-on-failure emits, per test: "    Start N: <name>"
+        # then immediately the result line "<k>/<m> Test #N: <name> ...*Failed"
+        # and the test's stdout, up to the next Start line (or the end of the
+        # summary). The Start line is the exact test-name anchor; the awk
+        # below prints the block from a target Start until the next one.
+        awk -v t="$t" '
+            index($0, "    Start ") == 1 {
+                name = substr($0, 5)
+                sub(/^[0-9]+: /, "", name)
+                in_target = (name == t)
+            }
+            in_target { print }
+        ' "$LOG" | tail -n 200
+        # The summary line carries the failure class (Failed / Not Run /
+        # Timeout / Required regular expression not found). The census prints
+        # names only, so surface the class next to the block above.
+        grep -E "^[[:space:]]*[0-9]+ - $t \(" "$LOG" || true
     done < "$UNLISTED"
     while IFS= read -r t; do
         [ -n "$t" ] || continue
