@@ -12,6 +12,30 @@
 #include <string.h>
 #include <assert.h>
 
+#if HAVE_VULKAN
+#include <vulkan/vulkan.h>
+
+/* Reuse test_gpu_pool.c's device setup convention: the GPU pool must be
+   initialized with a live device before lgx_gpu_alloc can succeed. */
+static VkResult create_test_vulkan_instance(VkInstance* instance) {
+    VkApplicationInfo app_info = {
+        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pApplicationName = "LGX Intent Test",
+        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+        .pEngineName = "LGX Runtime",
+        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+        .apiVersion = VK_API_VERSION_1_0
+    };
+    VkInstanceCreateInfo create_info = {
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pApplicationInfo = &app_info,
+        .enabledLayerCount = 0,
+        .enabledExtensionCount = 0
+    };
+    return vkCreateInstance(&create_info, NULL, instance);
+}
+#endif
+
 #define TEST(name) \
     printf("\n[TEST] %s\n", #name); \
     test_##name(); \
@@ -101,6 +125,65 @@ void test_persistent_routing() {
  * Test: GPU shared allocation routing
  */
 void test_gpu_routing() {
+#if HAVE_VULKAN
+    /* Post-B5 the GPU hint routes to lgx_gpu_alloc, which needs an
+       initialized pool backed by a real device. Set one up first, then
+       make the intent allocation; skip when the host has no device
+       (CI convention). */
+    VkInstance instance = VK_NULL_HANDLE;
+    VkResult vk_result = create_test_vulkan_instance(&instance);
+    if (vk_result != VK_SUCCESS) {
+        printf("  ✓ GPU routing skipped: no Vulkan instance on host (");
+        tests_passed++;
+        return;
+    }
+    
+    uint32_t device_count = 0;
+    vkEnumeratePhysicalDevices(instance, &device_count, NULL);
+    VkPhysicalDevice physical_device = VK_NULL_HANDLE;
+    if (device_count > 0) {
+        VkPhysicalDevice* devices = malloc(sizeof(VkPhysicalDevice) * device_count);
+        vkEnumeratePhysicalDevices(instance, &device_count, devices);
+        physical_device = devices[0];
+        free(devices);
+    }
+    if (physical_device == VK_NULL_HANDLE) {
+        printf("  ✓ GPU routing skipped: no physical device on host\n");
+        tests_passed++;
+        vkDestroyInstance(instance, NULL);
+        return;
+    }
+    
+    float queue_priority = 1.0f;
+    VkDeviceQueueCreateInfo queue_create_info = {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .queueFamilyIndex = 0,
+        .queueCount = 1,
+        .pQueuePriorities = &queue_priority
+    };
+    VkDeviceCreateInfo device_create_info = {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos = &queue_create_info,
+        .enabledExtensionCount = 0,
+        .enabledLayerCount = 0
+    };
+    VkDevice device = VK_NULL_HANDLE;
+    if (vkCreateDevice(physical_device, &device_create_info, NULL, &device) != VK_SUCCESS) {
+        printf("  ✓ GPU routing skipped: device creation failed on host\n");
+        tests_passed++;
+        vkDestroyInstance(instance, NULL);
+        return;
+    }
+    
+    if (lgx_gpu_pool_init(instance, physical_device, device) != LGX_SUCCESS) {
+        printf("  ✓ GPU routing skipped: GPU pool init failed on host\n");
+        tests_passed++;
+        vkDestroyDevice(device, NULL);
+        vkDestroyInstance(instance, NULL);
+        return;
+    }
+    
     lgx_allocation_intent_base_t intent = {
         .struct_size = sizeof(lgx_allocation_intent_base_t),
         .size = 512,
@@ -109,19 +192,35 @@ void test_gpu_routing() {
         .hint = LGX_HINT_GPU_SHARED,
         .validation_policy = LGX_INTENT_TRUST
     };
-    
     void* ptr = lgx_alloc_with_intent(&intent);
     
-#if HAVE_VULKAN
     ASSERT(ptr != NULL, "GPU allocation succeeded");
     
+    /* lgx_alloc_with_intent returns the GPU handle; the CPU-writable view
+       of host-visible memory is the B1d/B2 accessor's mapped pointer. */
+    void* mapped = lgx_gpu_get_mapped_ptr((lgx_gpu_allocation_t*)ptr);
+    ASSERT(mapped != NULL, "host-visible GPU allocation has a mapped view");
+    
     // Write to memory
-    memset(ptr, 0xCC, 512);
-    ASSERT(((uint8_t*)ptr)[0] == 0xCC, "GPU memory is writable");
+    memset(mapped, 0xCC, 512);
+    ASSERT(((uint8_t*)mapped)[0] == 0xCC, "GPU memory is writable");
     
     // GPU allocations return lgx_gpu_allocation_t*, need to cast
     lgx_gpu_free((lgx_gpu_allocation_t*)ptr);
+    
+    lgx_gpu_pool_shutdown();
+    vkDestroyDevice(device, NULL);
+    vkDestroyInstance(instance, NULL);
 #else
+    lgx_allocation_intent_base_t intent = {
+        .struct_size = sizeof(lgx_allocation_intent_base_t),
+        .size = 512,
+        .access_pattern = LGX_ACCESS_WRITE_ONCE,
+        .lifetime = LGX_LIFETIME_FRAME,
+        .hint = LGX_HINT_GPU_SHARED,
+        .validation_policy = LGX_INTENT_TRUST
+    };
+    void* ptr = lgx_alloc_with_intent(&intent);
     // Without Vulkan, should fall back to persistent heap
     if (ptr) {
         printf("  ✓ GPU allocation fell back to persistent heap (Vulkan not available)\n");
@@ -131,6 +230,42 @@ void test_gpu_routing() {
         printf("  ✓ GPU allocation returned NULL (expected without Vulkan)\n");
         tests_passed++;
     }
+#endif
+}
+
+/**
+ * Test: GPU hint precedence over frame lifetime
+ *
+ * lgx_alloc_gpu_shared() = lifetime FRAME + hint GPU_SHARED. The routing
+ * must key on the hint. Counters prove the branch taken; no device needed,
+ * because the GPU counter increments regardless of allocation success.
+ */
+void test_gpu_hint_precedence() {
+    lgx_intent_aggregate_stats();
+    lgx_intent_stats_t before;
+    ASSERT(lgx_intent_get_stats(&before) == LGX_SUCCESS, "baseline stats read");
+
+    void* ptr = lgx_alloc_gpu_shared(512);
+
+    lgx_intent_aggregate_stats();
+    lgx_intent_stats_t after;
+    ASSERT(lgx_intent_get_stats(&after) == LGX_SUCCESS, "post stats read");
+
+#if HAVE_VULKAN
+    ASSERT(after.gpu_allocations == before.gpu_allocations + 1,
+           "GPU hint routed to the GPU pool");
+    ASSERT(after.frame_allocations == before.frame_allocations,
+           "GPU hint did not consume frame arena");
+    if (ptr) {
+        lgx_gpu_free((lgx_gpu_allocation_t*)ptr);
+    }
+#else
+    /* No Vulkan: must fall back to the persistent heap, never NULL-crash
+       and never the frame arena. */
+    ASSERT(ptr != NULL, "GPU hint falls back to heap without Vulkan");
+    ASSERT(after.persistent_allocations == before.persistent_allocations + 1,
+           "fallback counted as persistent");
+    lgx_heap_free(ptr);
 #endif
 }
 
@@ -321,6 +456,7 @@ int main(void) {
     TEST(frame_routing);
     TEST(persistent_routing);
     TEST(gpu_routing);
+    TEST(gpu_hint_precedence);
     TEST(convenience_macros);
     TEST(intent_validation);
     TEST(intent_statistics);
