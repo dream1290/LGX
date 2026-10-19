@@ -193,6 +193,7 @@ Desktop.ini
 !/scripts/verify_test_integrity.sh
 !/scripts/count_tests.sh
 !/scripts/check_gate_scripts_tracked.sh
+!/scripts/run_chaos_tests.sh
 
 # Scratch files accidentally committed in bcd8b52 (untracked in A2)
 /f_str.c
