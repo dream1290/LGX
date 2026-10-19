@@ -219,6 +219,18 @@ note "   tolerated known failures : $listed"
 note "   unlisted failures        : $unlisted"
 
 if [ "$unlisted" -gt 0 ]; then
+    # An unlisted failure must be reproducible, and reproducing starts from
+    # what the test actually printed. The census alone does not carry that:
+    # report the failure sections of the ctest log too. The verdict and the
+    # error annotations below are unchanged by this.
+    note ""
+    note "── output of the failing tests (from ctest --output-on-failure)"
+    while IFS= read -r t; do
+        [ -n "$t" ] || continue
+        note ""
+        note "── $t"
+        sed -n "/^Test #[0-9]*: $t$/,/-- process returned/p" "$LOG" | tail -n 200
+    done < "$UNLISTED"
     while IFS= read -r t; do
         [ -n "$t" ] || continue
         note "::error title=Unlisted test failure::'$t' failed but is not in .github/ci/known-test-failures.txt under label '$LABEL'. Reproduce it; if it is pre-existing, add a line there with the reason and the tracking issue. Do not silence the CI step instead."
