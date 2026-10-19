@@ -62,11 +62,12 @@ lgx_result_t lgx_leak_detector_init(void) {
         return LGX_ERROR_ALREADY_INITIALIZED;
     }
     
+    memset(&g_leak_detector, 0, sizeof(lgx_leak_detector_t));
+    
     if (pthread_mutex_init(&g_leak_detector.mutex, NULL) != 0) {
         return LGX_ERROR_OUT_OF_MEMORY;
     }
     
-    memset(&g_leak_detector, 0, sizeof(lgx_leak_detector_t));
     g_leak_detector.initialized = true;
     
     return LGX_SUCCESS;
