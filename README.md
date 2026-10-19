@@ -81,42 +81,29 @@ each usable on its own. See [`docs/LGX_PLATFORM_ARCHITECTURE.md`](docs/LGX_PLATF
 
 ---
 
-## What it costs
+## Performance: every claim, its status, its evidence
 
-Measured with the benchmark in this repository, pinned to one CPU, with both
-sides actually writing their memory. Full data with provenance:
-[`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt).
+Nothing on this page claims anything the harness does not print. The snapshot
+is in
+[`docs/05-performance/arena-hotpath-profile.md`](docs/05-performance/arena-hotpath-profile.md)
+("Final measurement") and duplicately in
+[`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt);
+`scripts/verify_arena_ratios.sh` fails CI when a fresh run deviates from that
+snapshot or the size ladder grows non-linearly.
 
-Per allocation, median:
+| Claim | Status | Evidence (command) | Commit |
+|---|---|---|---|
+| "200× faster than malloc" | **retracted** | refuted by our own benchmark (fractions carved from an asserted, never-measured malloc baseline) | [`c7147d4`](https://github.com/dream1290/LGX/commit/c7147d4) |
+| Frame arena, 16B, is 5.7× slower than a bare bump pointer (468ns vs 82ns per frame) | measured | same command, `FRAME_RESET_PATTERN size=16B` vs `FLOOR_LINE bump_floor_16B` | [`54167d2`](https://github.com/dream1290/LGX/commit/54167d2) |
+| Frame arena runs a whole game-frame pattern (64 mixed-size objects) 1.27× slower than glibc malloc, same run | measured | same command, `MIXED_RATIO` line | [`f839501`](https://github.com/dream1290/LGX/commit/f839501) |
+| GPU pool: all four memory-safety defects fixed, owned memory returned | fixed | `ctest -R test_gpu_pool` in a Vulkan build | [`4bdb849`](https://github.com/dream1290/LGX/commit/4bdb849) |
+| Non-Vulkan build | builds and tests | `no-vulkan` CI job | [`aa747eb`](https://github.com/dream1290/LGX/commit/aa747eb) |
 
-| Size | Frame arena | glibc malloc | Bare bump pointer |
-|------|-------------|--------------|-------------------|
-| 16B  | 26 ns | 65 ns | 2 ns |
-| 64B  | 26 ns | 34 ns | 2 ns |
-| 256B | 29 ns | 35 ns | 4 ns |
-| 1KB  | 39 ns | — | 24 ns |
-| 4KB  | 116 ns | — | 104 ns |
+Every command above runs today from a fresh clone and prints the cited number
+(shown as of the snapshot date; bases move, so re-read your own run rather than
+quoting history). No row says "production-ready".
 
-Two honest caveats on this table:
-
-- The three columns are **not the same workload**. `malloc` is measured as a
-  single alloc/free pair; the arena and the bare bump pointer allocate 64 times
-  per frame and reset. They are close enough to compare at a glance, not close
-  enough to compute a ratio from.
-- `malloc` has no 1KB/4KB row because those sizes route to a different glibc
-  path; we did not measure them.
-
-Read the shape of it: the arena is in the same order of magnitude as glibc
-`malloc`, roughly 2–3× slower than it. It is **not faster**, and we do not claim
-it is.
-
-The last column is the point. A bare bump pointer — offset advance and nothing
-else — is another 5–10× cheaper. LGX currently sits between the two, paying
-roughly 13–25 ns per allocation for instrumentation and safety checks on top of
-the bare pointer. Locating that overhead is
-[Plan 01, Task 7](docs/superpowers/plans/2026-10-11-correctness-and-arena-performance.md).
-
-So what does the arena buy you? Not raw latency:
+So what does the arena buy you? Not raw latency per allocation:
 
 - **No `free()` per allocation.** Reclamation is one pointer reset per frame.
 - **No fragmentation across frames.** The memory is reused, not reallocated.
@@ -127,27 +114,8 @@ So what does the arena buy you? Not raw latency:
 
 If your workload is dominated by glibc's fastbin/tcache path, `malloc` is fine
 and this library is not for you. If your frame does thousands of allocations
-that all die together, the arena is the right shape — and we will keep measuring
-until it earns the rest of the gap.
-
-Raw benchmark data, with provenance and reproducibility commands:
-[`benchmarks/baseline_frame_arena.txt`](benchmarks/baseline_frame_arena.txt).
-
----
-
-## A retraction
-
-Earlier versions of this README claimed the frame arena was **200× faster than
-malloc**. That number was wrong, and we retract it here rather than quietly
-editing it.
-
-It came from comparing LGX against an asserted 10–30 μs `malloc` cost. The
-project's own benchmark measured glibc `malloc` at ~20 ns for a small hot
-allocation — roughly a thousand times cheaper than the figure the claim was
-built on. The "200×" was a ratio against a baseline we had not actually
-measured.
-
-Everything on this page is reproducible with:
+that all die together, the arena is the right shape — and the tables above say
+plainly at what latency.
 
 ```bash
 ./build/benchmarks/benchmark_benchmark_allocation_throughput
@@ -161,26 +129,26 @@ Everything on this page is reproducible with:
 `-Wall -Wextra -Werror`, and the public header compiles and links from both C11
 and C++17.
 
-Honest inventory of what is and isn't done:
+Honest inventory of what is and isn't done (census: fresh clone, 2026-10-19,
+`scripts/count_tests.sh build`):
 
 | | |
 |---|---|
 | Clean build, no warnings | ✅ |
 | C++ consumability gate | ✅ |
-| 76 registered tests | ✅ — but see below |
-| Tests that can actually fail | **26 of 77 registered tests cannot report failure** |
-| Memory safety | ❌ 3 known defects, tracked in [Plan 01](docs/superpowers/plans/README.md) |
-| CI | ✅ 3 jobs on every push |
+| 82 registered tests / 81/82 pass in RelWithDebInfo | ✅ — the 1 failure is the known `test_telemetry_anonymization` NDEBUG-only assert gap (allowlist) |
+| Tests that can actually fail | **26 of 82 registered tests cannot report failure** (NDEBUG assert-only; Plan 03's backlog) |
+| Memory safety | ✅ the 14 defects from the completion plan are fixed on `fix/phase1-safety` (GPU pool ×4 + intent routing, frame-arena growth, chaos self-deadlock, net recv timeout, leak-detector init, adapter status, usage stats), each with a test that failed before the fix |
+| CI | ✅ 3 jobs on every push (build-and-test incl. the arena ratio gate, asan-ubsan, no-vulkan) |
 
 The 26 are tests whose only failure mechanism is `assert()`, which
 `-DNDEBUG` compiles out of every Release build. We would rather tell you than
 have you find it. CI enforces a ratchet so that number can only go down.
 
-Three memory-safety defects are known and located: a use-after-free in the GPU
-pool's handle bookkeeping, pointer invalidation when the frame arena grows
-mid-frame, and a self-deadlock in chaos testing. Fixes and regression tests are
-written up in [Plan 01](docs/superpowers/plans/2026-10-11-correctness-and-arena-performance.md).
-We are not claiming production readiness until they are closed.
+Those defects and their fixes are written up in
+[`2026-10-18-phase1-completion.md`](docs/superpowers/plans/2026-10-18-phase1-completion.md),
+which superseded Plan 01 and was executed on `fix/phase1-safety` (2026-10-19).
+We are still not claiming production readiness.
 
 ---
 

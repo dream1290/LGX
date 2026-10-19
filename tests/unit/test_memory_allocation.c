@@ -155,6 +155,7 @@ static void test_gpu_alloc(void) {
         return;
     }
     
+#if defined(HAVE_VULKAN) && HAVE_VULKAN
     lgx_gpu_allocation_t* alloc = lgx_gpu_alloc(4096, 256, 0);
     TEST_ASSERT(alloc != NULL, "GPU allocation succeeds");
     
@@ -163,6 +164,9 @@ static void test_gpu_alloc(void) {
         lgx_gpu_free(alloc);
         TEST_ASSERT(true, "GPU free succeeds");
     }
+#else
+    TEST_ASSERT(true, "GPU not compiled in (no Vulkan)");
+#endif
 }
 
 // Test 9: Intent-based allocation (frame)

@@ -31,6 +31,11 @@ LGX_1.0 {
         lgx_free;
         lgx_memory_stats;
         lgx_alloc_get_usage_stats;
+        lgx_memory_manager_init;
+        lgx_memory_manager_shutdown;
+        lgx_memory_manager_alloc;
+        lgx_memory_manager_free;
+        lgx_memory_manager_get_usage_stats;
         
         # Frame arena allocator (Month 1 - Specialized Allocators)
         lgx_frame_arena_init;
@@ -69,6 +74,7 @@ LGX_1.0 {
         lgx_gpu_get_mapped_ptr;
         lgx_gpu_pool_get_fragmentation;
         lgx_gpu_pool_get_peak_usage;
+        lgx_gpu_pool_block_count;
         
         # GPU capability detection (Task 3.5.2.3)
         lgx_gpu_detect_capabilities;
@@ -137,7 +143,10 @@ LGX_1.0 {
         # Hardware adapter (internal but needed by tests)
         lgx_hardware_adapter_init;
         lgx_hardware_adapter_shutdown;
+        lgx_hardware_adapter_has_huge_pages;
+        lgx_hardware_adapter_has_numa;
         lgx_hardware_adapter_has_gpu;
+        lgx_hardware_adapter_get_cpu_count;
         lgx_hardware_adapter_get_gpu_vendor;
         lgx_hardware_adapter_get_driver_version;
         lgx_hardware_adapter_get_status;
@@ -278,6 +287,16 @@ LGX_1.0 {
         lgx_memory_monitor_report_gpu_pool;
         lgx_memory_monitor_report_persistent_heap;
         lgx_memory_monitor_print_report;
+        
+        # Leak detector API (public in lgx_runtime.h; left out of the map
+        # before Task B8a, which made its fix verifiable by test)
+        lgx_leak_detector_init;
+        lgx_leak_detector_shutdown;
+        lgx_leak_detector_add_sample;
+        lgx_leak_detector_is_leak_detected;
+        lgx_leak_detector_get_stats;
+        lgx_leak_detector_set_alert_callback;
+        lgx_leak_detector_reset;
         
         # Trace event system
         lgx_trace_init;

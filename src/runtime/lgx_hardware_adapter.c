@@ -118,7 +118,7 @@ long lgx_hardware_adapter_get_cpu_count(lgx_hardware_adapter_t* adapter) {
  * Get hardware status
  */
 lgx_hardware_status_t lgx_hardware_adapter_get_status(lgx_hardware_adapter_t* adapter) {
-    lgx_hardware_status_t status;
+    lgx_hardware_status_t status = {0};
     status.struct_size = sizeof(lgx_hardware_status_t);
     
     if (!adapter) {
@@ -135,6 +135,12 @@ lgx_hardware_status_t lgx_hardware_adapter_get_status(lgx_hardware_adapter_t* ad
     status.degradation_reason = adapter->degradation_reason;
     status.performance_impact_estimate = adapter->performance_impact;
     status.remediation_steps = adapter->remediation_steps;
+    
+    /* Capability flags: previously left uninitialised, which the health
+       monitor then copied into its own status struct (Task B8b). */
+    status.huge_pages_available = adapter->huge_pages_available;
+    status.numa_topology_detected = adapter->numa_available;
+    status.gpu_acceleration_available = adapter->gpu_available;
     
     return status;
 }

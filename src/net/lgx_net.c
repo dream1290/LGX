@@ -102,8 +102,9 @@ lgx_net_socket_t* lgx_net_socket_create(const lgx_net_config_t* config) {
     /* Create UDP socket */
     sock->fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock->fd < 0) {
-        printf("[LGX NET] Warning: could not create UDP socket (%s) — headless mode\n",
-               strerror(errno));
+        lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_DEBUG,
+                       "[LGX NET] Warning: could not create UDP socket (%s) — headless mode\n",
+                       strerror(errno));
         sock->fd = -1;
     } else {
         /* Set non-blocking */
@@ -111,8 +112,9 @@ lgx_net_socket_t* lgx_net_socket_create(const lgx_net_config_t* config) {
         if (flags >= 0) fcntl(sock->fd, F_SETFL, flags | O_NONBLOCK);
     }
 
-    printf("[LGX NET] Socket created: fd=%d, max_conn=%u, timeout=%ums, tick=%uHz\n",
-           sock->fd, sock->max_connections, sock->timeout_ms, sock->tick_rate);
+    lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_DEBUG,
+                   "[LGX NET] Socket created: fd=%d, max_conn=%u, timeout=%ums, tick=%uHz\n",
+                   sock->fd, sock->max_connections, sock->timeout_ms, sock->tick_rate);
     return sock;
 }
 
@@ -121,7 +123,8 @@ void lgx_net_socket_destroy(lgx_net_socket_t* sock) {
     if (sock->fd >= 0) close(sock->fd);
     free(sock->connections);
     free(sock);
-    printf("[LGX NET] Socket destroyed\n");
+    lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_DEBUG,
+                   "[LGX NET] Socket destroyed\n");
 }
 
 lgx_result_t lgx_net_socket_bind(lgx_net_socket_t* sock, uint16_t port) {
@@ -139,12 +142,14 @@ lgx_result_t lgx_net_socket_bind(lgx_net_socket_t* sock, uint16_t port) {
     setsockopt(sock->fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     if (bind(sock->fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-        printf("[LGX NET] Bind to port %u failed: %s\n", port, strerror(errno));
+        lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_WARN,
+                       "[LGX NET] Bind to port %u failed: %s\n", port, strerror(errno));
         return LGX_ERROR_INVALID_PARAM;
     }
 
     sock->bound = true;
-    printf("[LGX NET] Bound to port %u\n", port);
+    lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_DEBUG,
+                   "[LGX NET] Bound to port %u\n", port);
     return LGX_SUCCESS;
 }
 
@@ -181,6 +186,23 @@ int lgx_net_socket_recv(lgx_net_socket_t* sock, lgx_net_addr_t* addr,
         return -1;
     }
 
+    if (received > 0) {
+        /* Refresh the matching connection's timeout clock. Without this,
+           a peer that only sends (never replies to anything we send) is
+           timed out by lgx_net_update() despite the traffic. */
+        uint32_t src_ip = sa.sin_addr.s_addr;
+        uint16_t src_port = ntohs(sa.sin_port);
+        uint64_t now = time_ms();
+        for (uint32_t i = 0; i < sock->max_connections; i++) {
+            if (sock->connections[i].active &&
+                sock->connections[i].addr.ip == src_ip &&
+                sock->connections[i].addr.port == src_port) {
+                sock->connections[i].last_recv_ms = now;
+                break;
+            }
+        }
+    }
+
     if (addr) {
         addr->ip = sa.sin_addr.s_addr;
         addr->port = ntohs(sa.sin_port);
@@ -213,7 +235,8 @@ int lgx_net_connect(lgx_net_socket_t* sock, const char* host, uint16_t port) {
             sock->connections[i].rtt_ms = 0.0;
             sock->connections[i].seq_out = 0;
             sock->connections[i].seq_in = 0;
-            printf("[LGX NET] Connection %u established to %s:%u\n", i, host, port);
+            lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_INFO,
+                           "Connection %u established to %s:%u", i, host, port);
             return (int)i;
         }
     }
@@ -226,7 +249,8 @@ lgx_result_t lgx_net_disconnect(lgx_net_socket_t* sock, int conn_id) {
     if (!sock->connections[conn_id].active) return LGX_ERROR_INVALID_PARAM;
 
     sock->connections[conn_id].active = false;
-    printf("[LGX NET] Connection %d disconnected\n", conn_id);
+    lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_INFO,
+                   "Connection %d disconnected", conn_id);
     return LGX_SUCCESS;
 }
 
@@ -241,7 +265,8 @@ lgx_result_t lgx_net_update(lgx_net_socket_t* sock) {
         /* Check timeout */
         uint64_t elapsed = now - sock->connections[i].last_recv_ms;
         if (elapsed > sock->timeout_ms) {
-            printf("[LGX NET] Connection %u timed out (%lu ms)\n", i, (unsigned long)elapsed);
+            lgx_log_tagged(LGX_SUBSYSTEM_NET, LGX_LOG_WARN,
+                           "Connection %u timed out (%lu ms)", i, (unsigned long)elapsed);
             sock->connections[i].active = false;
         }
     }

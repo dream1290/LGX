@@ -269,6 +269,66 @@ static void test_rtt_no_connection(void) {
     PASS();
 }
 
+static void test_recv_refreshes_timeout(void) {
+    TEST("Recv refreshes the connection timeout clock");
+
+    lgx_net_config_t cfg = {
+        .struct_size = sizeof(lgx_net_config_t),
+        .max_connections = 8,
+        .timeout_ms = 200,          /* short, for a fast test */
+        .tick_rate = 30,
+    };
+    lgx_net_socket_t* receiver = lgx_net_socket_create(&cfg);
+    lgx_net_socket_t* sender = lgx_net_socket_create(NULL);
+    if (!receiver || !sender) { FAIL("socket create"); return; }
+
+    if (lgx_net_socket_bind(receiver, 19878) != LGX_SUCCESS ||
+        lgx_net_socket_bind(sender, 19877) != LGX_SUCCESS) {
+        FAIL("bind"); goto cleanup;
+    }
+
+    /* Register the sender as a connection of the receiver. */
+    int conn = lgx_net_connect(receiver, "127.0.0.1", 19877);
+    if (conn < 0) { FAIL("connect"); goto cleanup; }
+
+    /* Let the connection's clock age past the timeout WITHOUT traffic. */
+    usleep(300 * 1000);
+
+    /* Sender -> receiver traffic (source = 127.0.0.1:19877). */
+    lgx_net_addr_t dest = { .ip = htonl(INADDR_LOOPBACK), .port = 19878 };
+    if (lgx_net_socket_send(sender, &dest, "ping", 4) != 4) {
+        FAIL("send"); goto cleanup;
+    }
+    usleep(20 * 1000);
+
+    char buf[64];
+    lgx_net_addr_t from = {0};
+    if (lgx_net_socket_recv(receiver, &from, buf, sizeof(buf)) != 4) {
+        FAIL("recv"); goto cleanup;
+    }
+
+    /* Pre-fix: elapsed-since-connect is ~320ms > 200ms -> connection is
+       reaped. Post-fix: recv refreshed the clock -> still active. */
+    lgx_net_update(receiver);
+    if (lgx_net_get_connection_count(receiver) != 1) {
+        FAIL("connection timed out despite receiving data");
+        goto cleanup;
+    }
+
+    /* And the timeout still fires when traffic stops. */
+    usleep(300 * 1000);
+    lgx_net_update(receiver);
+    if (lgx_net_get_connection_count(receiver) != 0) {
+        FAIL("connection did not time out after traffic stopped");
+        goto cleanup;
+    }
+
+    PASS();
+cleanup:
+    lgx_net_socket_destroy(sender);
+    lgx_net_socket_destroy(receiver);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 int main(void) {
@@ -284,6 +344,7 @@ int main(void) {
     test_null_params();
     test_socket_bind();
     test_loopback_send_recv();
+    test_recv_refreshes_timeout();
     test_recv_no_data();
     test_stream_integers();
     test_stream_string();

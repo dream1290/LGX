@@ -329,11 +329,19 @@ enable_testing()
 # Phase 0 tests (moved to phase0 subdirectory)
 # The NUMA test needs libnuma and its own guards, so it is excluded from the
 # generic phase0 glob below and given an explicit target in tests/phase0/CMakeLists.txt.
-set(PHASE0_TESTS_EXCLUDED test_csf2_numa_awareness)
+# test_chaos_deadlock gets its own 20s timeout: the deadlock it guards makes
+# the generic 300s timeout the wrong failure mode (Task B4).
+set(PHASE0_TESTS_EXCLUDED test_csf2_numa_awareness test_chaos_deadlock)
 file(GLOB PHASE0_TESTS tests/phase0/*.c)
 foreach(test_file ${PHASE0_TESTS})
     get_filename_component(test_name ${test_file} NAME_WE)
     if(${test_name} IN_LIST PHASE0_TESTS_EXCLUDED)
+        continue()
+    endif()
+    # GPU tests include <vulkan/vulkan.h> unguarded; without Vulkan they
+    # cannot compile (Task B6). test_gpu_detection and test_intent_allocator
+    # keep their Vulkan use behind #if HAVE_VULKAN and stay registered.
+    if(NOT Vulkan_FOUND AND test_name MATCHES "^test_gpu_(buddy_allocator|capability|performance|pool)$")
         continue()
     endif()
     add_executable(${test_name} ${test_file})

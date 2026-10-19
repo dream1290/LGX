@@ -58,12 +58,14 @@ static lgx_result_t chaos_init(void) {
 }
 
 /**
- * Thread-safe random number generator
+ * Random number generator.
+ *
+ * Caller MUST hold g_chaos_state.mutex: every call site is already inside
+ * the lock (it needs the config it just read under the same lock), and the
+ * mutex is not recursive -- locking here deadlocks on the first decision.
  */
 static double chaos_random(void) {
-    pthread_mutex_lock(&g_chaos_state.mutex);
     int r = rand_r(&g_chaos_state.random_state);
-    pthread_mutex_unlock(&g_chaos_state.mutex);
     return (double)r / (double)RAND_MAX;
 }
 

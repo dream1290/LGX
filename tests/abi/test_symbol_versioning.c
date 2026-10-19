@@ -4,6 +4,14 @@
  * Tests ELF symbol versioning for ABI stability.
  */
 
+/* RTLD_DEFAULT/RTLD_NEXT are GNU extensions in <dlfcn.h>: glibc 2.35
+ * (ubuntu-22.04, the CI runner) keeps them inside `#ifdef __USE_GNU`, while
+ * newer glibc versions moved them out of the guard, which is why this file
+ * compiled on the author's machine and not on CI. Match the convention used
+ * by benchmarks/benchmark_allocation_throughput.c: define _GNU_SOURCE before
+ * the first include instead of relying on a not-guaranteed-by-default symbol. */
+#define _GNU_SOURCE
+
 #include "lgx_runtime.h"
 #include <stdio.h>
 #include <stdlib.h>

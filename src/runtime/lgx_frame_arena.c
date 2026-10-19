@@ -113,6 +113,13 @@ typedef struct {
     size_t bucket_size;                         // Size of each bucket
 } allocation_histogram_t;
 
+// A retired chunk of a frame arena's chained growth.
+typedef struct arena_chunk {
+    uint8_t* base;
+    size_t capacity;
+    struct arena_chunk* next;
+} arena_chunk_t;
+
 // Frame arena structure
 typedef struct lgx_frame_arena {
     uint8_t* base;              // Base address (huge page aligned)
@@ -124,10 +131,16 @@ typedef struct lgx_frame_arena {
     uint64_t peak_usage;        // Peak usage this frame
     bool overflow_occurred;     // Did we overflow this frame?
     
+    // Chained growth (Task B3): full chunks retired within this frame.
+    // Never unmapped until reset — callers hold raw pointers into them.
+    struct arena_chunk* retired_chunks;
+    size_t retired_bytes;       // bytes used in retired chunks this frame
+    
     // Adaptive sizing (Task 3.4.5.2)
     size_t usage_history[ROLLING_AVERAGE_WINDOW];  // Task 3.4.5.2.4: Rolling window
     uint32_t history_index;                         // Current index in rolling window
     size_t rolling_average;                         // Task 3.4.5.2.4: Computed average
+    size_t usage_sum;          // Task D2-2: running sum over Rolling window (O(1) insert)
     bool high_usage_warning_shown;                  // Task 3.4.5.2.5: Prevent spam
     uint64_t last_high_usage_warning_time;          // Task 3.4.5.2.5: Rate limiting
     
@@ -281,6 +294,21 @@ static void free_huge_page_arena(void* ptr, size_t size) {
 }
 
 /**
+ * Free all retired chunks of an arena (called at reset and shutdown).
+ */
+static void free_retired_chunks(lgx_frame_arena_t* arena) {
+    arena_chunk_t* node = arena->retired_chunks;
+    while (node) {
+        arena_chunk_t* next = node->next;
+        free_huge_page_arena(node->base, node->capacity);
+        free(node);
+        node = next;
+    }
+    arena->retired_chunks = NULL;
+    arena->retired_bytes = 0;
+}
+
+/**
  * Grow arena to new capacity (Task 3.4.5.2.2)
  * 
  * Dynamically grows the arena by allocating a new larger buffer and copying data.
@@ -305,23 +333,33 @@ static bool grow_arena(lgx_frame_arena_t* arena, size_t new_capacity) {
         return false;
     }
     
-    // Allocate new larger arena
+    // Allocate the new chunk
     uint8_t* new_base = allocate_huge_page_arena(new_capacity);
     if (!new_base) {
         return false;
     }
     
-    // Copy existing data to new arena
-    if (arena->offset > 0) {
-        memcpy(new_base, arena->base, arena->offset);
+    // Retire the current chunk WITHOUT unmapping or copying: callers hold
+    // raw pointers into it and they must stay valid until this arena's
+    // next reset. The retired node remembers the chunk; the malloc failure
+    // path must not leak the freshly allocated mapping.
+    if (arena->base) {
+        arena_chunk_t* node = (arena_chunk_t*)malloc(sizeof(arena_chunk_t));
+        if (!node) {
+            free_huge_page_arena(new_base, new_capacity);
+            return false;
+        }
+        node->base = arena->base;
+        node->capacity = arena->capacity;
+        node->next = arena->retired_chunks;
+        arena->retired_chunks = node;
+        arena->retired_bytes += arena->offset;  // bytes actually used
     }
     
-    // Free old arena
-    free_huge_page_arena(arena->base, arena->capacity);
-    
-    // Update arena
+    // Switch to the new chunk
     arena->base = new_base;
     arena->capacity = new_capacity;
+    arena->offset = 0;
     
     return true;
 }
@@ -333,16 +371,17 @@ static bool grow_arena(lgx_frame_arena_t* arena, size_t new_capacity) {
  * a smooth average. This helps identify trends and make sizing recommendations.
  */
 static void update_rolling_average(lgx_frame_arena_t* arena) {
-    // Add current usage to history
-    arena->usage_history[arena->history_index] = arena->offset;
+    // Update rolling average
+    // Add current usage to history, O(1) per insert over the same window
+    // semantics (Task D2-2): eviction removes the outgoing value before the
+    // sum, insertion adds the incoming one.
+    size_t leaving = arena->usage_history[arena->history_index];
+    size_t entering = arena->retired_bytes + arena->offset;
+    arena->usage_history[arena->history_index] = entering;
     arena->history_index = (arena->history_index + 1) % ROLLING_AVERAGE_WINDOW;
     
-    // Compute rolling average
-    size_t sum = 0;
-    for (int i = 0; i < ROLLING_AVERAGE_WINDOW; i++) {
-        sum += arena->usage_history[i];
-    }
-    arena->rolling_average = sum / ROLLING_AVERAGE_WINDOW;
+    arena->usage_sum = arena->usage_sum - leaving + entering;
+    arena->rolling_average = arena->usage_sum / ROLLING_AVERAGE_WINDOW;
 }
 
 
@@ -436,6 +475,7 @@ lgx_result_t lgx_frame_arena_init(void) {
         memset(arena->usage_history, 0, sizeof(arena->usage_history));
         arena->history_index = 0;
         arena->rolling_average = 0;
+        arena->usage_sum = 0;
         arena->high_usage_warning_shown = false;
         arena->last_high_usage_warning_time = 0;
         
@@ -479,6 +519,7 @@ lgx_result_t lgx_frame_arena_shutdown(void) {
     // Free all arenas
     for (int i = 0; i < FRAME_ARENA_COUNT; i++) {
         lgx_frame_arena_t* arena = &g_frame_arena_state.arenas[i];
+        free_retired_chunks(arena);
         if (arena->base) {
             // Use arena->capacity since arenas can now have different sizes (Task 3.4.5.2)
             free_huge_page_arena(arena->base, arena->capacity);
@@ -554,8 +595,11 @@ void* lgx_frame_alloc_internal(size_t size, const char* file, int line) {
                 fprintf(stderr, "[LGX INFO] Arena growth successful! New capacity: %.2f MB\n\n",
                         arena->capacity / (1024.0 * 1024.0));
                 
-                // Retry allocation with grown arena
-                new_offset = old_offset + size;
+                // Retry in the new chunk: grow_arena() retires the old
+                // chunk and resets arena->offset, so this allocation starts
+                // at offset 0 of the fresh chunk.
+                old_offset = 0;
+                new_offset = size;
                 if (new_offset <= arena->capacity) {
                     goto allocation_succeeded;  // Jump to success path
                 }
@@ -613,6 +657,22 @@ void* lgx_frame_alloc_internal(size_t size, const char* file, int line) {
 allocation_succeeded:
     // Update offset
     arena->offset = new_offset;
+    arena->allocations++;
+    
+    // Update peak usage (retired chunks + current chunk)
+    size_t total_used = arena->retired_bytes + new_offset;
+    if (total_used > arena->peak_usage) {
+        arena->peak_usage = total_used;
+    }
+    
+    // Update global statistics
+    g_frame_arena_state.stats.total_allocations++;
+    g_frame_arena_state.stats.total_bytes_allocated += size;
+    g_frame_arena_state.stats.allocations_since_reset++;
+    
+    if (arena->peak_usage > g_frame_arena_state.stats.peak_usage_bytes) {
+        g_frame_arena_state.stats.peak_usage_bytes = arena->peak_usage;
+    }
     
     void* ptr = arena->base + old_offset;
     if (new_offset + CACHE_LINE_SIZE < arena->capacity) {
@@ -693,9 +753,20 @@ lgx_result_t lgx_frame_reset(void) {
     
     // Get current time for tracking (Task 3.4.5.1.4)
     uint64_t current_time = lgx_time_now_ns();
-    uint64_t time_since_last_reset = current_time - g_frame_arena_state.stats.last_reset_time_ns;
     
-    // Task 3.4.5.1.4: Warn if frame reset is called too frequently or infrequently
+    // Increment frame counter
+    uint32_t old_frame = atomic_fetch_add(&g_frame_arena_state.current_frame, 1);
+    uint32_t new_frame = old_frame + 1;
+    
+    // Get the arena we'll use for the new frame
+    // This is the arena from 3 frames ago (safe to reset)
+    lgx_frame_arena_t* arena = &g_frame_arena_state.arenas[new_frame % FRAME_ARENA_COUNT];
+    
+#if LGX_DEBUG_BUILD
+    // Task 3.4.5.1.4: Warn about reset frequency (Task B7 plan D2-1:
+    // off the release path; the benchmark harness no longer needs to mute
+    // stderr because of these two lines).
+    uint64_t time_since_last_reset = current_time - g_frame_arena_state.stats.last_reset_time_ns;
     if (g_frame_arena_state.stats.reset_count > 0) {
         // Expected frame time: 16.67ms (60 FPS) = 16,670,000 ns
         // Warn if < 8ms (120+ FPS, might be calling reset too often)
@@ -710,14 +781,7 @@ lgx_result_t lgx_frame_reset(void) {
             fprintf(stderr, "              This might indicate lgx_frame_reset() is not being called every frame.\n");
         }
     }
-    
-    // Increment frame counter
-    uint32_t old_frame = atomic_fetch_add(&g_frame_arena_state.current_frame, 1);
-    uint32_t new_frame = old_frame + 1;
-    
-    // Get the arena we'll use for the new frame
-    // This is the arena from 3 frames ago (safe to reset)
-    lgx_frame_arena_t* arena = &g_frame_arena_state.arenas[new_frame % FRAME_ARENA_COUNT];
+#endif
     
     // Task 3.4.5.1.5: Check for potential memory leaks
     // If the arena still has significant usage after 3 frames, something might be wrong
@@ -739,6 +803,10 @@ lgx_result_t lgx_frame_reset(void) {
     
     // Task 3.4.5.2.4: Update rolling average before reset
     update_rolling_average(arena);
+    
+    // Free retired chunks: their pointers are invalid from here on,
+    // which is the same contract as arena->offset = 0.
+    free_retired_chunks(arena);
     
     // Reset arena (instant, no deallocation needed)
     arena->offset = 0;
@@ -857,6 +925,14 @@ bool lgx_frame_is_frame_pointer(void* ptr) {
         if (ptr_addr >= arena->base && ptr_addr < (arena->base + arena->capacity)) {
             return true;
         }
+        
+        // Check retired chunks: pointers into them still report as arena
+        // pointers until the next reset of this arena (B3)
+        for (arena_chunk_t* node = arena->retired_chunks; node; node = node->next) {
+            if (ptr_addr >= node->base && ptr_addr < (node->base + node->capacity)) {
+                return true;
+            }
+        }
     }
     
     return false;
@@ -919,12 +995,13 @@ void lgx_frame_arena_dump_stats(FILE* output) {
         fprintf(output, "Arena %d:\n", i);
         fprintf(output, "  Frame index: %u %s\n", arena->frame_index,
                 ((uint32_t)i == (current_frame % FRAME_ARENA_COUNT)) ? "(CURRENT)" : "");
-        fprintf(output, "  Capacity: %zu (%.2f MB)\n", arena->capacity,
+        fprintf(output, "  Capacity (current chunk): %zu (%.2f MB)\n", arena->capacity,
                 arena->capacity / (1024.0 * 1024.0));
-        fprintf(output, "  Current usage: %zu (%.2f MB, %.1f%%)\n",
-                arena->offset,
-                arena->offset / (1024.0 * 1024.0),
-                (arena->offset * 100.0) / arena->capacity);
+        unsigned long long current_usage = (unsigned long long)(arena->retired_bytes + arena->offset);
+        fprintf(output, "  Current usage: %llu (%.2f MB, %.1f%%)\n",
+                current_usage,
+                (double)current_usage / (1024.0 * 1024.0),
+                (current_usage * 100.0) / arena->capacity);
         fprintf(output, "  Peak usage: %lu (%.2f MB, %.1f%%)\n",
                 arena->peak_usage,
                 arena->peak_usage / (1024.0 * 1024.0),
@@ -1111,11 +1188,12 @@ lgx_result_t lgx_frame_arena_dump(const char* output_path) {
         fprintf(file, "      \"frame_index\": %u,\n", arena->frame_index);
         fprintf(file, "      \"capacity\": %zu,\n", arena->capacity);
         fprintf(file, "      \"max_capacity\": %zu,\n", arena->max_capacity);
-        fprintf(file, "      \"current_offset\": %zu,\n", arena->offset);
+        fprintf(file, "      \"current_offset\": %zu,\n", arena->retired_bytes + arena->offset);
         fprintf(file, "      \"peak_usage\": %lu,\n", arena->peak_usage);
         fprintf(file, "      \"allocations\": %lu,\n", arena->allocations);
         fprintf(file, "      \"overflow_occurred\": %s,\n", arena->overflow_occurred ? "true" : "false");
-        fprintf(file, "      \"usage_percent\": %.2f,\n", (arena->offset * 100.0) / arena->capacity);
+        fprintf(file, "      \"usage_percent\": %.2f,\n",
+                ((arena->retired_bytes + arena->offset) * 100.0) / arena->capacity);
         fprintf(file, "      \"rolling_average\": %zu,\n", arena->rolling_average);
         
         // Size histogram

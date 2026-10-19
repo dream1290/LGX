@@ -294,6 +294,7 @@ VkDeviceSize lgx_gpu_get_size(lgx_gpu_allocation_t* alloc);
 void* lgx_gpu_get_mapped_ptr(lgx_gpu_allocation_t* alloc);
 float lgx_gpu_pool_get_fragmentation(lgx_gpu_memory_type_t type);
 VkDeviceSize lgx_gpu_pool_get_peak_usage(lgx_gpu_memory_type_t type);
+size_t lgx_gpu_pool_block_count(lgx_gpu_memory_type_t type);
 
 // GPU capability detection API (Task 3.5.2.3)
 // GPU capability structure

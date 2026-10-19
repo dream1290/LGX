@@ -345,6 +345,39 @@ static void test_health_monitoring_integration(void) {
     printf("    Integration check passed\n");
 }
 
+// Test 19: Capability flags in hardware status mirror the adapters detection
+static void test_hardware_status_capability_flags(void) {
+    printf("\nTest 19: Hardware status capability flags\n");
+    
+    lgx_hardware_adapter_t* adapter = NULL;
+    lgx_result_t result = lgx_hardware_adapter_init(&adapter);
+    TEST_ASSERT(result == LGX_SUCCESS, "Hardware adapter initialization");
+    if (result != LGX_SUCCESS) return;
+    
+    lgx_hardware_status_t status = lgx_hardware_adapter_get_status(adapter);
+    
+    /* Each flag must equal the adapter's own getter. Pre-B8b fix, these
+       fields came back uninitialised: on hosts where a capability is
+       PRESENT the mismatch is deterministic; where it is absent, both can
+       be false by accident. On this host gpu detection (lavapipe) drives
+       the discriminating comparison. */
+    TEST_ASSERT(status.huge_pages_available ==
+                    lgx_hardware_adapter_has_huge_pages(adapter),
+                "huge_pages_available mirrors has_huge_pages");
+    TEST_ASSERT(status.numa_topology_detected ==
+                    lgx_hardware_adapter_has_numa(adapter),
+                "numa_topology_detected mirrors has_numa");
+    TEST_ASSERT(status.gpu_acceleration_available ==
+                    lgx_hardware_adapter_has_gpu(adapter),
+                "gpu_acceleration_available mirrors has_gpu");
+    
+    printf("    host flags: huge=%d numa=%d gpu=%d\n",
+           status.huge_pages_available, status.numa_topology_detected,
+           status.gpu_acceleration_available);
+    
+    lgx_hardware_adapter_shutdown(adapter);
+}
+
 int main(void) {
     printf("=== LGX Runtime Health Check API Unit Tests ===\n");
     
@@ -370,6 +403,7 @@ int main(void) {
     test_health_consistency();
     test_health_before_init();
     test_health_monitoring_integration();
+    test_hardware_status_capability_flags();
     
     // Cleanup
     lgx_runtime_shutdown();

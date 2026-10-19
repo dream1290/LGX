@@ -262,22 +262,28 @@ void* lgx_alloc_with_intent(const lgx_allocation_intent_base_t* intent) {
     void* ptr = NULL;
     
     // Route based on intent with branch hints (Task 12.1.3)
-    // Priority: lifetime > performance hint > access pattern
-    // Most common path first (FRAME = 80% of allocations)
+    // Priority: explicit performance hint > lifetime > access pattern.
+    // The GPU hint must be tested before the frame-lifetime fast path:
+    // lgx_alloc_gpu_shared() sets lifetime=FRAME AND hint=GPU_SHARED, so
+    // a lifetime-first check swallows the whole public GPU API.
+    // Bare lgx_alloc_frame() (hint=CRITICAL_PATH) still takes the fast path.
     
-    if (likely(intent->lifetime == LGX_LIFETIME_FRAME)) {
-        // Frame-scoped allocation → Frame arena (MOST COMMON PATH)
-        ptr = lgx_frame_alloc_internal(intent->size, "unknown", 0);
-        
-        // Thread-local statistics (no mutex) (Task 12.1.2)
-        tls_intent_stats.frame_allocations++;
-        
-    } else if (unlikely(intent->hint == LGX_HINT_GPU_SHARED)) {
-        // GPU-shared allocation → GPU pool (15% of allocations)
+#if HAVE_VULKAN
+    if (unlikely(intent->hint == LGX_HINT_GPU_SHARED)) {
+        // GPU-shared allocation → GPU pool
         // Default to host-visible memory for CPU-GPU sharing
         ptr = lgx_gpu_alloc(intent->size, 16, LGX_GPU_HOST_VISIBLE);
         
         tls_intent_stats.gpu_allocations++;
+        
+    } else
+#endif
+    if (likely(intent->lifetime == LGX_LIFETIME_FRAME)) {
+        // Frame-scoped allocation → Frame arena (MOST COMMON PATH)
+        ptr = lgx_frame_alloc(intent->size);
+        
+        // Thread-local statistics (no mutex) (Task 12.1.2)
+        tls_intent_stats.frame_allocations++;
         
     } else if (intent->lifetime == LGX_LIFETIME_LEVEL || 
                intent->lifetime == LGX_LIFETIME_SESSION) {

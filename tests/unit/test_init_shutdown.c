@@ -190,10 +190,12 @@ static void test_subsystem_init(void) {
     // Check that key subsystems are initialized
     TEST_ASSERT(lgx_frame_arena_is_initialized(), "Frame arena initialized");
     
+#if defined(HAVE_VULKAN) && HAVE_VULKAN
     // Check GPU pool if available
     if (lgx_runtime_has_capability(LGX_CAP_GPU_ACCELERATION)) {
         TEST_ASSERT(lgx_gpu_pool_is_initialized(), "GPU pool initialized");
     }
+#endif
     
     // Check persistent heap
     TEST_ASSERT(lgx_persistent_heap_is_initialized(), "Persistent heap initialized");

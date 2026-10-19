@@ -408,6 +408,7 @@ const char* lgx_subsystem_to_string(lgx_log_subsystem_t subsystem) {
         case LGX_SUBSYSTEM_LIFECYCLE:  return "LIFECYCLE";
         case LGX_SUBSYSTEM_HARDWARE:   return "HARDWARE";
         case LGX_SUBSYSTEM_SECURITY:   return "SECURITY";
+        case LGX_SUBSYSTEM_NET:        return "NET";
         default: return "UNKNOWN";
     }
 }

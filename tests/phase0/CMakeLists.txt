@@ -18,6 +18,18 @@ else()
 endif()
 
 add_test(NAME test_csf2_numa_awareness COMMAND test_csf2_numa_awareness)
+
+# Chaos deadlock regesstion gate (Task B4). The 20s timeout is the point:
+# pre-fix the decision call hangs forever; a generic 300s timeout would be
+# the wrong (slow) failure mode.
+add_executable(test_chaos_deadlock test_chaos_deadlock.c)
+target_link_libraries(test_chaos_deadlock lgx_runtime m)
+add_test(NAME test_chaos_deadlock COMMAND test_chaos_deadlock)
+set_tests_properties(test_chaos_deadlock PROPERTIES
+    LABELS "phase0"
+    TIMEOUT 20
+    ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
+)
 # The NUMA allocation-cost timing verdict is a benchmark observation, not a
 # correctness property, so it is opt-in and off on the default run. Functional
 # assertions always run. To enforce the timing threshold, run ctest under an

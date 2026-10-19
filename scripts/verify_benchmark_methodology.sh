@@ -5,8 +5,11 @@
 #
 #   1. the benchmark actually calls lgx_frame_reset()
 #   2. it emits the FRAME_RESET_PATTERN line downstream gates parse
-#   3. stderr is muted around the timed region (the reset fprintf's on every call
-#      in a microbenchmark, which made the number depend on the caller's stderr)
+#   3. NO stderr mute remains: after D2-1 the reset-frequency warnings are
+#      behind LGX_DEBUG_BUILD in the runtime, so the harness must not mute
+#      stderr -- a mute here would hide future runtime diagnostics from the
+#      caller and the number would again depend on invocation shape (moved to
+#      release-only diagnostics by the runtime, not the harness)
 #   4. the reset return value is compared against LGX_SUCCESS (an uninitialized
 #      arena makes the reset a silent no-op and the measurement a lie)
 #   5. the harness pins itself to one CPU (unpinned runs move by >2x)
@@ -71,23 +74,38 @@ grep -q "FRAME_RESET_PATTERN" "$BENCH" \
     || fail "$BENCH does not emit the FRAME_RESET_PATTERN line" \
            "Downstream performance gates parse this line."
 
-# 3. stderr muted, and muted AROUND the timed frame benchmark rather than
-#    somewhere in the file: begin < benchmark_run(bench_lgx_frame) < end.
+# 3. No stderr mute may remain in the harness: the runtime owns the
+#    diagnostics gating (D2-1). Call sites checked; comments and identifiers
+#    in prose do not satisfy the old check, so absence is absence.
 mute_begin_line="$(call_line stderr_mute_begin)"
 mute_end_line="$(call_line stderr_mute_end)"
-frame_run_line="$(call_line benchmark_run)"
-frame_run_line="$(printf '%s\n' "$CODE" | grep -nE 'benchmark_run[[:space:]]*\([^;]*bench_lgx_frame' | head -1 | cut -d: -f1 || true)"
-
-if [ -z "$mute_begin_line" ] || [ -z "$mute_end_line" ] || [ -z "$frame_run_line" ]; then
-    fail "$BENCH does not bracket the timed frame benchmark with a stderr mute" \
-        "lgx_frame_reset() fprintf's to stderr on every reset in a microbenchmark," \
-        "which made the measured cost depend on where the caller's stderr points." \
-        "Expected: stderr_mute_begin() ... benchmark_run(..., bench_lgx_frame, ...) ... stderr_mute_end()"
-elif [ "$mute_begin_line" -ge "$frame_run_line" ] || [ "$mute_end_line" -le "$frame_run_line" ]; then
-    fail "$BENCH calls the stderr mute, but not around the timed frame benchmark" \
-        "stderr_mute_begin() at line $mute_begin_line, frame benchmark_run() at line $frame_run_line," \
-        "stderr_mute_end() at line $mute_end_line -- the mute must enclose the timing."
+mute_call_line="$(printf '%s\n' "$CODE" | grep -nE '(^|[^_a-zA-Z])stderr_mute_(begin|end)[[:space:]]*\(' | head -1 | cut -d: -f1 || true)"
+if [ -n "$mute_call_line" ]; then
+    fail "$BENCH still calls the stderr mute" \
+        "lgx_frame_reset's reset-frequency warnings moved behind LGX_DEBUG_BUILD" \
+        "(Task D2-1), so the harness no longer needs to mute stderr. A mute here" \
+        "would hide runtime diagnostics from the caller and make the number" \
+        "depend on the invocation again. Remove the call and its helpers."
 fi
+frame_run_line="$(printf '%s\n' "$CODE" | grep -nE 'benchmark_run[[:space:]]*\([^;]*bench_lgx_frame' | head -1 | cut -d: -f1 || true)"
+[ -n "$frame_run_line" ] || fail "$BENCH does not run the frame benchmark (bench_lgx_frame)" \
+    "The methodology gate needs the timed frame benchmark present."
+
+# 3b. The mixed-size, many-live-objects scenario (Task D3) must stay present:
+#     the single-size ladder is malloc's best case, and the D3 MIXED_LINE /
+#     MALLOCMIXED_LINE / MIXED_RATIO rows are the ones the mixed-claims table
+#     cites. Emission lines and the bench functions are all required.
+grep -q "MIXED_LINE" "$BENCH" || fail "$BENCH does not emit MIXED_LINE" \
+    "The mixed-size scenario (70/20/10 small/medium/large, 64 live objects)" \
+    "is the honest frame-shaped workload; its absence would let gates" \
+    "run only on the single-size pattern."
+grep -q "MALLOCMIXED_LINE" "$BENCH" || fail "$BENCH does not emit MALLOCMIXED_LINE" \
+    "The malloc comparator row of the same scenario, same process, same run." \
+grep -q "MIXED_RATIO" "$BENCH" || fail "$BENCH does not emit MIXED_RATIO" \
+    "The same-run arena/malloc ratio row."
+mixed_frame_line="$(printf '%s\n' "$CODE" | grep -nE 'benchmark_run[[:space:]]*\([^;]*bench_lgx_frame_mixed' | head -1 | cut -d: -f1 || true)"
+[ -n "$mixed_frame_line" ] || fail "$BENCH does not run the mixed frame benchmark (bench_lgx_frame_mixed)" \
+    "A MIXED_LINE row without the timed call is decoration."
 
 # 4. The reset result is compared against LGX_SUCCESS, on the call line or
 #    within the next two lines (for the `rc = lgx_frame_reset(); if (rc != ...)`
@@ -134,5 +152,5 @@ pin_line="$(call_line pin_to_single_cpu)"
     "Unpinned runs of this benchmark move by more than 2x, which makes an" \
     "absolute-nanosecond gate meaningless. Pinning must be in the program."
 
-echo "PASS: benchmark methodology includes reset, reset-result check, stderr mute around" \
-     "the timed region, CPU pinning, and emits the gate line"
+echo "PASS: benchmark methodology includes reset, reset-result check," \
+     "CPU pinning, and emits the gate line"

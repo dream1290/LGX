@@ -154,6 +154,24 @@ void test_gpu_pool_initialization(void) {
     if (result == LGX_SUCCESS) {
         TEST_ASSERT(lgx_gpu_pool_is_initialized(), "GPU pool is initialized");
         
+        /* The pool must hand back usable handles: a real VkDeviceMemory and a
+           mapped pointer for host-visible memory. Pre-fix, buddy_init memsets
+           the allocator after vkAllocateMemory/vkMapMemory, so get_memory
+           returns VK_NULL_HANDLE and mapped_ptr is always NULL. */
+        lgx_gpu_allocation_t* h = lgx_gpu_alloc(4096, 256, LGX_GPU_HOST_VISIBLE);
+        TEST_ASSERT(h != NULL, "host-visible allocation succeeds");
+        if (h) {
+            TEST_ASSERT(lgx_gpu_get_memory(h) != VK_NULL_HANDLE,
+                        "handle carries a real VkDeviceMemory");
+            void* mapped = lgx_gpu_get_mapped_ptr(h);
+            TEST_ASSERT(mapped != NULL, "host-visible allocation is mapped");
+            if (mapped) {
+                memset(mapped, 0x5A, 4096);
+                TEST_ASSERT(((uint8_t*)mapped)[0] == 0x5A, "mapped memory is writable");
+            }
+            lgx_gpu_free(h);
+        }
+        
         // Cleanup
         lgx_gpu_pool_shutdown();
     }
