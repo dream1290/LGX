@@ -242,6 +242,10 @@ if [ "$unlisted" -gt 0 ]; then
             }
             in_target { print }
         ' "$LOG" | tail -n 200
+        # The summary line carries the failure class (Failed / Not Run /
+        # Timeout / Required regular expression not found). The census prints
+        # names only, so surface the class next to the block above.
+        grep -E "^[[:space:]]*[0-9]+ - $t \(" "$LOG" || true
     done < "$UNLISTED"
     while IFS= read -r t; do
         [ -n "$t" ] || continue
