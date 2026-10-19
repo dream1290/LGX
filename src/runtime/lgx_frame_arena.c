@@ -140,6 +140,7 @@ typedef struct lgx_frame_arena {
     size_t usage_history[ROLLING_AVERAGE_WINDOW];  // Task 3.4.5.2.4: Rolling window
     uint32_t history_index;                         // Current index in rolling window
     size_t rolling_average;                         // Task 3.4.5.2.4: Computed average
+    size_t usage_sum;          // Task D2-2: running sum over Rolling window (O(1) insert)
     bool high_usage_warning_shown;                  // Task 3.4.5.2.5: Prevent spam
     uint64_t last_high_usage_warning_time;          // Task 3.4.5.2.5: Rate limiting
     
@@ -371,16 +372,16 @@ static bool grow_arena(lgx_frame_arena_t* arena, size_t new_capacity) {
  */
 static void update_rolling_average(lgx_frame_arena_t* arena) {
     // Update rolling average
-    // Add current usage to history
-    arena->usage_history[arena->history_index] = arena->retired_bytes + arena->offset;
+    // Add current usage to history, O(1) per insert over the same window
+    // semantics (Task D2-2): eviction removes the outgoing value before the
+    // sum, insertion adds the incoming one.
+    size_t leaving = arena->usage_history[arena->history_index];
+    size_t entering = arena->retired_bytes + arena->offset;
+    arena->usage_history[arena->history_index] = entering;
     arena->history_index = (arena->history_index + 1) % ROLLING_AVERAGE_WINDOW;
     
-    // Compute rolling average
-    size_t sum = 0;
-    for (int i = 0; i < ROLLING_AVERAGE_WINDOW; i++) {
-        sum += arena->usage_history[i];
-    }
-    arena->rolling_average = sum / ROLLING_AVERAGE_WINDOW;
+    arena->usage_sum = arena->usage_sum - leaving + entering;
+    arena->rolling_average = arena->usage_sum / ROLLING_AVERAGE_WINDOW;
 }
 
 
@@ -474,6 +475,7 @@ lgx_result_t lgx_frame_arena_init(void) {
         memset(arena->usage_history, 0, sizeof(arena->usage_history));
         arena->history_index = 0;
         arena->rolling_average = 0;
+        arena->usage_sum = 0;
         arena->high_usage_warning_shown = false;
         arena->last_high_usage_warning_time = 0;
         
@@ -751,9 +753,20 @@ lgx_result_t lgx_frame_reset(void) {
     
     // Get current time for tracking (Task 3.4.5.1.4)
     uint64_t current_time = lgx_time_now_ns();
-    uint64_t time_since_last_reset = current_time - g_frame_arena_state.stats.last_reset_time_ns;
     
-    // Task 3.4.5.1.4: Warn if frame reset is called too frequently or infrequently
+    // Increment frame counter
+    uint32_t old_frame = atomic_fetch_add(&g_frame_arena_state.current_frame, 1);
+    uint32_t new_frame = old_frame + 1;
+    
+    // Get the arena we'll use for the new frame
+    // This is the arena from 3 frames ago (safe to reset)
+    lgx_frame_arena_t* arena = &g_frame_arena_state.arenas[new_frame % FRAME_ARENA_COUNT];
+    
+#if LGX_DEBUG_BUILD
+    // Task 3.4.5.1.4: Warn about reset frequency (Task B7 plan D2-1:
+    // off the release path; the benchmark harness no longer needs to mute
+    // stderr because of these two lines).
+    uint64_t time_since_last_reset = current_time - g_frame_arena_state.stats.last_reset_time_ns;
     if (g_frame_arena_state.stats.reset_count > 0) {
         // Expected frame time: 16.67ms (60 FPS) = 16,670,000 ns
         // Warn if < 8ms (120+ FPS, might be calling reset too often)
@@ -768,14 +781,7 @@ lgx_result_t lgx_frame_reset(void) {
             fprintf(stderr, "              This might indicate lgx_frame_reset() is not being called every frame.\n");
         }
     }
-    
-    // Increment frame counter
-    uint32_t old_frame = atomic_fetch_add(&g_frame_arena_state.current_frame, 1);
-    uint32_t new_frame = old_frame + 1;
-    
-    // Get the arena we'll use for the new frame
-    // This is the arena from 3 frames ago (safe to reset)
-    lgx_frame_arena_t* arena = &g_frame_arena_state.arenas[new_frame % FRAME_ARENA_COUNT];
+#endif
     
     // Task 3.4.5.1.5: Check for potential memory leaks
     // If the arena still has significant usage after 3 frames, something might be wrong

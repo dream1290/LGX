@@ -27,57 +27,6 @@
 extern lgx_result_t lgx_frame_reset(void);
 
 /*
- * Deterministic stderr for the timed frame region.
- *
- * lgx_frame_reset() unconditionally fprintf's two lines to stderr whenever two
- * resets are closer together than 8 ms. In this tight loop that is every single
- * reset (~55,000 of them per size), while in a 60 FPS game it never happens
- * (16.7 ms per frame). Left alone, the measured cost depends on where the
- * CALLER's stderr points: measured on this machine, 64B moved 2027 ns -> 2675 ns
- * (+32%) between /dev/null and a pipe, 256B +28%, 1KB +21%, 4KB +10%. A
- * benchmark whose number depends on its invocation is not a benchmark.
- *
- * So the harness mutes stderr around the frame benchmark and restores it after,
- * which makes the result a property of this machine rather than of how the
- * binary was called. THIS IS A WORKAROUND, NOT A CURE: the runtime should
- * rate-limit this warning the way its sibling warning already is, and that is a
- * runtime change deliberately out of scope here. See the task-3 report.
- */
-static int g_stderr_saved_fd = -1;
-static FILE* g_stderr_null = NULL;
-
-static void stderr_mute_begin(void) {
-    if (g_stderr_saved_fd >= 0) return; /* already muted */
-    fflush(stderr);
-    int saved = dup(STDERR_FILENO);
-    FILE* null = fopen("/dev/null", "w");
-    if (saved < 0 || !null) {
-        /* Cannot control stderr: keep it, the numbers just stay invocation
-         * dependent. Do not fail the benchmark over a diagnostic stream. */
-        if (saved >= 0) close(saved);
-        if (null) fclose(null);
-        return;
-    }
-    if (dup2(fileno(null), STDERR_FILENO) < 0) {
-        close(saved);
-        fclose(null);
-        return;
-    }
-    g_stderr_saved_fd = saved;
-    g_stderr_null = null;
-}
-
-static void stderr_mute_end(void) {
-    if (g_stderr_saved_fd < 0) return;
-    fflush(stderr);
-    dup2(g_stderr_saved_fd, STDERR_FILENO);
-    close(g_stderr_saved_fd);
-    g_stderr_saved_fd = -1;
-    fclose(g_stderr_null);
-    g_stderr_null = NULL;
-}
-
-/*
  * CPU pinning, from inside the harness.
  *
  * Unpinned, this benchmark moves by more than 2x between back-to-back runs on
@@ -414,14 +363,14 @@ int main(void) {
         result_count++;
         
         // Benchmark lgx_alloc_frame (FRAME_REPEATS in-process repeats; the
-        // reported row is the median of the per-repeat medians)
+        // reported row is the median of the per-repeat medians). No stderr
+        // muting needed since D2-1: the reset-frequency warning is behind
+        // LGX_DEBUG_BUILD, so stderr stays a caller property in Release.
         snprintf(names[result_count], 256, "lgx_frame_%s", size_names[i]);
         benchmark_result_t frame_reps[FRAME_REPEATS];
         for (int r = 0; r < FRAME_REPEATS; r++) {
-            stderr_mute_begin();        /* keep diagnostics out of the timing */
             frame_reps[r] = benchmark_run(names[result_count], bench_lgx_frame, &ctx,
-                                         FRAME_ITERATIONS, FRAME_WARMUP);
-            stderr_mute_end();
+                                          FRAME_ITERATIONS, FRAME_WARMUP);
         }
         /* Insertion sort by median_ns; FRAME_REPEATS is odd so the middle
          * element is the median of the per-repeat medians. p99 is taken from
@@ -484,7 +433,7 @@ int main(void) {
     /* If any reset failed, the frame numbers above describe a no-reset
      * workload and must not be trusted. Say so loudly and fail the run rather
      * than let a bogus baseline propagate. */
-    printf("FRAME_RESET_STATUS resets=%llu failures=%llu stderr=muted_during_timing"
+    printf("FRAME_RESET_STATUS resets=%llu failures=%llu stderr=not_muted"
            " expected_resets=%llu sizes=%d repeats=%d iterations=%u\n",
            (unsigned long long)g_frame_resets,
            (unsigned long long)g_frame_reset_failures,
