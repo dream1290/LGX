@@ -225,19 +225,24 @@ if [ "$unlisted" -gt 0 ]; then
     # error annotations below are unchanged by this.
     note ""
     note "── output of the failing tests (from ctest --output-on-failure)"
+    # Belt and braces: a bounded raw view of the ctest log around the
+    # failures. If one of the per-test blocks below comes out empty
+    # despite the summary naming the test, this window says why.
+    note "── ctest log stats: $(wc -l < "$LOG") lines, $(grep -cE "^[[:space:]]*[0-9]+/[0-9]+ Test" "$LOG" || true) result lines"
+    tail -n 120 "$LOG"
     while IFS= read -r t; do
         [ -n "$t" ] || continue
         note ""
         note "── $t"
-        # ctest --output-on-failure emits, per test: "    Start N: <name>"
-        # then immediately the result line "<k>/<m> Test #N: <name> ...*Failed"
-        # and the test's stdout, up to the next Start line (or the end of the
-        # summary). The Start line is the exact test-name anchor; the awk
-        # below prints the block from a target Start until the next one.
+        # ctest emits, per test, the padded Start line then the result line
+        # "N/M Test #N: <name> ...*Failed" followed by the test's stdout.
+        # The result line is the anchor: it exists once per test in every
+        # ctest version and at every suite size (Start lines get padded for
+        # suites with 10+ tests and there is no stable width to index on).
         awk -v t="$t" '
-            index($0, "    Start ") == 1 {
-                name = substr($0, 11)      # drop the four-space "    Start " prefix
-                sub(/^[0-9]+: /, "", name) # drop "N: "
+            match($0, /^[[:space:]]*[0-9]+\/[0-9]+ Test[[:space:]]*#[0-9]+: /) {
+                name = substr($0, RSTART + RLENGTH)
+                sub(/[[:space:]]+.*$/, "", name)
                 in_target = (name == t)
             }
             in_target { print }

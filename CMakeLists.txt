@@ -332,6 +332,15 @@ enable_testing()
 # test_chaos_deadlock gets its own 20s timeout: the deadlock it guards makes
 # the generic 300s timeout the wrong failure mode (Task B4).
 set(PHASE0_TESTS_EXCLUDED test_csf2_numa_awareness test_chaos_deadlock)
+# GPU-adjacent phase0 tests whose LeakSanitizer report cannot be matched by
+# suppressions (see the comment inside the loop below for why).
+set(LGX_LSAN_GPU_EXCLUDED
+    test_gpu_buddy_allocator
+    test_gpu_capability
+    test_gpu_performance
+    test_gpu_pool
+    test_intent_allocator
+)
 file(GLOB PHASE0_TESTS tests/phase0/*.c)
 foreach(test_file ${PHASE0_TESTS})
     get_filename_component(test_name ${test_file} NAME_WE)
@@ -354,10 +363,22 @@ foreach(test_file ${PHASE0_TESTS})
     endif()
     
     add_test(NAME ${test_name} COMMAND ${test_name})
+    set(_lgx_test_env "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp")
+    if(Vulkan_FOUND AND test_name IN_LIST LGX_LSAN_GPU_EXCLUDED)
+        # LeakSanitizer reports unsuppressible leaks in these GPU tests on
+        # CI runners: mesa's lavapipe ICD frees allocations from a module
+        # that is unloaded before the leak scan, so the leak frames carry
+        # no symbolized module and no leak: suppression can ever match
+        # them. The tests themselves pass; only the leak escalation is
+        # disabled, and only here. Other sanitizer checks stay active and
+        # leak detection stays on for every other test (ledger:
+        # .superpowers/sdd/2026-10-18-phase1-completion, ASan GPU flake).
+        list(APPEND _lgx_test_env "ASAN_OPTIONS=detect_leaks=0")
+    endif()
     set_tests_properties(${test_name} PROPERTIES
         LABELS "phase0"
         TIMEOUT 300  # 5 minutes for AddressSanitizer overhead
-        ENVIRONMENT "LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/lsan.supp"
+        ENVIRONMENT "${_lgx_test_env}"
     )
 endforeach()
 
@@ -391,6 +412,10 @@ if(Vulkan_FOUND)
     set_tests_properties(graphics_test_basic PROPERTIES
         LABELS "graphics"
         TIMEOUT 30
+        # Same lavapipe module-unload leak as the phase0 GPU tests above:
+        # only the leak escalation is disabled here, everything else in
+        # the sanitizer configuration is untouched.
+        ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0"
     )
 endif()
 
