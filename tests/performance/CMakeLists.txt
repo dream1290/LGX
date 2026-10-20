@@ -7,6 +7,7 @@ set(PERFORMANCE_TEST_SOURCES
     test_frame_time_contribution.c
     test_memory_overhead.c
     test_memory_footprint.c
+    test_persistent_heap.c
 )
 
 # Create performance test executables
